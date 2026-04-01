@@ -4,113 +4,121 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import androidx.fragment.app.Fragment;
-
 import com.bumptech.glide.Glide;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.api.AniListClient;
-
+import com.jeff.animeapp.utils.FirebaseUtils;
+import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AnimeDetailsFragment extends Fragment {
 
-    private static final String ARG_ANIME_ID = "anime_id";
+    private ImageView cover;
+    private TextView title, score, description;
+    private Button btnPlay, btnWatchlist;
+    private String imageUrl = ""; // ✅ store image URL
 
-    private int animeId;
-    private ImageView animePoster;
-    private TextView animeTitle, animeDescription, animeScore;
-
-    public AnimeDetailsFragment() {}
-
-    public static AnimeDetailsFragment newInstance(int animeId) {
+    public static AnimeDetailsFragment newInstance(int id) {
         AnimeDetailsFragment fragment = new AnimeDetailsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ANIME_ID, animeId);
+        args.putInt("anime_id", id);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            animeId = getArguments().getInt(ARG_ANIME_ID);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_anime_details, container, false);
 
-        // Bind XML views
-        animePoster = v.findViewById(R.id.animeCover);
-        animeTitle = v.findViewById(R.id.animeTitle);
-        animeDescription = v.findViewById(R.id.animeDescription);
-        animeScore = v.findViewById(R.id.statDefense); // <-- you can repurpose a TextView or add a new one for score in XML
+        cover = v.findViewById(R.id.animeCover);
+        title = v.findViewById(R.id.animeTitle);
+        score = v.findViewById(R.id.animeScore);
+        description = v.findViewById(R.id.animeDescription);
+        btnPlay = v.findViewById(R.id.btnPlay);
+        btnWatchlist = v.findViewById(R.id.btnWatchlist);
 
-        loadDetails();
+        int animeId = getArguments().getInt("anime_id");
+        fetchAnimeDetails(animeId);
+
+        btnWatchlist.setOnClickListener(view -> addToWatchlist(animeId));
 
         return v;
     }
 
-    private void loadDetails() {
-        // Classic string concatenation (works in all Java versions)
-        String query = "query {"
-                + " Media(id: " + animeId + ", type: ANIME) {"
-                + " title { romaji }"
-                + " description"
-                + " averageScore"
-                + " coverImage { large }"
-                + " }"
-                + "}";
+    private void fetchAnimeDetails(int id) {
+        String query = "query ($id: Int) { Media(id: $id, type: ANIME) { id title { romaji } description coverImage { large } averageScore } }";
+
+        JsonObject variables = new JsonObject();
+        variables.addProperty("id", id);
 
         JsonObject body = new JsonObject();
         body.addProperty("query", query);
+        body.add("variables", variables);
 
         AniListClient.API api = AniListClient.getClient().create(AniListClient.API.class);
-
         api.query(body).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (response.body() == null) return;
-
                 JsonObject media = response.body()
                         .getAsJsonObject("data")
                         .getAsJsonObject("Media");
 
-                // Set data to views
-                animeTitle.setText(
-                        media.getAsJsonObject("title")
-                                .get("romaji").getAsString()
-                );
+                String titleStr = media.getAsJsonObject("title").get("romaji").getAsString();
+                String descStr = media.get("description").getAsString().replaceAll("<.*?>", "");
+                imageUrl = media.getAsJsonObject("coverImage").get("large").getAsString(); // ✅ save image URL
+                int scoreInt = media.get("averageScore").getAsInt();
 
-                animeDescription.setText(
-                        media.get("description").getAsString()
-                                .replace("<br>", "")
-                                .replace("<i>", "").replace("</i>", "")
-                );
+                title.setText(titleStr);
+                description.setText(descStr);
+                score.setText("⭐ " + scoreInt);
 
-                animeScore.setText("Score: " + media.get("averageScore").getAsInt());
-
-                Glide.with(getContext())
-                        .load(media.getAsJsonObject("coverImage").get("large").getAsString())
-                        .into(animePoster);
+                Glide.with(getContext()).load(imageUrl).into(cover);
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getContext(), "Failed to load anime details", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
+                Toast.makeText(getContext(), "Failed to load details", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addToWatchlist(int id) {
+        String uid = FirebaseUtils.uid();
+        if (uid == null) {
+            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", id); // ✅ Save anime ID
+        map.put("title", title.getText().toString());
+        map.put("coverImage", imageUrl); // ✅ store actual image URL
+        map.put("description", description.getText().toString());
+
+        // ✅ Save score as number
+        String scoreText = score.getText().toString().replace("⭐", "").trim();
+        try {
+            int scoreInt = Integer.parseInt(scoreText);
+            map.put("score", scoreInt);
+        } catch (NumberFormatException e) {
+            map.put("score", 0);
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("watchlist")
+                .document(uid)
+                .collection("anime")
+                .document(String.valueOf(id)) // ✅ Use ID as doc name
+                .set(map)
+                .addOnSuccessListener(unused ->
+                        Toast.makeText(getContext(), "Added to Watchlist!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

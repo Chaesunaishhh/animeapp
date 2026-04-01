@@ -67,7 +67,8 @@ public class HomeFragment extends Fragment {
     private void fetchAnimeList() {
         progressBar.setVisibility(View.VISIBLE);
 
-        String query = "query { Page(page: 1, perPage: 20) { media(type: ANIME) { title { romaji } coverImage { large } averageScore } } }";
+        // ✅ include id field
+        String query = "query { Page(page: 1, perPage: 20) { media(type: ANIME) { id title { romaji } coverImage { large } averageScore } } }";
 
         JsonObject body = new JsonObject();
         body.addProperty("query", query);
@@ -101,7 +102,7 @@ public class HomeFragment extends Fragment {
     private void searchAnime(String search) {
         progressBar.setVisibility(View.VISIBLE);
 
-        String query = "query ($search: String) { Page(page: 1, perPage: 20) { media(search: $search, type: ANIME) { title { romaji } coverImage { large } averageScore } } }";
+        String query = "query ($search: String) { Page(page: 1, perPage: 20) { media(search: $search, type: ANIME) { id title { romaji } coverImage { large } averageScore } } }";
 
         JsonObject variables = new JsonObject();
         variables.addProperty("search", search);
@@ -134,7 +135,7 @@ public class HomeFragment extends Fragment {
     private void fetchBySort(String sort) {
         progressBar.setVisibility(View.VISIBLE);
 
-        String query = "query ($sort: [MediaSort]) { Page(page: 1, perPage: 20) { media(type: ANIME, sort: $sort) { title { romaji } coverImage { large } averageScore } } }";
+        String query = "query ($sort: [MediaSort]) { Page(page: 1, perPage: 20) { media(type: ANIME, sort: $sort) { id title { romaji } coverImage { large } averageScore } } }";
 
         JsonObject variables = new JsonObject();
         variables.addProperty("sort", sort);

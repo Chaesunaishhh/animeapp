@@ -1,7 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/colorBackground"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#0F0F1A">
 
     <LinearLayout
         android:orientation="vertical"
@@ -9,88 +9,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Anime Cover -->
+        <!-- Cover Image -->
         <ImageView
             android:id="@+id/animeCover"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:scaleType="centerCrop"
-            android:background="@color/colorCard"/>
+            android:layout_height="200dp"
+            android:scaleType="centerCrop" />
 
-        <!-- Anime Title -->
+        <!-- Title -->
         <TextView
             android:id="@+id/animeTitle"
-            android:textColor="@color/colorWhite"
-            android:textSize="24sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Anime Title"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="12dp"
+            android:textColor="@color/white"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Score -->
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <!-- Anime Description -->
-        <TextView
-            android:id="@+id/animeDescription"
-            android:textColor="@color/colorWhite"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <!-- Anime Score -->
-        <TextView
+            android:layout_height="wrap_content"
             android:id="@+id/animeScore"
-            android:textColor="@color/colorAccent"
+            android:text="⭐ 85"
             android:textSize="16sp"
-            android:text="Score: 0"
-            android:layout_marginTop="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:textColor="@color/white"
+            android:layout_marginTop="4dp"/>
 
-        <!-- Stats Card -->
+        <!-- Description -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/animeDescription"
+            android:text="Anime description goes here..."
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Actions -->
         <LinearLayout
-            android:orientation="vertical"
-            android:background="@color/colorCard"
-            android:padding="12dp"
+            android:orientation="horizontal"
             android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:text="Stats"
-                android:textColor="@color/colorAccent"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"
+            <Button
+                android:id="@+id/btnPlay"
+                android:text="Play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/statDefense"
-                android:textColor="@color/colorWhite"
-                android:text="Defense: 80"
+            <Button
+                android:id="@+id/btnWatchlist"
+                android:text="Add to Watchlist"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/statSpecialAttack"
-                android:textColor="@color/colorWhite"
-                android:text="Special Attack: 90"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/statSpecialDefense"
-                android:textColor="@color/colorWhite"
-                android:text="Special Defense: 85"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/statSpeed"
-                android:textColor="@color/colorWhite"
-                android:text="Speed: 95"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

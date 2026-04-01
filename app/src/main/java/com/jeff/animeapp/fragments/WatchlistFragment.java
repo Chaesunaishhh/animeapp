@@ -4,33 +4,30 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;import androidx.annotation.NonNull;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.adapters.AnimeAdapter;
-import com.jeff.animeapp.databinding.FragmentWatchlistBinding; // Import the binding
+import com.jeff.animeapp.databinding.FragmentWatchlistBinding;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 public class WatchlistFragment extends Fragment {
 
-    // 1. Create the binding variable
     private FragmentWatchlistBinding binding;
 
     public WatchlistFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // 2. Initialize the binding
         binding = FragmentWatchlistBinding.inflate(inflater, container, false);
 
-        // 3. Access views via binding (No findViewById needed!)
-        binding.recyclerWatchlist.setLayoutManager(new LinearLayoutManager(getContext()));
-
+        binding.recyclerWatchlist.setLayoutManager(new GridLayoutManager(getContext(), 2));
         loadWatchlist();
 
         return binding.getRoot();
@@ -55,21 +52,33 @@ public class WatchlistFragment extends Fragment {
                     JsonArray arr = new JsonArray();
                     for (DocumentSnapshot doc : snapshot.getDocuments()) {
                         JsonObject obj = new JsonObject();
+
+                        // ✅ ID
+                        if (doc.contains("id")) {
+                            obj.addProperty("id", doc.getLong("id"));
+                        }
+
+                        // ✅ Title
                         JsonObject titleObj = new JsonObject();
                         titleObj.addProperty("romaji", doc.getString("title"));
+                        obj.add("title", titleObj);
 
+                        // ✅ Image
                         JsonObject imgObj = new JsonObject();
                         imgObj.addProperty("large", doc.getString("coverImage"));
-
-                        obj.add("title", titleObj);
                         obj.add("coverImage", imgObj);
-                        obj.addProperty("description", doc.getString("description"));
-                        obj.addProperty("averageScore", doc.getLong("score") != null ? doc.getLong("score") : 0);
+
+                        // ✅ Description
+                        obj.addProperty("description",
+                                doc.getString("description") != null ? doc.getString("description") : "");
+
+                        // ✅ Score
+                        obj.addProperty("averageScore",
+                                doc.getLong("score") != null ? doc.getLong("score") : 0);
 
                         arr.add(obj);
                     }
 
-                    binding.recyclerWatchlist.setLayoutManager(new GridLayoutManager(getContext(), 2));
                     binding.recyclerWatchlist.setAdapter(new AnimeAdapter(arr));
                 })
                 .addOnFailureListener(e -> {
@@ -81,6 +90,6 @@ public class WatchlistFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Important for memory management
+        binding = null;
     }
 }

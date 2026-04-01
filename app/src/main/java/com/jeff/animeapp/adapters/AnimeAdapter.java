@@ -5,14 +5,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.jeff.animeapp.R;
+import com.jeff.animeapp.fragments.AnimeDetailsFragment;
 import com.jeff.animeapp.utils.FirebaseUtils;
 
 import java.util.HashMap;
@@ -36,9 +38,11 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         JsonObject anime = animeList.get(position).getAsJsonObject();
 
         // Safe Title extraction
-        String titleStr = "Unknown Title";
+        String titleStr;
         if (anime.has("title") && anime.getAsJsonObject("title").has("romaji")) {
             titleStr = anime.getAsJsonObject("title").get("romaji").getAsString();
+        } else {
+            titleStr = "Unknown Title";
         }
 
         // Safe Image extraction
@@ -69,7 +73,24 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .placeholder(android.R.drawable.ic_menu_gallery)
                 .into(holder.image);
 
+        // ADD TO WATCHLIST button
         holder.btn.setOnClickListener(v -> addToWatchlist(holder.itemView, anime));
+
+        // ✅ NEW: Click on card to open details
+        holder.itemView.setOnClickListener(v -> {
+            int id = anime.has("id") && !anime.get("id").isJsonNull()
+                    ? anime.get("id").getAsInt()
+                    : titleStr.hashCode(); // fallback if no id
+
+            Fragment fragment = AnimeDetailsFragment.newInstance(id);
+
+            ((AppCompatActivity) v.getContext())
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 
     private void addToWatchlist(View view, JsonObject anime) {
@@ -81,14 +102,9 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         }
 
         try {
-            // FIX: Check if ID exists before calling getAsInt()
-            int id;
-            if (anime.has("id") && !anime.get("id").isJsonNull()) {
-                id = anime.get("id").getAsInt();
-            } else {
-                // Fallback: use hashcode of title if ID is missing to prevent crash
-                id = anime.getAsJsonObject("title").get("romaji").getAsString().hashCode();
-            }
+            int id = anime.has("id") && !anime.get("id").isJsonNull()
+                    ? anime.get("id").getAsInt()
+                    : anime.getAsJsonObject("title").get("romaji").getAsString().hashCode();
 
             String title = anime.getAsJsonObject("title").get("romaji").getAsString();
             String image = anime.getAsJsonObject("coverImage").get("large").getAsString();
@@ -136,7 +152,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
             title = itemView.findViewById(R.id.animeTitle);
             score = itemView.findViewById(R.id.animeScore);
             desc = itemView.findViewById(R.id.animeDesc);
-            // Matches the ID in your updated item_anime.xml
             btn = itemView.findViewById(R.id.btnWishlist);
         }
     }
