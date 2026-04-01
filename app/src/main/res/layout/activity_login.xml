@@ -20,7 +20,7 @@
         android:hint="Email"
         android:textColor="@color/colorWhite"
         android:textColorHint="@color/colorGray"
-        android:background="@color/colorCard"
+        android:background="@drawable/edittext"
         android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="52dp"/>
@@ -30,7 +30,7 @@
         android:hint="Password"
         android:textColor="@color/colorWhite"
         android:textColorHint="@color/colorGray"
-        android:background="@color/colorCard"
+        android:background="@drawable/edittext"
         android:inputType="textPassword"
         android:padding="16dp"
         android:layout_marginTop="16dp"
@@ -42,7 +42,8 @@
         android:text="Login"
         android:textColor="@color/colorWhite"
         android:backgroundTint="@color/colorAccent"
-        android:layout_marginTop="24dp"
+        android:background="@drawable/rounded_button"
+        android:layout_marginTop="32dp"
         android:layout_width="match_parent"
         android:layout_height="52dp"/>
 

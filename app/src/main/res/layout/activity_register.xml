@@ -1,72 +1,78 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/colorBackground"
+    android:padding="24dp"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:padding="24dp"
-        android:orientation="vertical"
+    <TextView
+        android:text="Create Account"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"
+        android:layout_marginBottom="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="Join the anime community"
+        android:textSize="13sp"
+        android:textColor="@color/colorGray"
+        android:layout_marginBottom="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/usernameInput"
+        android:hint="Username"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray"
+        android:background="@drawable/edittext"
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="52dp"/>
 
-        <TextView
-            android:text="Create Account"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/colorWhite"
-            android:layout_marginBottom="32dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+    <EditText
+        android:id="@+id/emailInput"
+        android:hint="Email"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray"
+        android:background="@drawable/edittext"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"/>
 
-        <EditText
-            android:id="@+id/usernameInput"
-            android:hint="Username"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorGray"
-            android:background="@color/colorCard"
-            android:padding="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"/>
+    <EditText
+        android:id="@+id/passwordInput"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorGray"
+        android:background="@drawable/edittext"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"/>
 
-        <EditText
-            android:id="@+id/emailInput"
-            android:hint="Email"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorGray"
-            android:background="@color/colorCard"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"/>
+    <Button
+        android:id="@+id/registerButton"
+        android:text="Create Account"
+        android:textColor="@color/colorWhite"
+        android:backgroundTint="@color/colorAccent"
+        android:background="@drawable/rounded_button"
+        android:layout_marginTop="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"/>
 
-        <EditText
-            android:id="@+id/passwordInput"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorGray"
-            android:background="@color/colorCard"
-            android:padding="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"/>
+    <TextView
+        android:id="@+id/goToLogin"
+        android:text="Already have an account? Login"
+        android:textColor="@color/colorAccent"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
-        <Button
-            android:id="@+id/registerButton"
-            android:text="Create Account"
-            android:textColor="@color/colorWhite"
-            android:backgroundTint="@color/colorPink"
-            android:layout_marginTop="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"/>
-
-        <TextView
-            android:id="@+id/goToLogin"
-            android:text="Already have an account? Login"
-            android:textColor="@color/colorAccent"
-            android:layout_marginTop="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-</ScrollView>
+</LinearLayout>
