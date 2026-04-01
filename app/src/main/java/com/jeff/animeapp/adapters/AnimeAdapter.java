@@ -37,31 +37,29 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         JsonObject anime = animeList.get(position).getAsJsonObject();
 
-        // Safe Title extraction
-        String titleStr;
-        if (anime.has("title") && anime.getAsJsonObject("title").has("romaji")) {
-            titleStr = anime.getAsJsonObject("title").get("romaji").getAsString();
-        } else {
-            titleStr = "Unknown Title";
-        }
+        // Title
+        String titleStr = anime.has("title") && anime.getAsJsonObject("title").has("romaji")
+                ? anime.getAsJsonObject("title").get("romaji").getAsString()
+                : "Unknown Title";
 
-        // Safe Image extraction
-        String imageStr = "";
-        if (anime.has("coverImage") && anime.getAsJsonObject("coverImage").has("large")) {
-            imageStr = anime.getAsJsonObject("coverImage").get("large").getAsString();
-        }
+        // Image
+        String imageStr = anime.has("coverImage") && anime.getAsJsonObject("coverImage").has("large")
+                ? anime.getAsJsonObject("coverImage").get("large").getAsString()
+                : "";
 
-        // Safe Description extraction with HTML cleaning
+        // Description (clean HTML)
         String descStr = "No description available.";
         if (anime.has("description") && !anime.get("description").isJsonNull()) {
-            descStr = anime.get("description").getAsString().replaceAll("<.*?>", "");
+            String rawDesc = anime.get("description").getAsString();
+            if (!rawDesc.trim().isEmpty()) {
+                descStr = rawDesc.replaceAll("<.*?>", "");
+            }
         }
 
-        // Safe Score extraction
-        int scoreInt = 0;
-        if (anime.has("averageScore") && !anime.get("averageScore").isJsonNull()) {
-            scoreInt = anime.get("averageScore").getAsInt();
-        }
+        // Score
+        int scoreInt = anime.has("averageScore") && !anime.get("averageScore").isJsonNull()
+                ? anime.get("averageScore").getAsInt()
+                : 0;
 
         // Apply to UI
         holder.title.setText(titleStr);
@@ -73,14 +71,14 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .placeholder(android.R.drawable.ic_menu_gallery)
                 .into(holder.image);
 
-        // ADD TO WATCHLIST button
+        // Add to Watchlist button
         holder.btn.setOnClickListener(v -> addToWatchlist(holder.itemView, anime));
 
-        // ✅ NEW: Click on card to open details
+        // Card click → open details
         holder.itemView.setOnClickListener(v -> {
             int id = anime.has("id") && !anime.get("id").isJsonNull()
                     ? anime.get("id").getAsInt()
-                    : titleStr.hashCode(); // fallback if no id
+                    : titleStr.hashCode();
 
             Fragment fragment = AnimeDetailsFragment.newInstance(id);
 
@@ -95,7 +93,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
 
     private void addToWatchlist(View view, JsonObject anime) {
         String uid = FirebaseUtils.uid();
-
         if (uid == null) {
             Toast.makeText(view.getContext(), "Please login to add to watchlist", Toast.LENGTH_SHORT).show();
             return;
@@ -108,9 +105,19 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
 
             String title = anime.getAsJsonObject("title").get("romaji").getAsString();
             String image = anime.getAsJsonObject("coverImage").get("large").getAsString();
-            String desc = anime.has("description") ? anime.get("description").getAsString() : "";
+
+            // ✅ Clean description before saving
+            String desc = "No description available.";
+            if (anime.has("description") && !anime.get("description").isJsonNull()) {
+                String rawDesc = anime.get("description").getAsString();
+                if (!rawDesc.trim().isEmpty()) {
+                    desc = rawDesc.replaceAll("<.*?>", "");
+                }
+            }
+
             int score = anime.has("averageScore") && !anime.get("averageScore").isJsonNull()
-                    ? anime.get("averageScore").getAsInt() : 0;
+                    ? anime.get("averageScore").getAsInt()
+                    : 0;
 
             HashMap<String, Object> map = new HashMap<>();
             map.put("id", id);
