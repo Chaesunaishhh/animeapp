@@ -43,7 +43,7 @@
         android:textColor="@color/colorWhite"
         android:backgroundTint="@color/colorAccent"
         android:background="@drawable/rounded_button"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="52dp"/>
 

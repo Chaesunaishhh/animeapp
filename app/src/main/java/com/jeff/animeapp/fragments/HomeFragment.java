@@ -67,7 +67,6 @@ public class HomeFragment extends Fragment {
     private void fetchAnimeList() {
         progressBar.setVisibility(View.VISIBLE);
 
-        // ✅ include id field
         String query = "query { Page(page: 1, perPage: 20) { media(type: ANIME) { id title { romaji } coverImage { large } averageScore } } }";
 
         JsonObject body = new JsonObject();

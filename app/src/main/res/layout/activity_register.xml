@@ -17,7 +17,7 @@
 
     <TextView
         android:text="Join the anime community"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:textColor="@color/colorGray"
         android:layout_marginBottom="32dp"
         android:layout_width="wrap_content"

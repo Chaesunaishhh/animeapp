@@ -59,7 +59,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
         holder.user.setText(userName);
 
-        // Load avatar if exists
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(avatarUrl)

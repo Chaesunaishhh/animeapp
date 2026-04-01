@@ -72,7 +72,7 @@ public class WatchlistFragment extends Fragment {
                         obj.addProperty("description",
                                 doc.getString("description") != null ? doc.getString("description") : "");
 
-                        // ✅ Score
+
                         obj.addProperty("averageScore",
                                 doc.getLong("score") != null ? doc.getLong("score") : 0);
 

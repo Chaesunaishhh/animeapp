@@ -106,7 +106,6 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
             String title = anime.getAsJsonObject("title").get("romaji").getAsString();
             String image = anime.getAsJsonObject("coverImage").get("large").getAsString();
 
-            // ✅ Clean description before saving
             String desc = "No description available.";
             if (anime.has("description") && !anime.get("description").isJsonNull()) {
                 String rawDesc = anime.get("description").getAsString();
