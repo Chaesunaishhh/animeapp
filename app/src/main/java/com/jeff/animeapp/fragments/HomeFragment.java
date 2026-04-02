@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.adapters.AnimeAdapter;
 import com.jeff.animeapp.api.AniListClient;
@@ -68,19 +71,49 @@ public class HomeFragment extends Fragment {
     private void updateAdapter(JsonArray mediaArray) {
         if (mediaArray == null) return;
 
-        // Tatlo ang arguments: mediaArray, isWatchlist (false), at click listener
-        AnimeAdapter adapter = new AnimeAdapter(mediaArray, false, id -> {
+        String uid = FirebaseAuth.getInstance().getUid();
+        if (uid == null) {
+            // Kung walang login, diretso lang ipakita lahat
+            AnimeAdapter adapter = new AnimeAdapter(mediaArray, false, id -> {
+                Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, detailsFragment)
+                        .addToBackStack(null)
+                        .commit();
+            });
+            recyclerView.setAdapter(adapter);
+            return;
+        }
 
-            // Dito natin dinagdagan ng 'false' para sa isWatchlist parameter ng DetailsFragment
-            Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
+        FirebaseFirestore.getInstance()
+                .collection("watchlist")
+                .document(uid)
+                .collection("anime")
+                .get()
+                .addOnSuccessListener((QuerySnapshot snapshot) -> {
+                    JsonArray filteredArray = new JsonArray();
 
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, detailsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
+                    for (int i = 0; i < mediaArray.size(); i++) {
+                        JsonObject anime = mediaArray.get(i).getAsJsonObject();
+                        int id = anime.get("id").getAsInt();
 
-        recyclerView.setAdapter(adapter);
+                        boolean inWatchlist = snapshot.getDocuments().stream()
+                                .anyMatch(doc -> doc.getId().equals(String.valueOf(id)));
+
+                        if (!inWatchlist) {
+                            filteredArray.add(anime);
+                        }
+                    }
+
+                    AnimeAdapter adapter = new AnimeAdapter(filteredArray, false, id -> {
+                        Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
+                        getParentFragmentManager().beginTransaction()
+                                .replace(R.id.fragmentContainer, detailsFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    });
+                    recyclerView.setAdapter(adapter);
+                });
     }
 
     private void fetchAnimeList() {
