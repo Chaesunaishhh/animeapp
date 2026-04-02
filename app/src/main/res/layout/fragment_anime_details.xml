@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,63 +10,97 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Cover Image -->
         <ImageView
             android:id="@+id/animeCover"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:layout_height="250dp"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:background="@android:color/darker_gray" />
 
-        <!-- Title -->
         <TextView
             android:id="@+id/animeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Anime Title"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_marginTop="12dp"/>
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"/>
 
-        <!-- Score -->
         <TextView
+            android:id="@+id/animeScore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/animeScore"
-            android:text="⭐ 85"
+            android:text="⭐ 0"
             android:textSize="16sp"
-            android:textColor="@color/white"
+            android:textColor="#FFD700"
             android:layout_marginTop="4dp"/>
 
-        <!-- Description -->
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/animeDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Anime description goes here..."
             android:textSize="14sp"
-            android:textColor="@color/white"
-            android:layout_marginTop="8dp"/>
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="12dp"
+            android:lineSpacingExtra="4dp"/>
 
-        <!-- Actions -->
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/btnPlay"
                 android:text="Play"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#E50914"
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnWatchlist"
                 android:text="Add to Watchlist"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1.5"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"/>
+                android:layout_marginStart="12dp"
+                android:backgroundTint="#333333"
+                android:textColor="@android:color/white"/>
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutDetailsActions"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnDetailsComplete"
+                android:text="DONE"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/btnDetailsRemove"
+                android:text="REMOVE"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:backgroundTint="#F44336"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>

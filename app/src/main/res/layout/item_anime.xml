@@ -5,7 +5,7 @@
     android:layout_margin="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/card"
+    app:cardBackgroundColor="@color/card"
     app:cardCornerRadius="16dp"
     app:cardElevation="6dp">
 
@@ -22,7 +22,6 @@
             android:scaleType="centerCrop"
             android:clipToOutline="true"/>
 
-        <!-- Changed id from @+id/title to @+id/animeTitle -->
         <TextView
             android:id="@+id/animeTitle"
             android:textColor="@color/text"
@@ -34,7 +33,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
-        <!-- Changed id from @+id/score to @+id/animeScore -->
         <TextView
             android:id="@+id/animeScore"
             android:textColor="@color/muted"
@@ -43,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"/>
 
-        <!-- ADDED: animeDesc -->
         <TextView
             android:id="@+id/animeDesc"
             android:textColor="@color/muted"
@@ -54,15 +51,43 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"/>
 
-        <!-- ADDED: btnWatchlist -->
         <Button
             android:id="@+id/btnWishlist"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add to Watchlist"
-            android:textColor="@color/colorWhite"
+            android:textColor="@android:color/white"
             android:background="@drawable/button_bg"
             android:layout_marginTop="6dp"/>
 
+        <LinearLayout
+            android:id="@+id/layoutWatchlistActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnComplete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Done"
+                android:textSize="12sp"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="@android:color/white"/>
+
+            <Button
+                android:id="@+id/btnRemove"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Remove"
+                android:textSize="12sp"
+                android:backgroundTint="#F44336"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
