@@ -14,8 +14,6 @@ import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import java.util.HashMap;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 
 public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> {
 
@@ -44,6 +42,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         JsonObject anime = animeList.get(position).getAsJsonObject();
 
+        // Data Parsing
         String titleStr = anime.has("title") && anime.getAsJsonObject("title").has("romaji")
                 ? anime.getAsJsonObject("title").get("romaji").getAsString() : "Unknown Title";
 
@@ -58,30 +57,48 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
 
         final int finalId = anime.has("id") ? anime.get("id").getAsInt() : 0;
 
+        // Set Basic UI
         holder.title.setText(titleStr);
         holder.score.setText("⭐ " + scoreInt);
         holder.desc.setText(descStr);
         Glide.with(holder.itemView.getContext()).load(imageStr).into(holder.image);
 
-        // Visibility Logic
+        // --- BUTTON LOGIC START ---
         if (isWatchlist) {
             holder.btnWishlist.setVisibility(View.GONE);
             holder.layoutWatchlistActions.setVisibility(View.VISIBLE);
 
-            // LOGIC PARA SA DONE/COMPLETED BUTTON
-            if (anime.has("status") && anime.get("status").getAsString().equals("completed")) {
+            String status = anime.has("status") ? anime.get("status").getAsString() : "watching";
+
+            if ("completed".equalsIgnoreCase(status)) {
+                // 1. Hide the Remove button
+                holder.btnRemove.setVisibility(View.GONE);
+
+                // 2. Change text and disable
                 holder.btnComplete.setText("COMPLETED");
                 holder.btnComplete.setEnabled(false);
                 holder.btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+
+                // 3. Make button span full width (Weight 2.0)
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2.0f);
+                holder.btnComplete.setLayoutParams(params);
             } else {
+                // Default State (Watching)
+                holder.btnRemove.setVisibility(View.VISIBLE);
                 holder.btnComplete.setText("DONE");
                 holder.btnComplete.setEnabled(true);
                 holder.btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
+
+                // Reset weights to 1:1
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f);
+                holder.btnComplete.setLayoutParams(params);
+                holder.btnRemove.setLayoutParams(params);
             }
         } else {
             holder.btnWishlist.setVisibility(View.VISIBLE);
             holder.layoutWatchlistActions.setVisibility(View.GONE);
         }
+        // --- BUTTON LOGIC END ---
 
         // Click Listeners
         holder.btnWishlist.setOnClickListener(v -> addToWatchlist(v, anime));
@@ -119,14 +136,12 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         map.put("coverImage", anime.getAsJsonObject("coverImage").get("large").getAsString());
         map.put("description", anime.has("description") ? anime.get("description").getAsString() : "");
         map.put("score", anime.has("averageScore") ? anime.get("averageScore").getAsInt() : 0);
-        map.put("status", "watching"); // Default status
+        map.put("status", "watching");
 
         FirebaseUtils.firestore().collection("watchlist").document(uid)
                 .collection("anime").document(String.valueOf(id)).set(map)
                 .addOnSuccessListener(u -> {
                     Toast.makeText(view.getContext(), "Saved to Watchlist!", Toast.LENGTH_SHORT).show();
-
-                    // ✅ Remove from Home list after adding
                     int position = getPositionById(id);
                     if (position != -1) {
                         animeList.remove(position);
@@ -136,17 +151,13 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 });
     }
 
-    // Helper para hanapin ang position ng anime sa list
     private int getPositionById(int id) {
         for (int i = 0; i < animeList.size(); i++) {
             JsonObject obj = animeList.get(i).getAsJsonObject();
-            if (obj.has("id") && obj.get("id").getAsInt() == id) {
-                return i;
-            }
+            if (obj.has("id") && obj.get("id").getAsInt() == id) return i;
         }
         return -1;
     }
-
 
     private void updateStatusToCompleted(View view, int id, int position) {
         String uid = FirebaseUtils.uid();
@@ -157,10 +168,9 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .update("status", "completed")
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(view.getContext(), "Status updated to Completed!", Toast.LENGTH_SHORT).show();
-                    // I-update ang local list para mag-reflect agad sa UI
                     JsonObject anime = animeList.get(position).getAsJsonObject();
                     anime.addProperty("status", "completed");
-                    notifyItemChanged(position);
+                    notifyItemChanged(position); // Re-runs onBindViewHolder to fix the layout
                 });
     }
 
@@ -183,7 +193,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         ImageView image;
         TextView title, score, desc;
         Button btnWishlist, btnComplete, btnRemove;
-        View layoutWatchlistActions;
+        LinearLayout layoutWatchlistActions; // Use LinearLayout specifically for weight handling
 
         public ViewHolder(View itemView) {
             super(itemView);
