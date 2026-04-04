@@ -19,7 +19,7 @@
             android:layout_height="40dp"
             android:scaleType="centerCrop"
             android:background="@color/colorGray"
-            android:src="@drawable/ic_person"
+            android:src="@drawable/ic_profile"
             android:contentDescription="User Avatar"/>
 
         <TextView

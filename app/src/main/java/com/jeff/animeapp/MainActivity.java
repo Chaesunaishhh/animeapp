@@ -2,17 +2,24 @@ package com.jeff.animeapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.jeff.animeapp.LoginActivity;
 import com.jeff.animeapp.fragments.CommunityFragment;
 import com.jeff.animeapp.fragments.HomeFragment;
 import com.jeff.animeapp.fragments.ProfileFragment;
 import com.jeff.animeapp.fragments.WatchlistFragment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 🔥 LOGIN CHECK FIRST (VERY IMPORTANT)
+        // 🔥 LOGIN CHECK FIRST
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
@@ -35,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
@@ -62,5 +68,69 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             bottomNav.setSelectedItemId(R.id.nav_home);
         }
+    }
+
+    // 🔑 FILTER DIALOG FUNCTION
+    public void showFilterDialog(HomeFragment homeFragment) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.filter_dialog, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Button btnApply = dialogView.findViewById(R.id.btnApply);
+        Button btnReset = dialogView.findViewById(R.id.btnReset);
+
+        // Genre checkboxes
+        CheckBox cbAction = dialogView.findViewById(R.id.cbAction);
+        CheckBox cbComedy = dialogView.findViewById(R.id.cbComedy);
+        CheckBox cbRomance = dialogView.findViewById(R.id.cbRomance);
+        CheckBox cbFantasy = dialogView.findViewById(R.id.cbFantasy);
+
+        btnApply.setOnClickListener(a -> {
+            List<String> selectedGenres = new ArrayList<>();
+            if (cbAction.isChecked()) selectedGenres.add("Action");
+            if (cbComedy.isChecked()) selectedGenres.add("Comedy");
+            if (cbRomance.isChecked()) selectedGenres.add("Romance");
+            if (cbFantasy.isChecked()) selectedGenres.add("Fantasy");
+
+            List<String> selectedYears = new ArrayList<>();
+            // Loop through 2000–2026
+            for (int year = 2000; year <= 2026; year++) {
+                int resId = dialogView.getResources()
+                        .getIdentifier("cb" + year, "id", dialogView.getContext().getPackageName());
+                CheckBox cbYear = dialogView.findViewById(resId);
+                if (cbYear != null && cbYear.isChecked()) {
+                    selectedYears.add(String.valueOf(year));
+                }
+            }
+
+            // Call HomeFragment filter function
+            homeFragment.applyFilters(selectedGenres, selectedYears);
+
+            dialog.dismiss();
+        });
+
+        btnReset.setOnClickListener(r -> {
+            // Clear genres
+            cbAction.setChecked(false);
+            cbComedy.setChecked(false);
+            cbRomance.setChecked(false);
+            cbFantasy.setChecked(false);
+
+            // Clear years 2000–2026
+            for (int year = 2000; year <= 2026; year++) {
+                int resId = dialogView.getResources()
+                        .getIdentifier("cb" + year, "id", dialogView.getContext().getPackageName());
+                CheckBox cbYear = dialogView.findViewById(resId);
+                if (cbYear != null) cbYear.setChecked(false);
+            }
+
+            // Reset list in HomeFragment
+            homeFragment.applyFilters(new ArrayList<>(), new ArrayList<>());
+            dialog.dismiss();
+        });
     }
 }

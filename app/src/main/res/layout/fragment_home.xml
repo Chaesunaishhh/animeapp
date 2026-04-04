@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="#0F0F1A"
     android:padding="12dp"
@@ -13,19 +14,53 @@
         android:textSize="22sp"
         android:textColor="@color/colorWhite"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="4dp"/>
 
-    <!-- SEARCH -->
-    <EditText
-        android:id="@+id/searchInput"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Explore trending anime"
+        android:textSize="14sp"
+        android:textColor="#888"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- SEARCH BAR -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search anime..."
-        android:padding="12dp"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="#888"
+        android:orientation="horizontal"
         android:background="@drawable/search_bg"
-        android:layout_marginBottom="10dp"/>
+        android:padding="8dp"
+        android:layout_marginBottom="10dp">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_search"
+            app:tint="@color/colorWhite"
+            android:layout_gravity="center_vertical"/>
+
+        <EditText
+            android:id="@+id/searchInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Search anime..."
+            android:textColor="@color/colorWhite"
+            android:textColorHint="#888"
+            android:background="@android:color/transparent"
+            android:paddingStart="8dp"/>
+
+        <!-- Filter icon with ID -->
+        <ImageView
+            android:id="@+id/ic_filter"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_filter"
+            app:tint="@color/colorWhite"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
 
     <!-- FILTER BUTTONS -->
     <HorizontalScrollView
@@ -42,31 +77,41 @@
                 android:id="@+id/btnPopular"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Popular"
+                android:text="POPULAR"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/button_bg"
-                android:layout_marginRight="8dp"/>
+                android:background="@drawable/button_selector"
+                android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/btnTop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Top Rated"
+                android:text="TOP RATED"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/button_bg"
-                android:layout_marginRight="8dp"/>
+                android:background="@drawable/button_selector"
+                android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/btnTrending"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trending"
+                android:text="TRENDING"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/button_bg"/>
-
+                android:background="@drawable/button_selector"/>
         </LinearLayout>
+
     </HorizontalScrollView>
 
+    <TextView
+        android:id="@+id/tvRecommended"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Recommended For You"
+        android:textSize="18sp"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
     <!-- LOADING -->
     <ProgressBar
         android:id="@+id/progressHome"
@@ -83,5 +128,4 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_weight="1"/>
-
 </LinearLayout>

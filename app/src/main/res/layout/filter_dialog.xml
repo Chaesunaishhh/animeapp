@@ -1,0 +1,134 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1A1A2E"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filters"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Genre Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Genre"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"/>
+
+        <CheckBox
+            android:id="@+id/cbAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Action"
+            android:textColor="@color/colorWhite"/>
+
+        <CheckBox
+            android:id="@+id/cbComedy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comedy"
+            android:textColor="@color/colorWhite"/>
+
+        <CheckBox
+            android:id="@+id/cbRomance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Romance"
+            android:textColor="@color/colorWhite"/>
+
+        <CheckBox
+            android:id="@+id/cbFantasy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fantasy"
+            android:textColor="@color/colorWhite"/>
+
+        <!-- Year Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Year"
+            android:textColor="@color/colorWhite"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Years 2000 to 2026 -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Loop style: one checkbox per year -->
+            <CheckBox android:id="@+id/cb2000" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2000" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2001" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2001" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2002" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2002" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2003" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2003" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2004" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2004" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2005" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2005" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2006" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2006" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2007" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2007" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2008" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2008" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2009" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2009" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2010" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2010" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2011" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2011" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2012" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2012" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2013" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2013" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2014" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2014" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2015" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2015" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2016" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2016" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2017" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2017" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2018" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2018" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2019" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2019" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2020" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2020" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2021" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2021" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2022" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2022" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2023" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2023" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2024" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2024" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2025" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2025" android:textColor="@color/colorWhite"/>
+            <CheckBox android:id="@+id/cb2026" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="2026" android:textColor="@color/colorWhite"/>
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="16dp"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Reset"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/button_bg"/>
+
+            <Button
+                android:id="@+id/btnApply"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:text="Apply"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/button_bg"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
