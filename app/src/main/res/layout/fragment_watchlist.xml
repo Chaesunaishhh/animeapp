@@ -14,6 +14,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <!-- Count of anime in watchlist -->
+    <TextView
+        android:id="@+id/watchlistCount"
+        android:text="0 anime in your list"
+        android:textColor="@color/text"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <ProgressBar
         android:id="@+id/progressWatchlist"
         android:visibility="gone"

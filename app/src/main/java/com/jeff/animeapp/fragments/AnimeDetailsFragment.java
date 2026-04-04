@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.api.AniListClient;
@@ -23,13 +23,12 @@ import retrofit2.Response;
 public class AnimeDetailsFragment extends Fragment {
 
     private ImageView cover;
-    private TextView title, score, description;
-    private Button btnPlay, btnWatchlist, btnComplete, btnRemove; // Added buttons
-    private View layoutWatchlistActions; // Container ng buttons
+    private TextView title, score, description, meta, characters;
+    private Button btnPlay, btnWatchlist, btnComplete, btnRemove;
+    private View layoutWatchlistActions;
     private String imageUrl = "";
-    private boolean isFromWatchlist = false; // Flag para sa UI logic
+    private boolean isFromWatchlist = false;
 
-    // Updated newInstance para tumanggap ng isWatchlist boolean
     public static AnimeDetailsFragment newInstance(int id, boolean isWatchlist) {
         AnimeDetailsFragment fragment = new AnimeDetailsFragment();
         Bundle args = new Bundle();
@@ -47,10 +46,10 @@ public class AnimeDetailsFragment extends Fragment {
         title = v.findViewById(R.id.animeTitle);
         score = v.findViewById(R.id.animeScore);
         description = v.findViewById(R.id.animeDescription);
+        meta = v.findViewById(R.id.animeMeta);
+        characters = v.findViewById(R.id.animeCharacters);
         btnPlay = v.findViewById(R.id.btnPlay);
         btnWatchlist = v.findViewById(R.id.btnWatchlist);
-
-        // Watchlist Action Buttons (Galing sa layout)
         btnComplete = v.findViewById(R.id.btnDetailsComplete);
         btnRemove = v.findViewById(R.id.btnDetailsRemove);
         layoutWatchlistActions = v.findViewById(R.id.layoutDetailsActions);
@@ -61,22 +60,17 @@ public class AnimeDetailsFragment extends Fragment {
 
             fetchAnimeDetails(animeId);
 
-            // LOGIC PARA SA VISIBILITY NG BUTTONS
             if (isFromWatchlist) {
-                btnWatchlist.setVisibility(View.GONE); // Itago ang "Add"
-                layoutWatchlistActions.setVisibility(View.VISIBLE); // Ipakita ang "Done/Remove"
-
-                checkStatus(animeId); // I-check kung completed na ba
+                btnWatchlist.setVisibility(View.GONE);
+                layoutWatchlistActions.setVisibility(View.VISIBLE);
+                checkStatus(animeId);
             } else {
                 btnWatchlist.setVisibility(View.VISIBLE);
                 layoutWatchlistActions.setVisibility(View.GONE);
             }
 
-            // BUTTON LISTENERS
             btnWatchlist.setOnClickListener(view -> addToWatchlist(animeId));
-
             btnRemove.setOnClickListener(view -> removeFromWatchlist(animeId));
-
             btnComplete.setOnClickListener(view -> updateStatusToCompleted(animeId));
         }
 
@@ -84,9 +78,14 @@ public class AnimeDetailsFragment extends Fragment {
     }
 
     private void fetchAnimeDetails(int id) {
-        String query = "query ($id: Int) { Media(id: $id, type: ANIME) { id title { romaji } description coverImage { large } averageScore } }";
+        String query = "query ($id: Int) { Media(id: $id, type: ANIME) { " +
+                "id title { romaji } description coverImage { large } averageScore " +
+                "seasonYear episodes genres " +
+                "characters { edges { node { name { full } } } } } }";
+
         JsonObject variables = new JsonObject();
         variables.addProperty("id", id);
+
         JsonObject body = new JsonObject();
         body.addProperty("query", query);
         body.add("variables", variables);
@@ -94,20 +93,58 @@ public class AnimeDetailsFragment extends Fragment {
         AniListClient.getClient().create(AniListClient.API.class).query(body).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!isAdded()) return;
                 if (response.body() != null) {
                     JsonObject media = response.body().getAsJsonObject("data").getAsJsonObject("Media");
-                    String titleStr = media.getAsJsonObject("title").get("romaji").getAsString();
-                    String descStr = media.get("description").getAsString().replaceAll("<.*?>", "");
-                    imageUrl = media.getAsJsonObject("coverImage").get("large").getAsString();
-                    int scoreInt = media.get("averageScore").getAsInt();
 
+                    String titleStr = media.getAsJsonObject("title").get("romaji").getAsString();
+                    String descStr = media.has("description") && !media.get("description").isJsonNull()
+                            ? media.get("description").getAsString().replaceAll("<.*?>", "")
+                            : "No description available.";
+                    imageUrl = media.getAsJsonObject("coverImage").get("large").getAsString();
+                    int scoreInt = media.has("averageScore") && !media.get("averageScore").isJsonNull()
+                            ? media.get("averageScore").getAsInt() : 0;
+
+                    int year = media.has("seasonYear") && !media.get("seasonYear").isJsonNull()
+                            ? media.get("seasonYear").getAsInt() : 0;
+                    int episodes = media.has("episodes") && !media.get("episodes").isJsonNull()
+                            ? media.get("episodes").getAsInt() : 0;
+                    String genresStr = "";
+                    if (media.has("genres")) {
+                        genresStr = media.getAsJsonArray("genres").toString()
+                                .replace("[", "")
+                                .replace("]", "")
+                                .replace("\"", "");
+                    }
+
+                    // Characters
+                    StringBuilder charsBuilder = new StringBuilder();
+                    if (media.has("characters")) {
+                        JsonArray charEdges = media.getAsJsonObject("characters").getAsJsonArray("edges");
+                        for (int i = 0; i < charEdges.size(); i++) {
+                            JsonObject node = charEdges.get(i).getAsJsonObject().getAsJsonObject("node");
+                            String name = node.getAsJsonObject("name").get("full").getAsString();
+                            charsBuilder.append(name);
+                            if (i < charEdges.size() - 1) charsBuilder.append(", ");
+                        }
+                    }
+
+                    // Bind to UI
                     title.setText(titleStr);
                     description.setText(descStr);
                     score.setText("⭐ " + scoreInt);
-                    Glide.with(getContext()).load(imageUrl).into(cover);
+                    meta.setText(year + " • " + genresStr + " • " + episodes + " Episodes");
+                    characters.setText(charsBuilder.length() > 0 ? charsBuilder.toString() : "No characters available.");
+
+                    Glide.with(requireContext()).load(imageUrl).into(cover);
                 }
             }
-            @Override public void onFailure(Call<JsonObject> call, Throwable t) {}
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (!isAdded()) return;
+                Toast.makeText(getContext(), "Failed to load details", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -139,11 +176,13 @@ public class AnimeDetailsFragment extends Fragment {
 
         FirebaseFirestore.getInstance().collection("watchlist").document(uid)
                 .collection("anime").document(String.valueOf(id)).set(map)
-                .addOnSuccessListener(u -> Toast.makeText(getContext(), "Added!", Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(u -> Toast.makeText(getContext(), "Added to Watchlist!", Toast.LENGTH_SHORT).show());
     }
 
     private void updateStatusToCompleted(int id) {
         String uid = FirebaseUtils.uid();
+        if (uid == null) return;
+
         FirebaseFirestore.getInstance().collection("watchlist").document(uid)
                 .collection("anime").document(String.valueOf(id))
                 .update("status", "completed")
@@ -157,11 +196,13 @@ public class AnimeDetailsFragment extends Fragment {
 
     private void removeFromWatchlist(int id) {
         String uid = FirebaseUtils.uid();
+        if (uid == null) return;
+
         FirebaseFirestore.getInstance().collection("watchlist").document(uid)
                 .collection("anime").document(String.valueOf(id)).delete()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(getContext(), "Removed!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack(); // Bumalik sa listahan
+                    getParentFragmentManager().popBackStack();
                 });
     }
 }

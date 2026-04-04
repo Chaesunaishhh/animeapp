@@ -28,7 +28,6 @@ public class WatchlistFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentWatchlistBinding.inflate(inflater, container, false);
 
-        // Grid layout na may 2 columns
         binding.recyclerWatchlist.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         loadWatchlist();
@@ -58,39 +57,30 @@ public class WatchlistFragment extends Fragment {
                     for (DocumentSnapshot doc : snapshot.getDocuments()) {
                         JsonObject obj = new JsonObject();
 
-                        // 1. Map ID
                         long id = doc.contains("id") && doc.getLong("id") != null ? doc.getLong("id") : 0;
                         obj.addProperty("id", id);
 
-                        // 2. Map Title
                         JsonObject titleObj = new JsonObject();
                         titleObj.addProperty("romaji", doc.getString("title") != null ? doc.getString("title") : "Unknown");
                         obj.add("title", titleObj);
 
-                        // 3. Map Image
                         JsonObject imgObj = new JsonObject();
                         imgObj.addProperty("large", doc.getString("coverImage") != null ? doc.getString("coverImage") : "");
                         obj.add("coverImage", imgObj);
 
-                        // 4. Map Description
                         obj.addProperty("description", doc.getString("description") != null ? doc.getString("description") : "");
-
-                        // 5. Map Score
                         obj.addProperty("averageScore", doc.getLong("score") != null ? doc.getLong("score") : 0);
-
-                        // 6. Map Status
                         obj.addProperty("status", doc.getString("status") != null ? doc.getString("status") : "watching");
 
                         arr.add(obj);
                     }
 
-                    // 7. Setup Adapter
-                    // true = ibig sabihin nasa Watchlist page tayo
+                    // Update watchlist count text
+                    int count = snapshot.size();
+                    binding.watchlistCount.setText(count + " anime in your list");
+
                     AnimeAdapter adapter = new AnimeAdapter(arr, true, id -> {
-
-                        // FIX: Nagpasa tayo ng 'true' sa newInstance para lumabas ang Done/Remove buttons sa loob
                         Fragment detailsFragment = AnimeDetailsFragment.newInstance((int) id, true);
-
                         getParentFragmentManager().beginTransaction()
                                 .replace(R.id.fragmentContainer, detailsFragment)
                                 .addToBackStack(null)

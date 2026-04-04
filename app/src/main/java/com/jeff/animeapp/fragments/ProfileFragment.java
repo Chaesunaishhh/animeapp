@@ -21,7 +21,6 @@ import com.jeff.animeapp.LoginActivity;
 public class ProfileFragment extends Fragment {
 
     private Button logoutBtn;
-    private Switch darkModeSwitch;
     private TextView usernameView, emailView;
 
     public ProfileFragment() {}
@@ -31,7 +30,6 @@ public class ProfileFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
         logoutBtn = v.findViewById(R.id.logoutButton);
-        darkModeSwitch = v.findViewById(R.id.darkModeSwitch);
         usernameView = v.findViewById(R.id.profileUsername);
         emailView = v.findViewById(R.id.profileEmail);
 
@@ -41,16 +39,6 @@ public class ProfileFragment extends Fragment {
             getActivity().finish();
         });
 
-        int currentNightMode = AppCompatDelegate.getDefaultNightMode();
-        darkModeSwitch.setChecked(currentNightMode == AppCompatDelegate.MODE_NIGHT_YES);
-
-        darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        });
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {

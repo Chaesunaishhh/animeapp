@@ -10,33 +10,61 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Cover Image -->
         <ImageView
             android:id="@+id/animeCover"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:scaleType="centerCrop"
             android:clipToOutline="true"
-            android:background="@android:color/darker_gray" />
+            android:background="@android:color/darker_gray"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- Title + Score -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/animeTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Anime Title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"/>
+
+            <TextView
+                android:id="@+id/animeScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐ 0"
+                android:textSize="16sp"
+                android:textColor="#FFD700"/>
+        </LinearLayout>
+
+        <!-- Meta Info -->
         <TextView
-            android:id="@+id/animeTitle"
+            android:id="@+id/animeMeta"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Anime Title"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="16dp"/>
+            android:text="2019 • Action, Fantasy • 52 Episodes"
+            android:textSize="14sp"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="12dp"/>
 
-        <TextView
-            android:id="@+id/animeScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⭐ 0"
-            android:textSize="16sp"
-            android:textColor="#FFD700"
-            android:layout_marginTop="4dp"/>
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333333"
+            android:layout_marginBottom="12dp"/>
 
+        <!-- Description -->
         <TextView
             android:id="@+id/animeDescription"
             android:layout_width="match_parent"
@@ -44,39 +72,60 @@
             android:text="Anime description goes here..."
             android:textSize="14sp"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="12dp"
-            android:lineSpacingExtra="4dp"/>
+            android:lineSpacingExtra="4dp"
+            android:layout_marginBottom="20dp"/>
 
+        <!-- Characters Section -->
+        <TextView
+            android:id="@+id/animeCharactersLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Characters:"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:id="@+id/animeCharacters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading..."
+            android:textSize="14sp"
+            android:textColor="#CCCCCC"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Action Buttons -->
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
 
             <Button
                 android:id="@+id/btnPlay"
-                android:text="Play"
+                android:text="PLAY"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:backgroundTint="#E50914"
+                android:textStyle="bold"
                 android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnWatchlist"
-                android:text="Add to Watchlist"
+                android:text="ADD TO WATCHLIST"
                 android:layout_width="0dp"
-                android:layout_weight="1.5"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:backgroundTint="#333333"
                 android:textColor="@android:color/white"/>
         </LinearLayout>
 
+        <!-- Watchlist Actions -->
         <LinearLayout
             android:id="@+id/layoutDetailsActions"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone">
