@@ -1,56 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:background="@color/bg"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/animeImage"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:scaleType="centerCrop" />
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/animeTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Anime Title"
-        android:textColor="@color/text"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="6dp"/>
-
-    <!-- Rating -->
-    <TextView
-        android:id="@+id/animeRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="⭐ 85"
-        android:textColor="@color/text"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"/>
-
-    <!-- Action Buttons -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
+        android:padding="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/markCompleteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mark Complete"/>
+        <!-- Thumbnail -->
+        <ImageView
+            android:id="@+id/animeImage"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"/>
 
-        <Button
-            android:id="@+id/removeButton"
-            android:layout_width="wrap_content"
+        <!-- Title + Rating -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Remove"
-            android:layout_marginStart="12dp"/>
+            android:layout_marginTop="6dp">
+
+            <TextView
+                android:id="@+id/animeTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Anime Title"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/animeScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="★★★★☆"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDone"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Mark Complete"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDelete"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Remove"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

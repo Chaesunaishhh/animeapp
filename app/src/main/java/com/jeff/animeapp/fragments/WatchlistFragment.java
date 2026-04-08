@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
-import com.jeff.animeapp.adapters.AnimeAdapter;
+import com.jeff.animeapp.adapters.WatchlistAdapter;
 import com.jeff.animeapp.databinding.FragmentWatchlistBinding;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -68,7 +68,6 @@ public class WatchlistFragment extends Fragment {
                         imgObj.addProperty("large", doc.getString("coverImage") != null ? doc.getString("coverImage") : "");
                         obj.add("coverImage", imgObj);
 
-                        obj.addProperty("description", doc.getString("description") != null ? doc.getString("description") : "");
                         obj.addProperty("averageScore", doc.getLong("score") != null ? doc.getLong("score") : 0);
                         obj.addProperty("status", doc.getString("status") != null ? doc.getString("status") : "watching");
 
@@ -79,7 +78,8 @@ public class WatchlistFragment extends Fragment {
                     int count = snapshot.size();
                     binding.watchlistCount.setText(count + " anime in your list");
 
-                    AnimeAdapter adapter = new AnimeAdapter(arr, true, id -> {
+                    // Use WatchlistAdapter
+                    WatchlistAdapter adapter = new WatchlistAdapter(arr, id -> {
                         Fragment detailsFragment = AnimeDetailsFragment.newInstance((int) id, true);
                         getParentFragmentManager().beginTransaction()
                                 .replace(R.id.fragmentContainer, detailsFragment)

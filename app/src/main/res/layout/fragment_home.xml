@@ -1,131 +1,128 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:background="#0F0F1A"
-    android:padding="12dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <!-- HEADER -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="🎌 Anime Explorer"
-        android:textSize="22sp"
-        android:textColor="@color/colorWhite"
-        android:textStyle="bold"
-        android:layout_marginBottom="4dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Explore trending anime"
-        android:textSize="14sp"
-        android:textColor="#888"
-        android:layout_marginBottom="12dp"/>
-
-    <!-- SEARCH BAR -->
     <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/search_bg"
-        android:padding="8dp"
-        android:layout_marginBottom="10dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_search"
-            app:tint="@color/colorWhite"
-            android:layout_gravity="center_vertical"/>
-
-        <EditText
-            android:id="@+id/searchInput"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Search anime..."
-            android:textColor="@color/colorWhite"
-            android:textColorHint="#888"
-            android:background="@android:color/transparent"
-            android:paddingStart="8dp"/>
-
-        <!-- Filter icon with ID -->
-        <ImageView
-            android:id="@+id/ic_filter"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_filter"
-            app:tint="@color/colorWhite"
-            android:layout_gravity="center_vertical"/>
-
-    </LinearLayout>
-
-    <!-- FILTER BUTTONS -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-
-        <LinearLayout
+        <!-- HEADER -->
+        <TextView
+            android:text="🎌 Anime Explorer"
+            android:textSize="22sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"/>
 
-            <Button
-                android:id="@+id/btnPopular"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="POPULAR"
-                android:textColor="@color/colorWhite"
-                android:background="@drawable/button_selector"
-                android:layout_marginEnd="8dp"/>
+        <TextView
+            android:text="Discover trending anime"
+            android:textSize="14sp"
+            android:textColor="#888888"
+            android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-            <Button
-                android:id="@+id/btnTop"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="TOP RATED"
-                android:textColor="@color/colorWhite"
-                android:background="@drawable/button_selector"
-                android:layout_marginEnd="8dp"/>
+        <!-- SEARCH BAR -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:background="@drawable/search_bg"
+            android:padding="8dp"
+            android:layout_marginBottom="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/btnTrending"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:src="@drawable/ic_search"
+                app:tint="@android:color/white"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"/>
+
+            <EditText
+                android:id="@+id/searchInput"
+                android:hint="Search anime..."
+                android:textColor="@android:color/white"
+                android:textColorHint="#888888"
+                android:background="@android:color/transparent"
+                android:paddingStart="8dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="TRENDING"
-                android:textColor="@color/colorWhite"
-                android:background="@drawable/button_selector"/>
+                android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/ic_filter"
+                android:src="@drawable/ic_filter"
+                app:tint="@android:color/white"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"/>
         </LinearLayout>
 
-    </HorizontalScrollView>
+        <!-- RECOMMENDED SECTION FIRST -->
+        <TextView
+            android:id="@+id/tvRecommended"
+            android:text="Recommended For You"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/tvRecommended"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Recommended For You"
-        android:textSize="18sp"
-        android:textColor="@color/colorWhite"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
-    <!-- LOADING -->
-    <ProgressBar
-        android:id="@+id/progressHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_marginTop="10dp"/>
+        <ProgressBar
+            android:id="@+id/progressHome"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-    <!-- RECYCLER VIEW -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerHome"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight="1"/>
-</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerHome"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:overScrollMode="never"/>
+
+        <!-- FEATURED SECTION -->
+        <TextView
+            android:text="Featured"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerFeatured"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:overScrollMode="never"/>
+
+        <!-- TRENDING SECTION -->
+        <TextView
+            android:text="Trending This Season"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerTrending"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:overScrollMode="never"/>
+    </LinearLayout>
+</ScrollView>

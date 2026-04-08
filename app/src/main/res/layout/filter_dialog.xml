@@ -117,7 +117,7 @@
                 android:layout_weight="1"
                 android:text="Reset"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/button_bg"/>
+                android:background="@drawable/button_filter_bg"/>
 
             <Button
                 android:id="@+id/btnApply"
@@ -126,7 +126,7 @@
                 android:layout_weight="1"
                 android:text="Apply"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/button_bg"
+                android:background="@drawable/button_filter_bg"
                 android:layout_marginStart="8dp"/>
         </LinearLayout>
 
