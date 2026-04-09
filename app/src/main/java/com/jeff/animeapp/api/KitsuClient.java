@@ -5,7 +5,10 @@ import com.google.gson.JsonObject;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public class KitsuClient {
 
@@ -26,7 +29,12 @@ public class KitsuClient {
 
     // API interface for Kitsu
     public interface API {
-        @GET("posts")
-        Call<JsonObject> getCommunityPosts();
+        // Get reviews for a specific anime by ID
+        @GET("anime/{id}/reviews")
+        Call<JsonObject> getAnimeReviews(@Path("id") int animeId);
+
+        // Add a new review (requires authentication)
+        @POST("reviews")
+        Call<JsonObject> addReview(@Body JsonObject body);
     }
 }

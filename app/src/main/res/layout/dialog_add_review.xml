@@ -1,20 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="16dp"
+    android:background="@color/colorBackgroundDark"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Anime Title -->
     <EditText
-        android:id="@+id/editReview"
-        android:hint="Write your review..."
+        android:id="@+id/editAnimeTitle"
+        android:hint="Anime title..."
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/edittext_bg"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"/>
 
+    <!-- Rating -->
     <RatingBar
         android:id="@+id/ratingBar"
         android:numStars="5"
         android:stepSize="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Review Content -->
+    <EditText
+        android:id="@+id/editReview"
+        android:hint="Share your thoughts..."
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/edittext_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="120dp"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:text="Cancel"
+            android:textColor="@color/colorWhite"
+            android:backgroundTint="@color/colorCardDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:text="Submit"
+            android:textColor="@color/colorWhite"
+            android:backgroundTint="@color/colorAccentPink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </LinearLayout>

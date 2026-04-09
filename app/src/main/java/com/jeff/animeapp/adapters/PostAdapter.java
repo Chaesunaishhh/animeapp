@@ -4,7 +4,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,38 +34,67 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-
-        // Get the array of posts
         JsonArray arr = data.getAsJsonArray("data");
         if (arr == null || arr.size() <= position) return;
 
         JsonObject obj = arr.get(position).getAsJsonObject();
 
-        // User info
+        // Defaults
         String userName = "Unknown";
+        String animeTitle = "Anime";
+        String content = "";
         String avatarUrl = null;
+        int likes = 0;
+        int dislikes = 0;
+        float rating = 0f;
+
         if (obj.has("attributes")) {
             JsonObject attr = obj.getAsJsonObject("attributes");
 
-            // content
-            String content = attr.has("content") ? attr.get("content").getAsString() : "";
-            holder.content.setText(content);
+            if (attr.has("content")) content = attr.get("content").getAsString();
+            if (attr.has("animeTitle")) animeTitle = attr.get("animeTitle").getAsString();
+            if (attr.has("likes")) likes = attr.get("likes").getAsInt();
+            if (attr.has("dislikes")) dislikes = attr.get("dislikes").getAsInt();
+            if (attr.has("rating")) rating = attr.get("rating").getAsFloat();
 
-            // Optional user info
             if (attr.has("user")) {
                 JsonObject user = attr.getAsJsonObject("user");
-                userName = user.has("name") ? user.get("name").getAsString() : "Unknown";
-                avatarUrl = user.has("avatar") ? user.get("avatar").getAsString() : null;
+                if (user.has("name")) userName = user.get("name").getAsString();
+                if (user.has("avatar")) avatarUrl = user.get("avatar").getAsString();
             }
         }
 
+        // Bind data to UI
         holder.user.setText(userName);
+        holder.animeTitle.setText(animeTitle);
+        holder.content.setText(content);
+        holder.ratingBar.setRating(rating);
+
+        holder.likeButton.setText(likes + " Likes");
+        holder.dislikeButton.setText(dislikes + " Dislikes");
 
         if (avatarUrl != null && !avatarUrl.isEmpty()) {
             Glide.with(holder.itemView.getContext())
                     .load(avatarUrl)
+                    .placeholder(R.drawable.ic_profile)
                     .into(holder.avatar);
+        } else {
+            holder.avatar.setImageResource(R.drawable.ic_profile);
         }
+
+        // Make final copies for lambdas
+        final String finalAnimeTitle = animeTitle;
+        final String finalUserName = userName;
+
+        // Actions
+        holder.likeButton.setOnClickListener(v ->
+                Toast.makeText(v.getContext(), "Liked " + finalAnimeTitle, Toast.LENGTH_SHORT).show());
+
+        holder.dislikeButton.setOnClickListener(v ->
+                Toast.makeText(v.getContext(), "Disliked " + finalAnimeTitle, Toast.LENGTH_SHORT).show());
+
+        holder.commentButton.setOnClickListener(v ->
+                Toast.makeText(v.getContext(), "Reply to " + finalUserName, Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -76,14 +107,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     }
 
     static class Holder extends RecyclerView.ViewHolder {
-        TextView user, content;
+        TextView user, animeTitle, content, likeButton, dislikeButton, commentButton;
         ImageView avatar;
+        RatingBar ratingBar;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
-            user = itemView.findViewById(R.id.userName); // matches item_post.xml
+            user = itemView.findViewById(R.id.userName);
+            animeTitle = itemView.findViewById(R.id.animeTitle);
             content = itemView.findViewById(R.id.postContent);
-            avatar = itemView.findViewById(R.id.userAvatar); // matches item_post.xml
+            avatar = itemView.findViewById(R.id.userAvatar);
+            ratingBar = itemView.findViewById(R.id.postRating);
+            likeButton = itemView.findViewById(R.id.likeButton);
+            dislikeButton = itemView.findViewById(R.id.dislikeButton);
+            commentButton = itemView.findViewById(R.id.commentButton);
         }
     }
 }

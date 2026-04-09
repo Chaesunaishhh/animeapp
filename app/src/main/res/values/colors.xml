@@ -1,7 +1,10 @@
 <resources>
     <color name="colorBackground">#121212</color>
+    <color name="colorBackgroundDark">#121212</color>
     <color name="colorCard">#1E1E1E</color>
+    <color name="colorCardDark">#1E1E1E</color>
     <color name="colorAccent">#BB86FC</color>
+    <color name="colorAccentPink">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGray">#AAAAAA</color>
     <color name="colorPink">#E639CE</color>
