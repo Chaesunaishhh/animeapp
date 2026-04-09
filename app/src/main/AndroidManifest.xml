@@ -7,6 +7,37 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+<!--    <application-->
+<!--        android:allowBackup="true"-->
+<!--        android:dataExtractionRules="@xml/data_extraction_rules"-->
+<!--        android:fullBackupContent="@xml/backup_rules"-->
+<!--        android:icon="@mipmap/ic_launcher"-->
+<!--        android:label="@string/app_name"-->
+<!--        android:roundIcon="@mipmap/ic_launcher_round"-->
+<!--        android:supportsRtl="true"-->
+<!--        android:theme="@style/Theme.Animeapp">-->
+
+<!--        &lt;!&ndash; LOGIN SCREEN (START HERE FIRST) &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".LoginActivity"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
+
+<!--        &lt;!&ndash; REGISTER SCREEN &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".RegisterActivity"-->
+<!--            android:exported="false"/>-->
+
+<!--        &lt;!&ndash; MAIN APP SCREEN &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".MainActivity"-->
+<!--            android:exported="false"/>-->
+
+<!--    </application>-->
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -15,9 +46,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Animeapp">
+        android:theme="@style/Theme.AnimeApp">
 
-        <!-- LOGIN SCREEN (START HERE FIRST) -->
+        <!-- LOGIN SCREEN -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -26,7 +57,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
         <!-- REGISTER SCREEN -->
         <activity
             android:name=".RegisterActivity"
@@ -36,7 +66,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false"/>
-
     </application>
+
 
 </manifest>

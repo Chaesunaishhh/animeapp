@@ -2,8 +2,18 @@
     android:orientation="vertical"
     android:background="@color/colorBackground"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
+    <!-- Add Review Button -->
+    <Button
+        android:id="@+id/btnAddReview"
+        android:text="Add Review"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"/>
+
+    <!-- Progress bar for loading -->
     <ProgressBar
         android:id="@+id/progressCommunity"
         android:layout_width="wrap_content"
@@ -12,6 +22,7 @@
         android:visibility="gone"
         android:indeterminate="true"/>
 
+    <!-- RecyclerView for showing posts -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerCommunity"
         android:layout_width="match_parent"
