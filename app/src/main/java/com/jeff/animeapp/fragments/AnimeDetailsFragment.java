@@ -15,6 +15,7 @@ import com.jeff.animeapp.R;
 import com.jeff.animeapp.api.AniListClient;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
 import java.util.HashMap;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -158,7 +159,7 @@ public class AnimeDetailsFragment extends Fragment {
                     if (doc.exists() && "completed".equals(doc.getString("status"))) {
                         btnComplete.setText("COMPLETED");
                         btnComplete.setEnabled(false);
-                        btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+                        btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
                     }
                 });
     }
@@ -172,6 +173,15 @@ public class AnimeDetailsFragment extends Fragment {
         map.put("title", title.getText().toString());
         map.put("coverImage", imageUrl);
         map.put("description", description.getText().toString());
+
+        String scoreText = score.getText().toString().replace("⭐ ", "");
+        try {
+            int scoreInt = Integer.parseInt(scoreText.trim());
+            map.put("score", scoreInt);
+        } catch (NumberFormatException e) {
+            map.put("score", 0);
+        }
+
         map.put("status", "watching");
 
         FirebaseFirestore.getInstance().collection("watchlist").document(uid)
@@ -189,8 +199,13 @@ public class AnimeDetailsFragment extends Fragment {
                 .addOnSuccessListener(aVoid -> {
                     btnComplete.setText("COMPLETED");
                     btnComplete.setEnabled(false);
-                    btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+                    btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
                     Toast.makeText(getContext(), "Marked as Completed!", Toast.LENGTH_SHORT).show();
+
+                    // Increment watchedCount in user profile
+                    FirebaseFirestore.getInstance().collection("users")
+                            .document(uid)
+                            .update("watchedCount", FieldValue.increment(1));
                 });
     }
 

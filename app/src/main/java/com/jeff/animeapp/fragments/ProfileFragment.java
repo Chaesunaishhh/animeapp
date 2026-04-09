@@ -6,10 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,7 +19,7 @@ import com.jeff.animeapp.LoginActivity;
 public class ProfileFragment extends Fragment {
 
     private Button logoutBtn;
-    private TextView usernameView, emailView;
+    private TextView usernameView, emailView, statWatchedView;
 
     public ProfileFragment() {}
 
@@ -32,13 +30,13 @@ public class ProfileFragment extends Fragment {
         logoutBtn = v.findViewById(R.id.logoutButton);
         usernameView = v.findViewById(R.id.profileUsername);
         emailView = v.findViewById(R.id.profileEmail);
+        statWatchedView = v.findViewById(R.id.statWatched);
 
         logoutBtn.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();
         });
-
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
@@ -52,9 +50,15 @@ public class ProfileFragment extends Fragment {
                         if (doc.exists()) {
                             String username = doc.getString("username");
                             String email = doc.getString("email");
+                            Long watchedCount = doc.getLong("watchedCount");
 
                             if (username != null) usernameView.setText(username);
                             if (email != null) emailView.setText(email);
+                            if (watchedCount != null) {
+                                statWatchedView.setText(watchedCount + " Anime Watched");
+                            } else {
+                                statWatchedView.setText("0 Anime Watched");
+                            }
                         }
                     });
         }

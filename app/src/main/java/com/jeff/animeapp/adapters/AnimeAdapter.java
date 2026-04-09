@@ -105,7 +105,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .addOnSuccessListener(u -> {
                     Toast.makeText(view.getContext(), "Saved to Watchlist!", Toast.LENGTH_SHORT).show();
 
-                    // 🔑 Remove from Home list
+                    // Remove from Home list
                     int position = getPositionById(id);
                     if (position != -1) {
                         animeList.remove(position);

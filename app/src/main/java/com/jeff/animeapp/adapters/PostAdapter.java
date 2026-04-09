@@ -45,7 +45,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
         if (obj.has("attributes")) {
             JsonObject attr = obj.getAsJsonObject("attributes");
 
-            // Optional content
+            // content
             String content = attr.has("content") ? attr.get("content").getAsString() : "";
             holder.content.setText(content);
 

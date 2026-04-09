@@ -34,6 +34,7 @@
                     android:id="@+id/profileUsername"
                     android:text="Eyjey67"
                     android:textSize="20sp"
+                    android:textStyle="bold"
                     android:textColor="@color/colorWhite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -51,42 +52,38 @@
         <!-- Edit Profile -->
         <Button
             android:id="@+id/editProfileButton"
-            android:text="Edit Profile"
+            android:text="EDIT PROFILE"
             android:backgroundTint="@color/colorPink"
             android:textColor="@color/colorWhite"
-            android:layout_marginTop="12dp"
+            android:textAllCaps="true"
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <!-- Stats -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/statWatched"
-                android:text="0 Anime Watched"
-                android:textColor="@color/colorWhite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
+        <TextView
+            android:id="@+id/statWatched"
+            android:text="0 Anime Watched"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <!-- Favorite Genres -->
         <TextView
             android:text="Favorite Genres"
             android:textColor="@color/colorWhite"
             android:textSize="18sp"
-            android:layout_marginTop="20dp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:id="@+id/genresContainer"
             android:orientation="horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -94,10 +91,10 @@
                 android:text="Action"
                 android:background="@drawable/genre_chip"
                 android:textColor="@color/colorWhite"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -106,22 +103,66 @@
                 android:text="Fantasy"
                 android:background="@drawable/genre_chip"
                 android:textColor="@color/colorWhite"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <!-- Logout at the bottom -->
+        <!-- Settings Section -->
+        <TextView
+            android:text="Settings"
+            android:textColor="@color/colorWhite"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnNotifications"
+                android:text="Notifications"
+                android:backgroundTint="@color/darkGray"
+                android:textColor="@color/colorWhite"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnGeneralSettings"
+                android:text="General Settings"
+                android:backgroundTint="@color/darkGray"
+                android:textColor="@color/colorWhite"
+                android:layout_marginBottom="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btnHelpSupport"
+                android:text="Help and Support"
+                android:backgroundTint="@color/darkGray"
+                android:textColor="@color/colorWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <!-- Logout -->
         <Button
             android:id="@+id/logoutButton"
-            android:text="Logout"
+            android:text="LOGOUT"
             android:backgroundTint="@color/colorRed"
             android:textColor="@color/colorWhite"
-            android:layout_marginTop="380dp"
+            android:textAllCaps="true"
+            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
