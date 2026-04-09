@@ -32,7 +32,7 @@
 
                 <TextView
                     android:id="@+id/profileUsername"
-                    android:text="Eyjey67"
+                    android:text="Username"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/colorWhite"
@@ -41,7 +41,7 @@
 
                 <TextView
                     android:id="@+id/profileEmail"
-                    android:text="eyjey67@yahoo.com"
+                    android:text="gmail.com"
                     android:textSize="14sp"
                     android:textColor="@color/colorGray"
                     android:layout_width="wrap_content"

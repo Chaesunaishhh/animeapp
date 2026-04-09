@@ -9,6 +9,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public class KitsuClient {
 
@@ -29,6 +30,10 @@ public class KitsuClient {
 
     // API interface for Kitsu
     public interface API {
+
+        @GET("anime")
+        Call<JsonObject> searchAnime(@Query("filter[text]") String title);
+
         // Get reviews for a specific anime by ID
         @GET("anime/{id}/reviews")
         Call<JsonObject> getAnimeReviews(@Path("id") int animeId);
