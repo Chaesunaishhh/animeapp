@@ -104,7 +104,6 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
-    // 🔑 FILTERS (Recommended section only)
     public void applyFilters(List<String> genres, List<String> years) {
         if (adapterHome == null || adapterHome.getMediaArray() == null) return;
 
