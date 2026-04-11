@@ -38,15 +38,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/ic_search"
-                android:src="@drawable/ic_search"
-                android:contentDescription="@string/search_icon_desc"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                app:tint="@android:color/white"/>
-
             <EditText
                 android:id="@+id/searchInput"
                 android:hint="@string/search_hint"
@@ -60,6 +51,15 @@
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"/>
+
+            <ImageView
+                android:id="@+id/ic_search"
+                android:src="@drawable/ic_search"
+                android:contentDescription="@string/search_icon_desc"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                app:tint="@android:color/white"/>
 
             <ImageView
                 android:id="@+id/ic_filter"

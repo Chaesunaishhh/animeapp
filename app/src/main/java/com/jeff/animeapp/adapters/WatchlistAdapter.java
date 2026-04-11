@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
+import android.widget.ImageButton;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -145,15 +148,17 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView title, score;
-        MaterialButton btnDone, btnDelete;
+        Button btnDone;          // matches <Button> in XML
+        ImageButton btnDelete;   // matches <ImageButton> in XML
 
         ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.animeImage);
             title = itemView.findViewById(R.id.animeTitle);
             score = itemView.findViewById(R.id.animeScore);
-            btnDone = itemView.findViewById(R.id.btnDone);
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            btnDone = itemView.findViewById(R.id.markCompleteButton);
+            btnDelete = itemView.findViewById(R.id.deleteButton);
         }
     }
+
 }

@@ -9,4 +9,11 @@
     <string name="recommended_text">Recommended For You</string>
     <string name="featured_text">Featured</string>
     <string name="trending_text">Trending This Season</string>
+    <string name="anime_image_desc">Anime cover image</string>
+    <string name="anime_title">Anime Title</string>
+    <string name="anime_info">⭐ %1$d • %2$s • %3$d eps</string>
+    <string name="btn_completed">Completed</string>
+    <string name="btn_remove">Remove</string>
+    <string name="delete_button_desc">Delete item</string>
+    <string name="mark_complete">Mark Complete</string>
 </resources>

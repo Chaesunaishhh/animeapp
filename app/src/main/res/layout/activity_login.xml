@@ -25,17 +25,32 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"/>
 
-    <EditText
-        android:id="@+id/passwordInput"
-        android:hint="Password"
-        android:textColor="@color/colorWhite"
-        android:textColorHint="@color/colorGray"
-        android:background="@drawable/edittext"
-        android:inputType="textPassword"
-        android:padding="16dp"
-        android:layout_marginTop="16dp"
+    <!-- Password field with toggle -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="52dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGray"
+            android:background="@drawable/edittext"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"/>
+
+        <ImageView
+            android:id="@+id/togglePassword"
+            android:src="@drawable/ic_eye"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="8dp"/>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/loginButton"
@@ -54,5 +69,4 @@
         android:layout_marginTop="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
-
 </LinearLayout>
