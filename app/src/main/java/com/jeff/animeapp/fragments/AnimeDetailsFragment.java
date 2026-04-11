@@ -214,10 +214,23 @@ public class AnimeDetailsFragment extends Fragment {
         if (uid == null) return;
 
         FirebaseFirestore.getInstance().collection("watchlist").document(uid)
-                .collection("anime").document(String.valueOf(id)).delete()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "Removed!", Toast.LENGTH_SHORT).show();
-                    getParentFragmentManager().popBackStack();
+                .collection("anime").document(String.valueOf(id)).get()
+                .addOnSuccessListener(doc -> {
+                    boolean wasCompleted = doc.exists() && "completed".equals(doc.getString("status"));
+
+                    FirebaseFirestore.getInstance().collection("watchlist").document(uid)
+                            .collection("anime").document(String.valueOf(id)).delete()
+                            .addOnSuccessListener(aVoid -> {
+                                // Decrement watchedCount if anime was completed
+                                if (wasCompleted) {
+                                    FirebaseFirestore.getInstance().collection("users")
+                                            .document(uid)
+                                            .update("watchedCount", FieldValue.increment(-1));
+                                }
+
+                                Toast.makeText(getContext(), "Removed!", Toast.LENGTH_SHORT).show();
+                                getParentFragmentManager().popBackStack();
+                            });
                 });
     }
 }

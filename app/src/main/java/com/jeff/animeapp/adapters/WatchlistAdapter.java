@@ -20,6 +20,7 @@ import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.ViewHolder> {
 
@@ -103,28 +104,31 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
                     });
         });
 
-        // Delete button → remove from Firestore + decrement if completed
+        // Delete button → fetch doc, remove, decrement if completed
         holder.btnDelete.setOnClickListener(v -> {
-            String currentStatus = anime.has("status") && !anime.get("status").isJsonNull()
-                    ? anime.get("status").getAsString()
-                    : "watching";
-
-            FirebaseUtils.firestore().collection("watchlist")
+            FirebaseFirestore.getInstance().collection("watchlist")
                     .document(FirebaseUtils.uid())
                     .collection("anime").document(String.valueOf(id))
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        // Decrement watchedCount if anime was completed
-                        if ("completed".equals(currentStatus)) {
-                            FirebaseUtils.firestore().collection("users")
-                                    .document(FirebaseUtils.uid())
-                                    .update("watchedCount", FieldValue.increment(-1));
-                        }
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        boolean wasCompleted = doc.exists() && "completed".equals(doc.getString("status"));
 
-                        animeList.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, animeList.size());
-                        Toast.makeText(v.getContext(), "Removed from Watchlist!", Toast.LENGTH_SHORT).show();
+                        FirebaseFirestore.getInstance().collection("watchlist")
+                                .document(FirebaseUtils.uid())
+                                .collection("anime").document(String.valueOf(id))
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    if (wasCompleted) {
+                                        FirebaseUtils.firestore().collection("users")
+                                                .document(FirebaseUtils.uid())
+                                                .update("watchedCount", FieldValue.increment(-1));
+                                    }
+
+                                    animeList.remove(position);
+                                    notifyItemRemoved(position);
+                                    notifyItemRangeChanged(position, animeList.size());
+                                    Toast.makeText(v.getContext(), "Removed from Watchlist!", Toast.LENGTH_SHORT).show();
+                                });
                     });
         });
 

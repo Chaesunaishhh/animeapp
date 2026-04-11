@@ -101,6 +101,17 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // ✅ CALENDAR QUICK ACCESS
+        View btnCalendar = v.findViewById(R.id.btnCalendar);
+        btnCalendar.setOnClickListener(view -> {
+            Fragment fragment = new ReleaseCalendarFragment();
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment) // adjust container ID if different
+                    .addToBackStack(null)
+                    .commit();
+        });
+        // ✅ QUIZ QUICK ACCESS
         return v;
     }
 

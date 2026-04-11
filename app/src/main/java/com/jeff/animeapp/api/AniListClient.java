@@ -29,7 +29,7 @@ public class AniListClient {
     // API interface for GraphQL queries
     public interface API {
         @Headers("Content-Type: application/json")
-        @POST(".")
+        @POST("graphql") // clearer than "."
         Call<JsonObject> query(@Body JsonObject body);
     }
 }

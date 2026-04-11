@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">Anime Explorer</string>
     <string name="app_title">🎌 Anime Explorer</string>
     <string name="discover_text">Discover trending anime</string>
     <string name="search_hint">Search anime…</string>

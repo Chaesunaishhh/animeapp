@@ -54,7 +54,8 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:weightSum="2">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnDone"
@@ -63,7 +64,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Complete"
-                    android:textAllCaps="true"/>
+                    android:textAllCaps="true"
+                    android:layout_marginEnd="4dp"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnDelete"
@@ -73,7 +75,7 @@
                     android:layout_weight="1"
                     android:text="Remove"
                     android:textAllCaps="true"
-                    android:layout_marginStart="8dp"/>
+                    android:layout_marginStart="4dp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

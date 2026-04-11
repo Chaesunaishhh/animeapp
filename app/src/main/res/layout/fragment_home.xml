@@ -71,6 +71,102 @@
                 app:tint="@android:color/white"/>
         </LinearLayout>
 
+        <TextView
+            android:text="Quick Access"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Calendar -->
+            <LinearLayout
+                android:id="@+id/btnCalendar"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/quick_access_bg"
+                android:padding="12dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp">
+
+                <ImageView
+                    android:src="@drawable/ic_calendar"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:tint="@color/colorGreen"/>
+
+                <TextView
+                    android:text="Calendar"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Quiz -->
+            <LinearLayout
+                android:id="@+id/btnQuiz"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/quick_access_bg"
+                android:padding="12dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp">
+
+                <ImageView
+                    android:src="@drawable/ic_quiz"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:tint="@color/colorGreen"/>
+
+                <TextView
+                    android:text="Quiz"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <!-- Leaderboard -->
+            <LinearLayout
+                android:id="@+id/btnLeaderboard"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/quick_access_bg"
+                android:padding="12dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:src="@drawable/ic_leaderboard"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    app:tint="@color/colorGreen"/>
+
+                <TextView
+                    android:text="Leaderboard"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+
         <!-- SEARCH RESULTS -->
         <TextView
             android:id="@+id/tvSearchResults"
