@@ -11,8 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- HEADER -->
         <TextView
-            android:text="🎌 Anime Explorer"
+            android:text="@string/app_title"
             android:textSize="22sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
@@ -21,13 +22,14 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="Discover trending anime"
+            android:text="@string/discover_text"
             android:textSize="14sp"
             android:textColor="#888888"
             android:layout_marginBottom="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <!-- SEARCH BAR -->
         <LinearLayout
             android:orientation="horizontal"
             android:background="@drawable/search_bg"
@@ -36,40 +38,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-
-            <EditText
-                android:id="@+id/searchInput"
-                android:hint="Search anime..."
-                android:textColor="@android:color/white"
-                android:textColorHint="#888888"
-                android:background="@android:color/transparent"
-                android:paddingStart="8dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
             <ImageView
                 android:id="@+id/ic_search"
                 android:src="@drawable/ic_search"
-                android:contentDescription="Search"
+                android:contentDescription="@string/search_icon_desc"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 app:tint="@android:color/white"/>
 
+            <EditText
+                android:id="@+id/searchInput"
+                android:hint="@string/search_hint"
+                android:textColor="@android:color/white"
+                android:textColorHint="#888888"
+                android:background="@android:color/transparent"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:inputType="text"
+                android:autofillHints="search"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"/>
+
             <ImageView
                 android:id="@+id/ic_filter"
                 android:src="@drawable/ic_filter"
-                app:tint="@android:color/white"
+                android:contentDescription="@string/filter_icon_desc"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:layout_gravity="center_vertical"/>
+                android:layout_gravity="center_vertical"
+                app:tint="@android:color/white"/>
         </LinearLayout>
 
+        <!-- SEARCH RESULTS -->
         <TextView
             android:id="@+id/tvSearchResults"
-            android:text="Search Results"
+            android:text="@string/search_results"
             android:textSize="18sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
@@ -86,10 +91,10 @@
             android:overScrollMode="never"
             android:visibility="gone"/>
 
-
+        <!-- RECOMMENDED SECTION -->
         <TextView
             android:id="@+id/tvRecommended"
-            android:text="Recommended For You"
+            android:text="@string/recommended_text"
             android:textSize="18sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
@@ -112,8 +117,9 @@
             android:layout_height="220dp"
             android:overScrollMode="never"/>
 
+        <!-- FEATURED SECTION -->
         <TextView
-            android:text="Featured"
+            android:text="@string/featured_text"
             android:textSize="18sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"
@@ -128,8 +134,9 @@
             android:layout_height="220dp"
             android:overScrollMode="never"/>
 
+        <!-- TRENDING SECTION -->
         <TextView
-            android:text="Trending This Season"
+            android:text="@string/trending_text"
             android:textSize="18sp"
             android:textColor="@android:color/white"
             android:textStyle="bold"

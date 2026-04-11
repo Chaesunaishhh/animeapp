@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">animeapp</string>
+    <string name="app_title">🎌 Anime Explorer</string>
+    <string name="discover_text">Discover trending anime</string>
+    <string name="search_hint">Search anime...</string>
+    <string name="search_icon_desc">Search icon</string>
+    <string name="filter_icon_desc">Filter icon</string>
+    <string name="search_results">Search Results</string>
+    <string name="recommended_text">Recommended For You</string>
+    <string name="featured_text">Featured</string>
+    <string name="trending_text">Trending This Season</string>
 </resources>
