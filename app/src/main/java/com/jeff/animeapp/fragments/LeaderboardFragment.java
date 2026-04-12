@@ -18,10 +18,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.jeff.animeapp.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class LeaderboardFragment extends Fragment {
 
     @Nullable
@@ -37,44 +33,52 @@ public class LeaderboardFragment extends Fragment {
         TextView tvTop3 = v.findViewById(R.id.tvTop3Name);
         Button btnTakeQuiz = v.findViewById(R.id.btnTakeQuiz);
 
-        // Load Local Stats
-        SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
-        tvLatest.setText(String.valueOf(prefs.getInt("last_score", 0)));
-        tvTotal.setText(String.valueOf(prefs.getInt("total_score", 0)));
+        // Get Account Info
+        SharedPreferences userSession = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        String currentUsername = userSession.getString("logged_in_user", "Guest");
 
-        // --- DAILY LOCK CHECK ---
-        String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        if (prefs.getString("last_played_date", "").equals(today)) {
-            btnTakeQuiz.setEnabled(false);
-            btnTakeQuiz.setText("Limit Reached");
-            btnTakeQuiz.setAlpha(0.5f);
-        } else {
-            btnTakeQuiz.setOnClickListener(view -> {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, new QuizFragment())
-                        .commit();
-            });
-        }
+        // Load Locally Saved Stats (Specific to current user)
+        SharedPreferences quizPrefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
+        tvLatest.setText(String.valueOf(quizPrefs.getInt(currentUsername + "_last_score", 0)));
+        tvTotal.setText(String.valueOf(quizPrefs.getInt(currentUsername + "_total_score", 0)));
 
-        // --- FIREBASE TOP 3 FETCH ---
+        btnTakeQuiz.setOnClickListener(view -> {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, new QuizFragment())
+                    .commit();
+        });
+
+        // Fetch Global Rankings
+        fetchLeaderboard(tvTop1, tvTop2, tvTop3);
+
+        return v;
+    }
+
+    private void fetchLeaderboard(TextView t1, TextView t2, TextView t3) {
         FirebaseFirestore.getInstance().collection("users")
                 .orderBy("highScore", Query.Direction.DESCENDING)
                 .limit(3)
                 .get()
                 .addOnSuccessListener(snapshots -> {
                     if (!isAdded()) return;
+
+                    // Set placeholders if DB is empty
+                    t1.setText("🥇 ---");
+                    t2.setText("🥈 ---");
+                    t3.setText("🥉 ---");
+
                     for (int i = 0; i < snapshots.size(); i++) {
                         String name = snapshots.getDocuments().get(i).getString("username");
-                        Long score = snapshots.getDocuments().get(i).getLong("highScore");
-                        String rankData = name + " - " + (score != null ? score : 0);
+                        Long highScore = snapshots.getDocuments().get(i).getLong("highScore");
+                        String display = (name != null ? name : "User") + " - " + (highScore != null ? highScore : 0);
 
-                        if (i == 0) tvTop1.setText("🥇 " + rankData);
-                        else if (i == 1) tvTop2.setText("🥈 " + rankData);
-                        else if (i == 2) tvTop3.setText("🥉 " + rankData);
+                        if (i == 0) t1.setText("🥇 " + display);
+                        else if (i == 1) t2.setText("🥈 " + display);
+                        else if (i == 2) t3.setText("🥉 " + display);
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(getContext(), "Failed to load ranks", Toast.LENGTH_SHORT).show());
-
-        return v;
+                .addOnFailureListener(e -> {
+                    if (isAdded()) Toast.makeText(getContext(), "Error syncing leaderboard", Toast.LENGTH_SHORT).show();
+                });
     }
 }
