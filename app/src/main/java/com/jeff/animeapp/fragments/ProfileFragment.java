@@ -19,7 +19,9 @@ import com.jeff.animeapp.LoginActivity;
 public class ProfileFragment extends Fragment {
 
     private Button logoutBtn;
-    private TextView usernameView, emailView, statWatchedView;
+    private TextView usernameView, emailView, statWatchedView, tvInWatchlist, tvQuizzesTaken, tvQuizAvgScore;
+    private TextView progressCollector, progressMasterCollector, progressFinisher, progressMasterFinisher, progressLegendaryOtaku, progressQuizEnthusiast;
+    private View collectorCard, masterCollectorCard, finisherCard, masterFinisherCard, legendaryOtakuCard, quizEnthusiastCard;
 
     public ProfileFragment() {}
 
@@ -31,6 +33,25 @@ public class ProfileFragment extends Fragment {
         usernameView = v.findViewById(R.id.profileUsername);
         emailView = v.findViewById(R.id.profileEmail);
         statWatchedView = v.findViewById(R.id.statWatched);
+        tvInWatchlist = v.findViewById(R.id.tvInWatchlist);
+        tvQuizzesTaken = v.findViewById(R.id.tvQuizzesTaken);
+        tvQuizAvgScore = v.findViewById(R.id.tvQuizAvgScore);
+
+        // Progress TextViews
+        progressCollector = v.findViewById(R.id.progressCollector);
+        progressMasterCollector = v.findViewById(R.id.progressMasterCollector);
+        progressFinisher = v.findViewById(R.id.progressFinisher);
+        progressMasterFinisher = v.findViewById(R.id.progressMasterFinisher);
+        progressLegendaryOtaku = v.findViewById(R.id.progressLegendaryOtaku);
+        progressQuizEnthusiast = v.findViewById(R.id.progressQuizEnthusiast);
+
+        // Achievement cards
+        collectorCard = v.findViewById(R.id.collectorCard);
+        masterCollectorCard = v.findViewById(R.id.masterCollectorCard);
+        finisherCard = v.findViewById(R.id.finisherCard);
+        masterFinisherCard = v.findViewById(R.id.masterFinisherCard);
+        legendaryOtakuCard = v.findViewById(R.id.legendaryOtakuCard);
+        quizEnthusiastCard = v.findViewById(R.id.quizEnthusiastCard);
 
         logoutBtn.setOnClickListener(view -> {
             FirebaseAuth.getInstance().signOut();
@@ -51,13 +72,45 @@ public class ProfileFragment extends Fragment {
                             String username = doc.getString("username");
                             String email = doc.getString("email");
                             Long watchedCount = doc.getLong("watchedCount");
+                            Long watchlistCount = doc.getLong("watchlistCount");
+                            Long quizCount = doc.getLong("quizCount");
+                            Double quizAvgScore = doc.getDouble("quizAvgScore");
 
                             if (username != null) usernameView.setText(username);
                             if (email != null) emailView.setText(email);
+
+                            // Statistics
+                            statWatchedView.setText(watchedCount != null ? "Anime Watched: " + watchedCount : "Anime Watched: 0");
+                            tvInWatchlist.setText(watchlistCount != null ? "In Watchlist: " + watchlistCount : "In Watchlist: 0");
+                            tvQuizzesTaken.setText(quizCount != null ? "Quizzes Taken: " + quizCount: "Quizzes Taken: 0");
+                            tvQuizAvgScore.setText(quizAvgScore != null ? "Quiz Avg Score: " + quizAvgScore + "%" : "Quiz Avg Score: 0%");
+
+                            // Progress text updates
+                            if (watchlistCount != null) {
+                                progressCollector.setText("Progress: " + watchlistCount + "/10");
+                                progressMasterCollector.setText("Progress: " + watchlistCount + "/50");
+                            }
                             if (watchedCount != null) {
-                                statWatchedView.setText(watchedCount + " Anime Watched");
-                            } else {
-                                statWatchedView.setText("0 Anime Watched");
+                                progressFinisher.setText("Progress: " + watchedCount + "/5");
+                                progressMasterFinisher.setText("Progress: " + watchedCount + "/20");
+                                progressLegendaryOtaku.setText("Progress: " + watchedCount + "/50");
+                            }
+                            if (quizCount != null) {
+                                progressQuizEnthusiast.setText("Progress: " + quizCount + "/10");
+                            }
+
+                            // Achievements unlock logic
+                            if (watchlistCount != null) {
+                                if (watchlistCount >= 10) collectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                if (watchlistCount >= 50) masterCollectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                            }
+                            if (watchedCount != null) {
+                                if (watchedCount >= 5) finisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                if (watchedCount >= 20) masterFinisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                if (watchedCount >= 50) legendaryOtakuCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                            }
+                            if (quizCount != null && quizCount >= 10) {
+                                quizEnthusiastCard.setBackgroundResource(R.drawable.achievement_unlocked);
                             }
                         }
                     });
