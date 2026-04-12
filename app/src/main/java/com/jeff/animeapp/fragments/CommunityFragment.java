@@ -1,5 +1,7 @@
 package com.jeff.animeapp.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,32 +12,36 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.JsonObject;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.adapters.PostAdapter;
-import com.jeff.animeapp.api.KitsuClient;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommunityFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private String currentUser;
 
-    // Example anime ID (Demon Slayer). Replace with dynamic ID if needed.
+    // Example anime ID (replace with dynamic ID if needed)
     private static final int ANIME_ID = 1;
 
     public CommunityFragment() {}
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_community, container, false);
 
         recyclerView = v.findViewById(R.id.recyclerCommunity);
@@ -43,6 +49,11 @@ public class CommunityFragment extends Fragment {
         Button btnAddReview = v.findViewById(R.id.btnAddReview);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Get logged-in user from SharedPreferences
+        SharedPreferences userSession = requireActivity()
+                .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        currentUser = userSession.getString("logged_in_user", "Guest");
 
         // Fetch reviews when fragment loads
         fetchReviews(ANIME_ID);
@@ -56,27 +67,19 @@ public class CommunityFragment extends Fragment {
     private void fetchReviews(int animeId) {
         progressBar.setVisibility(View.VISIBLE);
 
-        KitsuClient.API api = KitsuClient.getClient().create(KitsuClient.API.class);
-        api.getAnimeReviews(animeId).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                progressBar.setVisibility(View.GONE);
-
-                if (response.body() == null) {
-                    Toast.makeText(getContext(), "No reviews found", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                recyclerView.setAdapter(new PostAdapter(response.body()));
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Failed to fetch reviews", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("reviews")
+                .whereEqualTo("animeId", animeId)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    progressBar.setVisibility(View.GONE);
+                    recyclerView.setAdapter(new PostAdapter(snapshots.getDocuments()));
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Failed to fetch reviews", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void showAddReviewDialog() {
@@ -118,50 +121,26 @@ public class CommunityFragment extends Fragment {
     private void submitReview(String animeTitle, String reviewText, float rating, int animeId) {
         progressBar.setVisibility(View.VISIBLE);
 
-        KitsuClient.API api = KitsuClient.getClient().create(KitsuClient.API.class);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Build JSON body according to Kitsu schema
-        JsonObject body = new JsonObject();
-        JsonObject data = new JsonObject();
-        JsonObject attributes = new JsonObject();
-        JsonObject relationships = new JsonObject();
-        JsonObject anime = new JsonObject();
-        JsonObject animeData = new JsonObject();
+        Map<String, Object> review = new HashMap<>();
+        review.put("animeId", animeId);
+        review.put("animeTitle", animeTitle);
+        review.put("reviewText", reviewText);
+        review.put("rating", rating);
+        review.put("username", currentUser);
+        review.put("timestamp", System.currentTimeMillis());
 
-        attributes.addProperty("content", reviewText);
-        attributes.addProperty("rating", rating);
-        attributes.addProperty("animeTitle", animeTitle);
-
-        animeData.addProperty("type", "anime");
-        animeData.addProperty("id", animeId);
-        anime.add("data", animeData);
-        relationships.add("anime", anime);
-
-        data.addProperty("type", "reviews");
-        data.add("attributes", attributes);
-        data.add("relationships", relationships);
-
-        body.add("data", data);
-
-        api.addReview(body).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                progressBar.setVisibility(View.GONE);
-
-                if (response.isSuccessful()) {
+        db.collection("reviews")
+                .add(review)
+                .addOnSuccessListener(docRef -> {
+                    progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Review submitted!", Toast.LENGTH_SHORT).show();
-                    fetchReviews(animeId); // refresh reviews
-                } else {
-                    Toast.makeText(getContext(), "Failed to submit review (auth required)", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Error submitting review", Toast.LENGTH_SHORT).show();
-                t.printStackTrace();
-            }
-        });
+                    fetchReviews(animeId); // refresh list
+                })
+                .addOnFailureListener(e -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getContext(), "Error submitting review", Toast.LENGTH_SHORT).show();
+                });
     }
 }

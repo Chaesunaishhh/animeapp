@@ -1,89 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:background="@color/colorCardDark"
+    android:orientation="horizontal"
     android:padding="12dp"
-    android:layout_margin="8dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/colorCardDark">
 
-    <!-- User Info -->
+    <!-- User Avatar -->
+    <ImageView
+        android:id="@+id/userAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_profile"
+        android:scaleType="centerCrop"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="User avatar" />
+
+    <!-- Right side content -->
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:layout_weight="1">
 
-        <ImageView
-            android:id="@+id/userAvatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_profile"
-            android:contentDescription="User Avatar"/>
-
+        <!-- Username + Anime Title -->
         <TextView
             android:id="@+id/userName"
-            android:textColor="@color/colorWhite"
+            android:text="Username"
             android:textStyle="bold"
-            android:layout_marginStart="8dp"
+            android:textColor="@color/colorAccent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-    <!-- Anime Title + Rating -->
-    <TextView
-        android:id="@+id/animeTitle"
-        android:textColor="@color/colorAccentPink"
-        android:textStyle="bold"
-        android:layout_marginTop="4dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <RatingBar
-        android:id="@+id/postRating"
-        android:numStars="5"
-        android:stepSize="1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:isIndicator="true"/>
-
-    <!-- Review Content -->
-    <TextView
-        android:id="@+id/postContent"
-        android:textColor="@color/colorWhite"
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <!-- Actions -->
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+            android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/likeButton"
-            android:text="234 Likes"
-            android:textColor="@color/colorAccentPink"
-            android:layout_marginEnd="16dp"
+            android:id="@+id/animeTitle"
+            android:text="Anime Title"
+            android:textColor="@color/colorWhite"
+            android:textSize="14sp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp" />
 
+        <!-- Review Content -->
         <TextView
-            android:id="@+id/dislikeButton"
-            android:text="12 Dislikes"
-            android:textColor="@color/colorAccentPink"
-            android:layout_marginEnd="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:id="@+id/postContent"
+            android:text="This anime was amazing!"
+            android:textColor="@color/colorWhite"
+            android:textSize="14sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp" />
 
-        <TextView
-            android:id="@+id/commentButton"
-            android:text="Reply"
-            android:textColor="@color/colorAccentPink"
+        <!-- Rating -->
+        <RatingBar
+            android:id="@+id/postRating"
+            android:numStars="5"
+            android:stepSize="1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:isIndicator="true" />
     </LinearLayout>
 </LinearLayout>

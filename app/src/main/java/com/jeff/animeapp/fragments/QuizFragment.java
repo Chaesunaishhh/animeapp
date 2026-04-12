@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,8 +41,10 @@ public class QuizFragment extends Fragment {
     private boolean isBonus = false;
     private String currentUsername;
     private boolean isAnswering = false;
+    private List<Integer> questionIndices;
+    private long currentWeekStart; // For weekly tracking
 
-    // UI Colors to match your screenshot
+    // UI Colors
     private final int COLOR_DEFAULT_GRAY = Color.parseColor("#1E1E2C");
     private final int COLOR_CORRECT_GREEN = Color.parseColor("#4CAF50");
     private final int COLOR_WRONG_RED = Color.parseColor("#F44336");
@@ -92,13 +95,22 @@ public class QuizFragment extends Fragment {
             "Grace Field", "MHA"
     };
 
-    private List<Integer> questionIndices;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         SharedPreferences userSession = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         currentUsername = userSession.getString("logged_in_user", "Guest");
+
+        // **CHECK ONE-TAKE-PER-WEEK RULE FOR THIS USER ONLY**
+        if (!canUserTakeQuizThisWeek()) {
+            Toast.makeText(getContext(), " You can only take the quiz ONCE per week!", Toast.LENGTH_LONG).show();
+            if (isAdded()) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, new LeaderboardFragment())
+                        .commit();
+            }
+            return null; // Don't create the quiz view
+        }
 
         View v = inflater.inflate(R.layout.fragment_quiz, container, false);
 
@@ -124,10 +136,45 @@ public class QuizFragment extends Fragment {
         return v;
     }
 
+    /**
+     * Check if current user can take quiz this week
+     * Each user has their own weekly tracking
+     */
+    private boolean canUserTakeQuizThisWeek() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
+        long lastQuizTime = prefs.getLong(currentUsername + "_last_quiz_week_start", 0);
+        currentWeekStart = getCurrentWeekStartTimestamp();
+
+        // If no previous quiz OR different week, allow quiz
+        return lastQuizTime == 0 || lastQuizTime != currentWeekStart;
+    }
+
+    /**
+     * Get timestamp for start of current week (Monday 00:00)
+     */
+    private long getCurrentWeekStartTimestamp() {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        cal.set(java.util.Calendar.MINUTE, 0);
+        cal.set(java.util.Calendar.SECOND, 0);
+        cal.set(java.util.Calendar.MILLISECOND, 0);
+        return cal.getTimeInMillis();
+    }
+
     private void setupRandomQuestions() {
+        // **WEEKLY ROTATING SET: Use week number to seed random selection**
+        Random rng = new Random(currentWeekStart); // Same seed = same 10 questions every week
         questionIndices = new ArrayList<>();
-        for (int i = 0; i < questions.length; i++) questionIndices.add(i);
-        Collections.shuffle(questionIndices); // Shuffles all 30 questions
+
+        // Select exactly 10 unique questions based on weekly seed
+        List<Integer> allIndices = new ArrayList<>();
+        for (int i = 0; i < questions.length; i++) allIndices.add(i);
+
+        Collections.shuffle(allIndices, rng); // Weekly consistent shuffle
+        for (int i = 0; i < 10; i++) {
+            questionIndices.add(allIndices.get(i));
+        }
     }
 
     private void updateUI() {
@@ -140,7 +187,6 @@ public class QuizFragment extends Fragment {
         tvQuestionCount.setText("Question " + (currentIdx + 1) + " of 10");
         progressBar.setProgress(currentIdx + 1);
 
-        // RESET BUTTONS: Use BackgroundTint to keep rounded corners
         for (Button btn : options) {
             btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_DEFAULT_GRAY));
             btn.setEnabled(true);
@@ -177,12 +223,10 @@ public class QuizFragment extends Fragment {
         for (Button btn : options) btn.setEnabled(false);
 
         if (selectedText.equals(correctText)) {
-            // CORRECT: Green tint and proceed quickly (600ms)
             selectedBtn.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT_GREEN));
             score += isBonus ? 20 : 10;
             new Handler(Looper.getMainLooper()).postDelayed(this::nextQuestion, 600);
         } else {
-            // WRONG: Red tint for selected, Green for correct, wait longer (1500ms)
             selectedBtn.setBackgroundTintList(ColorStateList.valueOf(COLOR_WRONG_RED));
             for (Button btn : options) {
                 if (btn.getText().toString().equals(correctText)) {
@@ -208,9 +252,11 @@ public class QuizFragment extends Fragment {
         int currentTotal = prefs.getInt(currentUsername + "_total_score", 0);
         int newTotal = currentTotal + score;
 
+        // **MARK THIS USER as having taken quiz this week**
         prefs.edit()
                 .putInt(currentUsername + "_last_score", score)
                 .putInt(currentUsername + "_total_score", newTotal)
+                .putLong(currentUsername + "_last_quiz_week_start", currentWeekStart) // KEY: Per-user weekly lock
                 .apply();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();

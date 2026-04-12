@@ -16,80 +16,91 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText email, password;
-    Button loginBtn;
-    TextView goToRegister;
-    ImageView togglePassword;
-    FirebaseAuth auth;
+    private EditText email, password;
+    private Button loginBtn;
+    private TextView goToRegister;
+    private ImageView togglePassword;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        initViews();
+        setupClickListeners();
+        checkAutoLogin();
+    }
+
+    private void initViews() {
         auth = FirebaseAuth.getInstance();
-
-        // 🔥 AUTO LOGIN
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        }
-
         email = findViewById(R.id.emailInput);
         password = findViewById(R.id.passwordInput);
         loginBtn = findViewById(R.id.loginButton);
         goToRegister = findViewById(R.id.goToRegister);
         togglePassword = findViewById(R.id.togglePassword);
+    }
 
+    private void setupClickListeners() {
         loginBtn.setOnClickListener(v -> loginUser());
-
-        goToRegister.setOnClickListener(v -> {
-            new AlertDialog.Builder(LoginActivity.this)
-                    .setTitle("Confirm Registration")
-                    .setMessage("Are you sure you want to sign up for a new account?")
-                    .setPositiveButton("Yes", (dialog, which) -> {
-                        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-        });
-
+        goToRegister.setOnClickListener(v -> showRegisterDialog());
         togglePassword.setOnClickListener(v -> togglePasswordVisibility());
     }
 
+    private void checkAutoLogin() {
+        if (auth.getCurrentUser() != null) {
+            goToMainActivity();
+        }
+    }
+
     private void loginUser() {
-        String e = email.getText().toString().trim();
-        String p = password.getText().toString().trim();
+        if (!validateInputs()) return;
 
-        if (TextUtils.isEmpty(e)) {
-            email.setError("Email required");
-            return;
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(e).matches()) {
-            email.setError("Enter valid email");
-            return;
-        }
-
-        if (TextUtils.isEmpty(p)) {
-            password.setError("Password required");
-            return;
-        }
+        String emailStr = email.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
 
         setLoading(true);
 
-        auth.signInWithEmailAndPassword(e, p)
+        auth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnSuccessListener(result -> {
-                    Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-                    goToMain();
-                })
-                .addOnFailureListener(err -> {
-                    Toast.makeText(this,
-                            "Invalid email or password. Please try again.",
-                            Toast.LENGTH_SHORT).show();
                     setLoading(false);
+                    Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
+                    goToMainActivity();
+                })
+                .addOnFailureListener(e -> {
+                    setLoading(false);
+                    Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
                 });
+    }
 
+    private boolean validateInputs() {
+        String emailStr = email.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
+
+        if (TextUtils.isEmpty(emailStr)) {
+            email.setError("Email required");
+            return false;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailStr).matches()) {
+            email.setError("Enter valid email");
+            return false;
+        }
+        if (TextUtils.isEmpty(passwordStr)) {
+            password.setError("Password required");
+            return false;
+        }
+        return true;
+    }
+
+    private void showRegisterDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Create New Account")
+                .setMessage("Don't have an account? Sign up now!")
+                .setPositiveButton("Sign Up", (dialog, which) -> {
+                    startActivity(new Intent(this, RegisterActivity.class));
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void setLoading(boolean isLoading) {
@@ -97,15 +108,16 @@ public class LoginActivity extends AppCompatActivity {
         loginBtn.setText(isLoading ? "Logging in..." : "Login");
     }
 
-    private void goToMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
     private void togglePasswordVisibility() {
-        if (password.getInputType() == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+        int currentInputType = password.getInputType();
+        if (currentInputType == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
             password.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             togglePassword.setImageResource(R.drawable.ic_eye_off);
         } else {

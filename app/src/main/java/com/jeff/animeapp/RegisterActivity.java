@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,12 +26,18 @@ public class RegisterActivity extends AppCompatActivity {
     ImageView togglePassword;
     FirebaseAuth auth;
     FirebaseFirestore db;
+    private boolean isProcessing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        initViews();
+        setupClickListeners();
+    }
+
+    private void initViews() {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
@@ -40,102 +47,120 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn = findViewById(R.id.registerButton);
         goToLogin = findViewById(R.id.goToLogin);
         togglePassword = findViewById(R.id.togglePassword);
+    }
 
+    private void setupClickListeners() {
         registerBtn.setOnClickListener(v -> registerUser());
-
-        goToLogin.setOnClickListener(v -> {
-            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-            finish();
-        });
-
+        goToLogin.setOnClickListener(v -> goToLoginActivity());
         togglePassword.setOnClickListener(v -> togglePasswordVisibility());
     }
 
     private void registerUser() {
-        String user = username.getText().toString().trim();
-        String e = email.getText().toString().trim();
-        String p = password.getText().toString().trim();
+        if (isProcessing) return;
 
-        if (TextUtils.isEmpty(user)) {
-            username.setError("Username required");
-            return;
-        }
+        if (!validateInputs()) return;
 
-        if (TextUtils.isEmpty(e)) {
-            email.setError("Email required");
-            return;
-        }
+        String usernameStr = username.getText().toString().trim();
+        String emailStr = email.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(e).matches()) {
-            email.setError("Enter valid email");
-            return;
-        }
+        isProcessing = true;
+        setLoading(true);
 
-        if (TextUtils.isEmpty(p)) {
-            password.setError("Password required");
-            return;
-        }
+        auth.createUserWithEmailAndPassword(emailStr, passwordStr)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
 
-        if (p.length() < 6) {
-            password.setError("Password must be at least 6 characters");
-            return;
-        }
-
-        registerBtn.setEnabled(false);
-        registerBtn.setText("Creating account...");
-
-//        auth.createUserWithEmailAndPassword(e, p)
-//                .addOnSuccessListener(result -> {
-//                    String uid = auth.getCurrentUser().getUid();
-//
-//                    Map<String, Object> userMap = new HashMap<>();
-//                    userMap.put("username", user);
-//                    userMap.put("email", e);
-//                    userMap.put("createdAt", System.currentTimeMillis());
-//
-//                    db.collection("users").document(uid).set(userMap);
-//
-//                    Toast.makeText(RegisterActivity.this, "Account created successfully. Please log in.", Toast.LENGTH_LONG).show();
-//
-//                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-//                    finish();
-//                })
-//                .addOnFailureListener(err -> {
-//                    Toast.makeText(RegisterActivity.this, err.getMessage(), Toast.LENGTH_SHORT).show();
-//                    registerBtn.setEnabled(true);
-//                    registerBtn.setText("Create Account");
-//                });
-        auth.createUserWithEmailAndPassword(e, p)
-                .addOnSuccessListener(result -> {
-                    String uid = auth.getCurrentUser().getUid();
-
-                    Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("username", user);
-                    userMap.put("email", e);
-                    userMap.put("createdAt", System.currentTimeMillis());
-
-                    db.collection("users").document(uid).set(userMap);
-
-                    // ✅ Always redirect back to login with clear toast
-                    Toast.makeText(RegisterActivity.this,
-                            "Account created successfully. Please log in.",
-                            Toast.LENGTH_LONG).show();
-
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(err -> {
-                    Toast.makeText(RegisterActivity.this, err.getMessage(), Toast.LENGTH_SHORT).show();
-                    registerBtn.setEnabled(true);
-                    registerBtn.setText("Create Account");
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            saveUserProfile(user.getUid(), usernameStr, emailStr);
+                        } else {
+                            handleRegistrationComplete();
+                        }
+                    } else {
+                        // Registration failed
+                        handleRegistrationError(task.getException());
+                    }
                 });
+    }
 
+    private void saveUserProfile(String uid, String usernameStr, String emailStr) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("username", usernameStr);
+        userMap.put("email", emailStr);
+        userMap.put("createdAt", System.currentTimeMillis());
+
+        db.collection("users").document(uid).set(userMap)
+                .addOnCompleteListener(task -> {
+
+                    handleRegistrationComplete();
+                });
+    }
+
+    private void handleRegistrationComplete() {
+        setLoading(false);
+        isProcessing = false;
+
+        Toast.makeText(this,
+                "Account created successfully!\nPlease login with your credentials.",
+                Toast.LENGTH_LONG).show();
+
+        new android.os.Handler().postDelayed(() -> {
+            goToLoginActivity();
+        }, 1500); // 1.5 second delay to show toast
+    }
+
+    private void handleRegistrationError(Exception error) {
+        setLoading(false);
+        isProcessing = false;
+        Toast.makeText(this, "❌ " + error.getMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean validateInputs() {
+        String usernameStr = username.getText().toString().trim();
+        String emailStr = email.getText().toString().trim();
+        String passwordStr = password.getText().toString().trim();
+
+        if (TextUtils.isEmpty(usernameStr)) {
+            username.setError("Username required");
+            return false;
+        }
+        if (TextUtils.isEmpty(emailStr)) {
+            email.setError("Email required");
+            return false;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailStr).matches()) {
+            email.setError("Enter valid email");
+            return false;
+        }
+        if (TextUtils.isEmpty(passwordStr)) {
+            password.setError("Password required");
+            return false;
+        }
+        if (passwordStr.length() < 6) {
+            password.setError("Password must be at least 6 characters");
+            return false;
+        }
+        return true;
+    }
+
+    private void setLoading(boolean isLoading) {
+        registerBtn.setEnabled(!isLoading);
+        registerBtn.setText(isLoading ? "Creating..." : "Create Account");
+    }
+
+    private void goToLoginActivity() {
+        auth.signOut();
+
+        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finishAffinity();
     }
 
     private void togglePasswordVisibility() {
-        if (password.getInputType() == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+        int currentInputType = password.getInputType();
+        if (currentInputType == (android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
             password.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             togglePassword.setImageResource(R.drawable.ic_eye_off);
         } else {
