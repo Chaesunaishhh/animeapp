@@ -10,6 +10,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,8 +37,6 @@ public class HomeFragment extends Fragment {
     private ImageView filterIcon, searchIcon;
     private RecyclerView recyclerSearchResults;
     private TextView tvSearchResults;
-
-
     private AnimeAdapter adapterFeatured, adapterTrending, adapterHome;
 
     public HomeFragment() {}
@@ -45,6 +45,9 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Initialize Views
+        v.findViewById(R.id.btnLeaderboard).setOnClickListener(view ->
+                navigateTo(new LeaderboardFragment()));
         recyclerFeatured = v.findViewById(R.id.recyclerFeatured);
         recyclerTrending = v.findViewById(R.id.recyclerTrending);
         recyclerHome = v.findViewById(R.id.recyclerHome);
@@ -52,80 +55,62 @@ public class HomeFragment extends Fragment {
         searchInput = v.findViewById(R.id.searchInput);
         filterIcon = v.findViewById(R.id.ic_filter);
         searchIcon = v.findViewById(R.id.ic_search);
-
-        // Layout managers
-        recyclerFeatured.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerTrending.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        recyclerHome.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-
         recyclerSearchResults = v.findViewById(R.id.recyclerSearchResults);
         tvSearchResults = v.findViewById(R.id.tvSearchResults);
 
-        recyclerSearchResults.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        // Layout managers
+        recyclerFeatured.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerTrending.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerHome.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        recyclerSearchResults.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-
-        // Fetch each section
+        // API Calls
         fetchFeatured();
         fetchTrending();
         fetchRecommended();
 
-
-
-        // SEARCH: trigger when pressing enter OR clicking search icon
-        searchInput.setOnEditorActionListener((textView, i, keyEvent) -> {
+        // Search Logic
+        searchIcon.setOnClickListener(view -> {
             String searchText = searchInput.getText().toString().trim();
-            if (!searchText.isEmpty()) {
-                searchAnime(searchText);
-            }
-            return true;
+            if (!searchText.isEmpty()) searchAnime(searchText);
+            else Toast.makeText(getContext(), "Enter an anime title", Toast.LENGTH_SHORT).show();
         });
 
-
-                searchIcon.setOnClickListener(view -> {
-            String searchText = searchInput.getText().toString().trim();
-            if (!searchText.isEmpty()) {
-                searchAnime(searchText);
-            } else {
-                Toast.makeText(getContext(), "Enter an anime title", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // FILTER ICON
+        // Filter Icon
         filterIcon.setOnClickListener(view -> {
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).showFilterDialog(this);
             }
         });
 
-        // ✅ CALENDAR QUICK ACCESS
-        View btnCalendar = v.findViewById(R.id.btnCalendar);
-        btnCalendar.setOnClickListener(view -> {
-            Fragment fragment = new ReleaseCalendarFragment();
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentContainer, fragment) // adjust container ID if different
-                    .addToBackStack(null)
-                    .commit();
-        });
+        // ✅ QUICK ACCESS: CALENDAR
+        v.findViewById(R.id.btnCalendar).setOnClickListener(view ->
+                navigateTo(new ReleaseCalendarFragment()));
+
+        // ✅ QUICK ACCESS: QUIZ
+        v.findViewById(R.id.btnQuiz).setOnClickListener(view ->
+                navigateTo(new QuizFragment()));
 
         return v;
     }
 
+    // ✅ ADDED THIS METHOD TO FIX MAINACTIVITY ERROR
     public void applyFilters(List<String> genres, List<String> years) {
         if (adapterHome == null || adapterHome.getMediaArray() == null) return;
 
         JsonArray filteredArray = new JsonArray();
+        JsonArray originalData = adapterHome.getMediaArray();
 
-        for (int i = 0; i < adapterHome.getMediaArray().size(); i++) {
-            JsonObject anime = adapterHome.getMediaArray().get(i).getAsJsonObject();
-            String genre = anime.has("genres") ? anime.getAsJsonArray("genres").toString() : "";
-            String year = anime.has("seasonYear") ? anime.get("seasonYear").getAsString() : "";
+        for (int i = 0; i < originalData.size(); i++) {
+            JsonObject anime = originalData.get(i).getAsJsonObject();
 
-            boolean matchGenre = genres.isEmpty() || genres.stream().anyMatch(genre::contains);
+            // Extract Genres
+            String genreString = anime.has("genres") ? anime.getAsJsonArray("genres").toString() : "";
+            // Extract Year
+            String year = anime.has("seasonYear") && !anime.get("seasonYear").isJsonNull()
+                    ? anime.get("seasonYear").getAsString() : "";
+
+            boolean matchGenre = genres.isEmpty() || genres.stream().anyMatch(genreString::contains);
             boolean matchYear = years.isEmpty() || years.contains(year);
 
             if (matchGenre && matchYear) {
@@ -134,6 +119,18 @@ public class HomeFragment extends Fragment {
         }
 
         adapterHome.updateData(filteredArray);
+
+        if (filteredArray.size() == 0) {
+            Toast.makeText(getContext(), "No anime matches these filters", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void navigateTo(Fragment fragment) {
+        getParentFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.fragmentContainer, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void fetchFeatured() {
@@ -150,82 +147,33 @@ public class HomeFragment extends Fragment {
         String query = "query { Page(page: 1, perPage: 20) { media(type: ANIME) { id title { romaji } coverImage { large } averageScore description seasonYear genres } } }";
         executeApiCall(query, null, "home");
     }
-    private void showSearchResults(JsonArray mediaArray) {
-        // Inflate custom layout for dialog
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View dialogView = inflater.inflate(R.layout.dialog_search_results, null);
-
-        RecyclerView recyclerSearch = dialogView.findViewById(R.id.recyclerSearchResults);
-        recyclerSearch.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        AnimeAdapter adapter = new AnimeAdapter(mediaArray, id -> {
-            Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, detailsFragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
-        recyclerSearch.setAdapter(adapter);
-
-        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Search Results")
-                .setView(dialogView)
-                .setNegativeButton("Close", (dialog, which) -> dialog.dismiss())
-                .show();
-    }
 
     private void searchAnime(String search) {
         progressBar.setVisibility(View.VISIBLE);
         String query = "query ($search: String) { Page(page: 1, perPage: 20) { media(search: $search, type: ANIME) { id title { romaji } coverImage { large } averageScore description seasonYear genres } } }";
-
         JsonObject variables = new JsonObject();
         variables.addProperty("search", search);
-
         JsonObject body = new JsonObject();
         body.addProperty("query", query);
         body.add("variables", variables);
 
         AniListClient.API api = AniListClient.getClient().create(AniListClient.API.class);
         api.query(body).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (!isAdded()) return;
                 progressBar.setVisibility(View.GONE);
-
                 if (response.body() != null) {
-                    JsonArray mediaArray = response.body()
-                            .getAsJsonObject("data")
-                            .getAsJsonObject("Page")
-                            .getAsJsonArray("media");
-
+                    JsonArray mediaArray = response.body().getAsJsonObject("data").getAsJsonObject("Page").getAsJsonArray("media");
                     if (mediaArray.size() > 0) {
                         tvSearchResults.setVisibility(View.VISIBLE);
                         recyclerSearchResults.setVisibility(View.VISIBLE);
-
-                        AnimeAdapter adapter = new AnimeAdapter(mediaArray, id -> {
-                            Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
-                            getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.fragmentContainer, detailsFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        });
-
-                        recyclerSearchResults.setAdapter(adapter);
-                    } else {
-                        Toast.makeText(getContext(), "No anime found", Toast.LENGTH_SHORT).show();
+                        recyclerSearchResults.setAdapter(new AnimeAdapter(mediaArray, id -> navigateTo(AnimeDetailsFragment.newInstance(id, false))));
                     }
                 }
             }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                if (!isAdded()) return;
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Search failed", Toast.LENGTH_SHORT).show();
-            }
+            @Override public void onFailure(Call<JsonObject> call, Throwable t) { progressBar.setVisibility(View.GONE); }
         });
     }
-
 
     private void executeApiCall(String query, JsonObject variables, String target) {
         JsonObject body = new JsonObject();
@@ -234,62 +182,15 @@ public class HomeFragment extends Fragment {
 
         AniListClient.API api = AniListClient.getClient().create(AniListClient.API.class);
         api.query(body).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (!isAdded()) return;
-                progressBar.setVisibility(View.GONE);
-
-                try {
-                    if (response.body() != null) {
-                        JsonArray mediaArray = response.body()
-                                .getAsJsonObject("data")
-                                .getAsJsonObject("Page")
-                                .getAsJsonArray("media");
-
-                        if ("search".equals(target)) {
-                            if (mediaArray.size() > 0) {
-                                showSearchResults(mediaArray);
-                            } else {
-                                Toast.makeText(getContext(), "No anime found", Toast.LENGTH_SHORT).show();
-                            }
-                            return;
-                        }
-
-                        AnimeAdapter adapter = new AnimeAdapter(mediaArray, id -> {
-                            Fragment detailsFragment = AnimeDetailsFragment.newInstance(id, false);
-                            getParentFragmentManager().beginTransaction()
-                                    .replace(R.id.fragmentContainer, detailsFragment)
-                                    .addToBackStack(null)
-                                    .commit();
-                        });
-
-                        switch (target) {
-                            case "featured":
-                                adapterFeatured = adapter;
-                                recyclerFeatured.setAdapter(adapterFeatured);
-                                break;
-                            case "trending":
-                                adapterTrending = adapter;
-                                recyclerTrending.setAdapter(adapterTrending);
-                                break;
-                            case "home":
-                                adapterHome = adapter;
-                                recyclerHome.setAdapter(adapterHome);
-                                break;
-                        }
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(getContext(), "Error loading data", Toast.LENGTH_SHORT).show();
-                }
+            @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!isAdded() || response.body() == null) return;
+                JsonArray mediaArray = response.body().getAsJsonObject("data").getAsJsonObject("Page").getAsJsonArray("media");
+                AnimeAdapter adapter = new AnimeAdapter(mediaArray, id -> navigateTo(AnimeDetailsFragment.newInstance(id, false)));
+                if ("featured".equals(target)) { adapterFeatured = adapter; recyclerFeatured.setAdapter(adapterFeatured); }
+                else if ("trending".equals(target)) { adapterTrending = adapter; recyclerTrending.setAdapter(adapterTrending); }
+                else if ("home".equals(target)) { adapterHome = adapter; recyclerHome.setAdapter(adapterHome); }
             }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                if (!isAdded()) return;
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "API Failed", Toast.LENGTH_SHORT).show();
-            }
+            @Override public void onFailure(Call<JsonObject> call, Throwable t) {}
         });
     }
-
 }
