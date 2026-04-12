@@ -81,6 +81,12 @@ public class WatchlistFragment extends Fragment {
                     int count = snapshot.size();
                     binding.watchlistCount.setText(count + " anime in your list");
 
+                    // Update Firestore field for watchlistCount
+                    FirebaseUtils.firestore()
+                            .collection("users")
+                            .document(FirebaseUtils.uid())
+                            .update("watchlistCount", count);
+
                     // Use WatchlistAdapter
                     WatchlistAdapter adapter = new WatchlistAdapter(arr, id -> {
                         Fragment detailsFragment = AnimeDetailsFragment.newInstance((int) id, true);
