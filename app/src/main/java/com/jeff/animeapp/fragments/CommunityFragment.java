@@ -32,6 +32,7 @@ public class CommunityFragment extends Fragment {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private String currentUser;
+    private PostAdapter postAdapter;
 
     // Example anime ID (replace with dynamic ID if needed)
     private static final int ANIME_ID = 1;
@@ -50,12 +51,12 @@ public class CommunityFragment extends Fragment {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Get logged-in user from SharedPreferences
+        // ✅ Get logged-in user from SharedPreferences
         SharedPreferences userSession = requireActivity()
                 .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         currentUser = userSession.getString("logged_in_user", "Guest");
 
-        // Fetch reviews when fragment loads
+        // ✅ Fetch reviews in real-time
         fetchReviews(ANIME_ID);
 
         // Handle Add Review button
@@ -69,16 +70,18 @@ public class CommunityFragment extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("reviews")
-                .whereEqualTo("animeId", animeId)
+                .whereEqualTo("animeId", String.valueOf(animeId))
                 .orderBy("timestamp", Query.Direction.DESCENDING)
-                .get()
-                .addOnSuccessListener(snapshots -> {
+                .addSnapshotListener((snapshots, e) -> {
                     progressBar.setVisibility(View.GONE);
-                    recyclerView.setAdapter(new PostAdapter(snapshots.getDocuments()));
-                })
-                .addOnFailureListener(e -> {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Failed to fetch reviews", Toast.LENGTH_SHORT).show();
+                    if (e != null) {
+                        Toast.makeText(getContext(), "Error loading reviews", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (snapshots != null) {
+                        postAdapter = new PostAdapter(snapshots.getDocuments());
+                        recyclerView.setAdapter(postAdapter);
+                    }
                 });
     }
 
@@ -124,11 +127,11 @@ public class CommunityFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> review = new HashMap<>();
-        review.put("animeId", animeId);
+        review.put("animeId", String.valueOf(animeId));
         review.put("animeTitle", animeTitle);
         review.put("reviewText", reviewText);
         review.put("rating", rating);
-        review.put("username", currentUser);
+        review.put("username", currentUser); // ✅ actual logged-in user
         review.put("timestamp", System.currentTimeMillis());
 
         db.collection("reviews")
@@ -136,11 +139,10 @@ public class CommunityFragment extends Fragment {
                 .addOnSuccessListener(docRef -> {
                     progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "Review submitted!", Toast.LENGTH_SHORT).show();
-                    fetchReviews(animeId); // refresh list
                 })
                 .addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error submitting review", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }
