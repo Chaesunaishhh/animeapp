@@ -1,5 +1,6 @@
 package com.jeff.animeapp.fragments;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -7,49 +8,47 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 
+
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 import com.jeff.animeapp.R;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+
+import java.util.*;
+
 
 public class QuizFragment extends Fragment {
+
 
     private TextView tvQuestion, tvScore, tvQuestionCount, tvLives;
     private ProgressBar progressBar;
     private final Button[] options = new Button[4];
 
+
     private int score = 0;
     private int currentIdx = 0;
     private int lives = 3;
-    private boolean isBonus = false;
     private String currentUsername;
     private boolean isAnswering = false;
+
+
     private List<Integer> questionIndices;
-    private long currentWeekStart; // For weekly tracking
+    private List<String> userAnswers = new ArrayList<>();
+    private long currentWeekStart;
 
-    // UI Colors
-    private final int COLOR_DEFAULT_GRAY = Color.parseColor("#1E1E2C");
-    private final int COLOR_CORRECT_GREEN = Color.parseColor("#4CAF50");
-    private final int COLOR_WRONG_RED = Color.parseColor("#F44336");
 
-    // Full 30-Question Bank
+    private final int COLOR_DEFAULT = Color.parseColor("#1E1E2C");
+    private final int COLOR_CORRECT = Color.parseColor("#4CAF50");
+    private final int COLOR_WRONG = Color.parseColor("#F44336");
+
+
     private final String[] questions = {
             "Who is the protagonist of 'Attack on Titan'?", "What is Goku's signature move?",
             "Who is the 'Copy Ninja' in Naruto?", "Luffy's Devil Fruit is the...?",
@@ -67,6 +66,7 @@ public class QuizFragment extends Fragment {
             "What is the main power system in 'JoJo's Bizarre Adventure'?", "Who is the 'Flame Hashira' in Demon Slayer?",
             "What is the name of the orphanage in 'The Promised Neverland'?", "Which anime involves 'Quirks'?"
     };
+
 
     private final String[][] choices = {
             {"Levi", "Eren Yeager", "Mikasa", "Armin"}, {"Chidori", "Rasengan", "Kamehameha", "Bankai"},
@@ -86,6 +86,7 @@ public class QuizFragment extends Fragment {
             {"Grace Field", "Glory Bell", "Grand Valley", "Goldy Pond"}, {"MHA", "Naruto", "One Piece", "Black Clover"}
     };
 
+
     private final String[] answers = {
             "Eren Yeager", "Kamehameha", "Kakashi", "Gum-Gum", "Ryuk",
             "Demon Slayer", "Edward Elric", "Caped Baldy", "Sukuna", "Aincrad",
@@ -95,185 +96,227 @@ public class QuizFragment extends Fragment {
             "Grace Field", "MHA"
     };
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        SharedPreferences userSession = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
-        currentUsername = userSession.getString("logged_in_user", "Guest");
 
-        // **CHECK ONE-TAKE-PER-WEEK RULE FOR THIS USER ONLY**
-        if (!canUserTakeQuizThisWeek()) {
-            Toast.makeText(getContext(), " You can only take the quiz ONCE per week!", Toast.LENGTH_LONG).show();
-            if (isAdded()) {
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, new LeaderboardFragment())
-                        .commit();
-            }
-            return null; // Don't create the quiz view
+
+        SharedPreferences session = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        currentUsername = session.getString("logged_in_user", null);
+
+
+        if (currentUsername == null) {
+            Toast.makeText(getContext(), "User not logged in!", Toast.LENGTH_SHORT).show();
+            return inflater.inflate(R.layout.fragment_quiz, container, false);
         }
 
+
         View v = inflater.inflate(R.layout.fragment_quiz, container, false);
+
 
         tvQuestion = v.findViewById(R.id.tvQuestion);
         tvScore = v.findViewById(R.id.tvScore);
         tvQuestionCount = v.findViewById(R.id.tvQuestionCount);
         tvLives = v.findViewById(R.id.tvLives);
         progressBar = v.findViewById(R.id.quizProgress);
-        progressBar.setMax(10);
+
 
         options[0] = v.findViewById(R.id.btnOption1);
         options[1] = v.findViewById(R.id.btnOption2);
         options[2] = v.findViewById(R.id.btnOption3);
         options[3] = v.findViewById(R.id.btnOption4);
 
+
+        // Reset userAnswers for new quiz session
+        userAnswers = new ArrayList<>();
+
+
+        // Weekly check
+        if (!canUserTakeQuizThisWeek()) {
+            new Handler(Looper.getMainLooper()).post(this::openReview);
+            return v;
+        }
+
+
         setupRandomQuestions();
+        progressBar.setMax(questionIndices.size());
+
+
         updateUI();
+
 
         for (Button btn : options) {
             btn.setOnClickListener(view -> checkAnswer((Button) view));
         }
 
+
         return v;
     }
 
-    /**
-     * Check if current user can take quiz this week
-     * Each user has their own weekly tracking
-     */
+
     private boolean canUserTakeQuizThisWeek() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
-        long lastQuizTime = prefs.getLong(currentUsername + "_last_quiz_week_start", 0);
-        currentWeekStart = getCurrentWeekStartTimestamp();
-
-        // If no previous quiz OR different week, allow quiz
-        return lastQuizTime == 0 || lastQuizTime != currentWeekStart;
+        currentWeekStart = getWeekStart();
+        long last = prefs.getLong("quiz_week_" + currentUsername, -1);
+        return last != currentWeekStart;
     }
 
-    /**
-     * Get timestamp for start of current week (Monday 00:00)
-     */
-    private long getCurrentWeekStartTimestamp() {
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY);
-        cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        cal.set(java.util.Calendar.MINUTE, 0);
-        cal.set(java.util.Calendar.SECOND, 0);
-        cal.set(java.util.Calendar.MILLISECOND, 0);
+
+    private long getWeekStart() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         return cal.getTimeInMillis();
     }
 
+
     private void setupRandomQuestions() {
-        // **WEEKLY ROTATING SET: Use week number to seed random selection**
-        Random rng = new Random(currentWeekStart); // Same seed = same 10 questions every week
-        questionIndices = new ArrayList<>();
-
-        // Select exactly 10 unique questions based on weekly seed
-        List<Integer> allIndices = new ArrayList<>();
-        for (int i = 0; i < questions.length; i++) allIndices.add(i);
-
-        Collections.shuffle(allIndices, rng); // Weekly consistent shuffle
-        for (int i = 0; i < 10; i++) {
-            questionIndices.add(allIndices.get(i));
-        }
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < questions.length; i++) list.add(i);
+        Collections.shuffle(list);
+        questionIndices = list.subList(0, Math.min(10, list.size()));
     }
+
 
     private void updateUI() {
-        if (currentIdx >= 10) return;
-
         isAnswering = false;
-        int actualIdx = questionIndices.get(currentIdx);
+
+
+        int idx = questionIndices.get(currentIdx);
+
 
         tvScore.setText("Score: " + score);
-        tvQuestionCount.setText("Question " + (currentIdx + 1) + " of 10");
+        tvQuestionCount.setText((currentIdx + 1) + "/" + questionIndices.size());
+        tvLives.setText("❤️".repeat(lives));
+
+
         progressBar.setProgress(currentIdx + 1);
 
-        for (Button btn : options) {
-            btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_DEFAULT_GRAY));
-            btn.setEnabled(true);
+
+        for (Button b : options) {
+            b.setEnabled(true);
+            b.setBackgroundTintList(ColorStateList.valueOf(COLOR_DEFAULT));
         }
 
-        StringBuilder hearts = new StringBuilder();
-        for(int i=0; i<lives; i++) hearts.append("❤️");
-        tvLives.setText(hearts.toString());
 
-        isBonus = new Random().nextInt(5) == 0;
-        if (isBonus) {
-            tvQuestion.setText("🔥 BONUS (+20): " + questions[actualIdx]);
-            tvQuestion.setTextColor(Color.parseColor("#FFD700"));
-        } else {
-            tvQuestion.setText(questions[actualIdx]);
-            tvQuestion.setTextColor(Color.WHITE);
+        tvQuestion.setText(questions[idx]);
+
+
+        List<String> shuffled = new ArrayList<>(Arrays.asList(choices[idx]));
+        Collections.shuffle(shuffled);
+
+
+        for (int i = 0; i < 4; i++) {
+            options[i].setText(shuffled.get(i));
         }
-
-        List<String> currentChoices = new ArrayList<>();
-        Collections.addAll(currentChoices, choices[actualIdx]);
-        Collections.shuffle(currentChoices);
-
-        for (int i = 0; i < 4; i++) options[i].setText(currentChoices.get(i));
     }
 
-    private void checkAnswer(Button selectedBtn) {
+
+    private void checkAnswer(Button btn) {
         if (isAnswering) return;
         isAnswering = true;
 
-        int actualIdx = questionIndices.get(currentIdx);
-        String selectedText = selectedBtn.getText().toString();
-        String correctText = answers[actualIdx];
 
-        for (Button btn : options) btn.setEnabled(false);
+        int idx = questionIndices.get(currentIdx);
+        String correct = answers[idx];
 
-        if (selectedText.equals(correctText)) {
-            selectedBtn.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT_GREEN));
-            score += isBonus ? 20 : 10;
-            new Handler(Looper.getMainLooper()).postDelayed(this::nextQuestion, 600);
+
+        userAnswers.add(btn.getText().toString());
+
+
+        for (Button b : options) b.setEnabled(false);
+
+
+        if (btn.getText().toString().equals(correct)) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT));
+            score += 10;
         } else {
-            selectedBtn.setBackgroundTintList(ColorStateList.valueOf(COLOR_WRONG_RED));
-            for (Button btn : options) {
-                if (btn.getText().toString().equals(correctText)) {
-                    btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT_GREEN));
+            btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_WRONG));
+            lives--;
+
+
+            for (Button b : options) {
+                if (b.getText().toString().equals(correct)) {
+                    b.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT));
                 }
             }
-            lives--;
-            new Handler(Looper.getMainLooper()).postDelayed(this::nextQuestion, 1500);
         }
+
+
+        new Handler(Looper.getMainLooper()).postDelayed(this::nextQuestion, 1200);
     }
 
+
     private void nextQuestion() {
+        if (lives <= 0) {
+            finishQuiz();
+            return;
+        }
+
+
         currentIdx++;
-        if (lives <= 0 || currentIdx >= 10) {
-            saveAndNavigate();
+
+
+        if (currentIdx >= questionIndices.size()) {
+            finishQuiz();
         } else {
             updateUI();
         }
     }
 
-    private void saveAndNavigate() {
-        SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
-        int currentTotal = prefs.getInt(currentUsername + "_total_score", 0);
-        int newTotal = currentTotal + score;
 
-        // **MARK THIS USER as having taken quiz this week**
-        prefs.edit()
-                .putInt(currentUsername + "_last_score", score)
-                .putInt(currentUsername + "_total_score", newTotal)
-                .putLong(currentUsername + "_last_quiz_week_start", currentWeekStart) // KEY: Per-user weekly lock
-                .apply();
+    private void finishQuiz() {
+        SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+
+        editor.putLong("quiz_week_" + currentUsername, currentWeekStart);
+        editor.putInt("last_" + currentUsername, score);
+
+
+        int total = prefs.getInt("total_" + currentUsername, 0) + score;
+        editor.putInt("total_" + currentUsername, total);
+
+
+        // ✅ SAVE USER ANSWERS AND QUESTION INDICES FOR REVIEW
+        Gson gson = new Gson();
+        String answersJson = gson.toJson(userAnswers);
+        String questionsJson = gson.toJson(questionIndices);
+
+
+        editor.putString("answers_" + currentUsername, answersJson);
+        editor.putString("questions_" + currentUsername, questionsJson);
+
+
+        editor.apply();
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Map<String, Object> userUpdate = new HashMap<>();
-        userUpdate.put("username", currentUsername);
-        userUpdate.put("highScore", score);
 
-        db.collection("users").document(currentUsername)
-                .set(userUpdate)
-                .addOnCompleteListener(task -> navigateToLeaderboard());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("username", currentUsername);
+        data.put("weeklyScore", score);
+        data.put("totalScore", total);
+        data.put("week", currentWeekStart);
+
+
+        db.collection("weekly_leaderboard")
+                .document(currentUsername)
+                .set(data);
+
+
+        openReview();
     }
 
-    private void navigateToLeaderboard() {
-        if (isAdded()) {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, new LeaderboardFragment())
-                    .commit();
-        }
+
+    private void openReview() {
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, new QuizReviewFragment())
+                .commit();
     }
 }

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "945308685570",
+    "firebase_url": "https://animeapp-63a84-default-rtdb.firebaseio.com",
     "project_id": "animeapp-63a84",
     "storage_bucket": "animeapp-63a84.firebasestorage.app"
   },

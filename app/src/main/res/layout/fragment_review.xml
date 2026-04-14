@@ -1,0 +1,45 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F0F1A"
+    android:padding="12dp">
+
+
+    <LinearLayout
+        android:id="@+id/reviewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- HEADER -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📘 Quiz Review"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"
+            android:background="#1A1A2E"/>
+
+
+        <!-- BUTTON -->
+        <Button
+            android:id="@+id/btnLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="🏆 Back to Leaderboard"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#22C55E"
+            android:layout_marginBottom="16dp"/>
+
+
+    </LinearLayout>
+
+
+</ScrollView>
+

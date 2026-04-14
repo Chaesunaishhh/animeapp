@@ -1,82 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F1A"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:background="#0F0F1A">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Leaderboard"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:cardBackgroundColor="#1E1E2C"
-            app:cardCornerRadius="12dp">
-            <LinearLayout android:padding="16dp" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
-                <TextView android:text="Total Scores" android:textColor="#888888" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/tvTotalScoreValue" android:text="0" android:textColor="#22C55E" android:textSize="28sp" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
+        <!-- TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            app:cardBackgroundColor="#1E1E2C"
-            app:cardCornerRadius="12dp">
-            <LinearLayout android:padding="16dp" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
-                <TextView android:text="Your Score" android:textColor="#888888" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-                <TextView android:id="@+id/tvYourScoreValue" android:text="0" android:textColor="#22C55E" android:textSize="28sp" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+            android:text="🏆 Leaderboard"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+
+        <!-- SCORE CARDS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+
+            <!-- TOTAL -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardBackgroundColor="#1E1E2C"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="6dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+
+                    <TextView
+                        android:text="Total Score"
+                        android:textColor="#888888"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:id="@+id/tvTotalScoreValue"
+                        android:text="0"
+                        android:textColor="#22C55E"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!-- LATEST -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:cardBackgroundColor="#1E1E2C"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="6dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+
+                    <TextView
+                        android:text="Weekly Score"
+                        android:textColor="#888888"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+
+                    <TextView
+                        android:id="@+id/tvYourScoreValue"
+                        android:text="0"
+                        android:textColor="#22C55E"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
+
+
+        <!-- GLOBAL TOP 10 TITLE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌍 Global Top 10"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="25dp"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+
+        <!-- RECYCLER VIEW FOR TOP 10 -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="10dp"/>
+
+
+        <!-- YOUR RANK -->
+        <TextView
+            android:id="@+id/tvYourRank"
+            android:text="Your Rank: #--"
+            android:textColor="#22C55E"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Global Top 3"
-        android:textColor="#FFFFFF"
-        android:layout_marginTop="30dp"
-        android:textSize="18sp"
-        android:textStyle="bold" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:cardBackgroundColor="#1E1E2C"
-        app:cardCornerRadius="12dp">
-        <LinearLayout android:padding="16dp" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
-            <TextView android:id="@+id/tvTop1Name" android:text="🥇 Loading..." android:textColor="#FFD700" android:textSize="18sp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-            <TextView android:id="@+id/tvTop2Name" android:text="🥈 Loading..." android:textColor="#C0C0C0" android:textSize="18sp" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-            <TextView android:id="@+id/tvTop3Name" android:text="🥉 Loading..." android:textColor="#CD7F32" android:textSize="18sp" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
+</ScrollView>
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:gravity="center"-->
-<!--        android:orientation="vertical">-->
-<!--        <TextView android:text="Keep playing to beat your score!" android:textColor="#888888" android:layout_width="wrap_content" android:layout_height="wrap_content" />-->
-<!--        <Button android:id="@+id/btnTakeQuiz" android:text="Take Quiz" android:layout_marginTop="20dp" android:backgroundTint="#22C55E" android:layout_width="wrap_content" android:layout_height="wrap_content" />-->
-<!--    </LinearLayout>-->
-
-</LinearLayout>
