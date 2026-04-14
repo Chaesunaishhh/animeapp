@@ -13,6 +13,9 @@ import android.widget.*;
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.jeff.animeapp.R;
@@ -240,7 +243,6 @@ public class QuizFragment extends Fragment {
         int total = prefs.getInt("total_" + currentUsername, 0) + score;
         editor.putInt("total_" + currentUsername, total);
 
-        // ✅ SAVE USER ANSWERS AND QUESTION INDICES FOR REVIEW
         Gson gson = new Gson();
         String answersJson = gson.toJson(userAnswers);
         String questionsJson = gson.toJson(questionIndices);
@@ -262,10 +264,41 @@ public class QuizFragment extends Fragment {
                 .document(currentUsername)
                 .set(data);
 
+        // ✅ UPDATE USER QUIZ STATS USING UID
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null) {
+            String uid = auth.getCurrentUser().getUid();
+            DocumentReference userDoc = db.collection("users").document(uid);
+
+            // FIXED formula: compute percentage based on correct answers
+            int correctAnswers = score / 10; // 10 points per correct
+            double latestScore = (correctAnswers * 100.0) / questionIndices.size();
+
+            db.runTransaction(transaction -> {
+                DocumentSnapshot snapshot = transaction.get(userDoc);
+
+                long oldCount = snapshot.contains("quizCount") ? snapshot.getLong("quizCount") : 0;
+                double oldAvg = snapshot.contains("quizAvgScore") ? snapshot.getDouble("quizAvgScore") : 0.0;
+
+                long newCount = oldCount + 1;
+                double newAvg = (oldAvg * oldCount + latestScore) / newCount;
+
+                transaction.update(userDoc, "quizCount", newCount);
+                transaction.update(userDoc, "quizAvgScore", newAvg);
+
+                return null;
+            }).addOnSuccessListener(aVoid -> {
+                Toast.makeText(getContext(), "Quiz stats recorded!", Toast.LENGTH_SHORT).show();
+            }).addOnFailureListener(e -> {
+                Toast.makeText(getContext(), "Failed to record quiz stats", Toast.LENGTH_SHORT).show();
+            });
+        }
+
         openReview();
     }
 
-    private void openReview() {
+
+        private void openReview() {
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.fragmentContainer, new QuizReviewFragment())
                 .commit();

@@ -85,7 +85,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
             holder.btnDone.setText("Complete");
             holder.btnDone.setEnabled(true);
             holder.btnDone.setBackgroundTintList(
-                    ColorStateList.valueOf(Color.parseColor("#6200EE"))
+                    ColorStateList.valueOf(Color.parseColor("#AAAAAA"))
             );
         }
 

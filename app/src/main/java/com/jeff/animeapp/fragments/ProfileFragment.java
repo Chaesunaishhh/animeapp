@@ -89,8 +89,15 @@ public class ProfileFragment extends Fragment {
                             // Statistics
                             statWatchedView.setText(watchedCount != null ? "Anime Watched: " + watchedCount : "Anime Watched: 0");
                             tvInWatchlist.setText(watchlistCount != null ? "In Watchlist: " + watchlistCount : "In Watchlist: 0");
-                            tvQuizzesTaken.setText(quizCount != null ? "Quizzes Taken: " + quizCount: "Quizzes Taken: 0");
-                            tvQuizAvgScore.setText(quizAvgScore != null ? "Quiz Avg Score: " + quizAvgScore + "%" : "Quiz Avg Score: 0%");
+                            tvQuizzesTaken.setText(quizCount != null ? "Quizzes Taken: " + quizCount : "Quizzes Taken: 0");
+
+                            // Format quiz average score to whole number %
+                            if (quizAvgScore != null) {
+                                int avg = (int) Math.round(quizAvgScore);
+                                tvQuizAvgScore.setText("Quiz Avg Score: " + avg + "%");
+                            } else {
+                                tvQuizAvgScore.setText("Quiz Avg Score: 0%");
+                            }
 
                             // Progress text updates
                             if (watchlistCount != null) {

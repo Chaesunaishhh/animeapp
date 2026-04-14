@@ -74,10 +74,7 @@ public class CommunityFragment extends Fragment {
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((snapshots, e) -> {
                     progressBar.setVisibility(View.GONE);
-                    if (e != null) {
-                        Toast.makeText(getContext(), "Error loading reviews", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+
                     if (snapshots != null) {
                         postAdapter = new PostAdapter(snapshots.getDocuments());
                         recyclerView.setAdapter(postAdapter);

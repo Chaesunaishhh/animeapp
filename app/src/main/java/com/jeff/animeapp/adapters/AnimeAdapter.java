@@ -103,7 +103,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         FirebaseUtils.firestore().collection("watchlist").document(uid)
                 .collection("anime").document(String.valueOf(id)).set(map)
                 .addOnSuccessListener(u -> {
-                    Toast.makeText(view.getContext(), "Saved to Watchlist!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), "Added to Watchlist!", Toast.LENGTH_SHORT).show();
 
                     // Remove from Home list
                     int position = getPositionById(id);

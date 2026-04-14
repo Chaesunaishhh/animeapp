@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#0F0F1A">
 
     <LinearLayout
@@ -11,14 +12,19 @@
         android:layout_height="wrap_content">
 
         <!-- Cover Image -->
-        <ImageView
-            android:id="@+id/animeCover"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:scaleType="centerCrop"
-            android:clipToOutline="true"
-            android:background="@android:color/darker_gray"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardUseCompatPadding="true">
+
+            <ImageView
+                android:id="@+id/animeCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
+        </androidx.cardview.widget.CardView>
 
         <!-- Title + Score -->
         <LinearLayout
@@ -102,25 +108,15 @@
             android:layout_marginBottom="16dp">
 
             <Button
-                android:id="@+id/btnPlay"
-                android:text="PLAY"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#E50914"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
-
-            <Button
                 android:id="@+id/btnWatchlist"
                 android:text="ADD TO WATCHLIST"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:backgroundTint="#333333"
+                android:textStyle="bold"
                 android:textColor="@android:color/white"/>
         </LinearLayout>
+
 
         <!-- Watchlist Actions -->
         <LinearLayout
@@ -132,12 +128,12 @@
 
             <Button
                 android:id="@+id/btnDetailsComplete"
-                android:text="DONE"
+                android:text="COMPLETE"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
-                android:backgroundTint="#4CAF50"
+                android:backgroundTint="@color/colorGray"
                 android:textColor="@android:color/white"/>
 
             <Button

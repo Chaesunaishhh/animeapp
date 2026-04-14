@@ -49,7 +49,6 @@ public class AnimeDetailsFragment extends Fragment {
         description = v.findViewById(R.id.animeDescription);
         meta = v.findViewById(R.id.animeMeta);
         characters = v.findViewById(R.id.animeCharacters);
-        btnPlay = v.findViewById(R.id.btnPlay);
         btnWatchlist = v.findViewById(R.id.btnWatchlist);
         btnComplete = v.findViewById(R.id.btnDetailsComplete);
         btnRemove = v.findViewById(R.id.btnDetailsRemove);
@@ -228,7 +227,7 @@ public class AnimeDetailsFragment extends Fragment {
                                             .update("watchedCount", FieldValue.increment(-1));
                                 }
 
-                                Toast.makeText(getContext(), "Removed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Removed from Watchlist!", Toast.LENGTH_SHORT).show();
                                 getParentFragmentManager().popBackStack();
                             });
                 });

@@ -93,7 +93,7 @@
                     android:id="@+id/statWatched"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1 Total Watched"
+                    android:text="Anime Watched: 0"
                     android:textColor="@color/colorWhite"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -111,7 +111,7 @@
                     android:id="@+id/tvInWatchlist"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="In Watchlist: "
+                    android:text="In Watchlist: 0"
                     android:textColor="@color/colorWhite"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -130,7 +130,7 @@
                     android:id="@+id/tvQuizzesTaken"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1 Quizzes Taken"
+                    android:text="Quizzes Taken: 0"
                     android:textColor="@color/colorWhite"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -149,7 +149,7 @@
                     android:id="@+id/tvQuizAvgScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Quiz Avg Score: 50%"
+                    android:text="Quiz Avg Score: 0%"
                     android:textColor="@color/colorWhite"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -365,7 +365,7 @@
                     android:id="@+id/progressQuizEnthusiast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Progress: 1/10"
+                    android:text="Progress: 0/10"
                     android:textColor="@color/colorAccent"
                     android:textSize="12sp" />
             </LinearLayout>

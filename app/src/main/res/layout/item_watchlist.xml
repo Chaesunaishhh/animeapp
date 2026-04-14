@@ -81,20 +81,7 @@
 <!--                    android:layout_weight="1"-->
 <!--                    android:layout_height="48dp"/>-->
 
-                <Button
-                    android:id="@+id/markCompleteButton"
-                    android:text="@string/mark_complete"
-                    android:textColor="@color/colorWhite"
-                    android:background="@drawable/rounded_button"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"/>
-
-<!--                <ImageButton-->
+                <!--                <ImageButton-->
 <!--                    android:id="@+id/deleteButton"-->
 <!--                    android:src="@drawable/ic_delete"-->
 <!--                    android:background="@drawable/circle_button"-->
@@ -103,6 +90,19 @@
 <!--                    android:layout_height="48dp"-->
 <!--                    android:layout_marginStart="12dp"-->
 <!--                    android:contentDescription="@string/delete_button_desc" />-->
+
+                <Button
+                    android:id="@+id/markCompleteButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button"
+                    android:ellipsize="end"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:singleLine="true"
+                    android:text="COMPLETE"
+                    android:textColor="@color/colorWhite" />
 
                 <ImageButton
                     android:id="@+id/deleteButton"
