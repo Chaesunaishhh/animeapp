@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,7 +36,12 @@ public class CommunityFragment extends Fragment {
     private String currentUser;
     private PostAdapter postAdapter;
 
-    // Example anime ID (replace with dynamic ID if needed)
+    // Tab UI Elements
+    private LinearLayout layoutReviews, layoutCharacters;
+    private TextView tabReviews, tabCharacters;
+    private RecyclerView recyclerCharacters;
+    private PostAdapter characterAdapter; // For the character list
+
     private static final int ANIME_ID = 1;
 
     public CommunityFragment() {}
@@ -45,39 +52,83 @@ public class CommunityFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_community, container, false);
 
+        // 1. Initialize View IDs
         recyclerView = v.findViewById(R.id.recyclerCommunity);
         progressBar = v.findViewById(R.id.progressCommunity);
         Button btnAddReview = v.findViewById(R.id.btnAddReview);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        layoutReviews = v.findViewById(R.id.layoutReviews);
+        layoutCharacters = v.findViewById(R.id.layoutCharacters);
+        tabReviews = v.findViewById(R.id.tabReviews);
+        tabCharacters = v.findViewById(R.id.tabCharacters);
+        recyclerCharacters = v.findViewById(R.id.recyclerCharacters);
 
-        // ✅ Get logged-in user from SharedPreferences
+        // 2. Set Layout Managers
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerCharacters.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // 3. Session Management
         SharedPreferences userSession = requireActivity()
                 .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         currentUser = userSession.getString("logged_in_user", "Guest");
 
-        // ✅ Fetch reviews in real-time
+        // 4. Initial Load (Reviews)
         fetchReviews(ANIME_ID);
 
-        // Handle Add Review button
+        // 5. Click Listeners
         btnAddReview.setOnClickListener(view -> showAddReviewDialog());
+
+        tabReviews.setOnClickListener(view -> switchTab(true));
+        tabCharacters.setOnClickListener(view -> switchTab(false));
 
         return v;
     }
 
+    private void switchTab(boolean isReviews) {
+        if (isReviews) {
+            layoutReviews.setVisibility(View.VISIBLE);
+            layoutCharacters.setVisibility(View.GONE);
+
+            tabReviews.setBackgroundResource(R.drawable.tab_selected_bg);
+            tabCharacters.setBackground(null);
+
+            fetchReviews(ANIME_ID);
+        } else {
+            layoutReviews.setVisibility(View.GONE);
+            layoutCharacters.setVisibility(View.VISIBLE);
+
+            tabCharacters.setBackgroundResource(R.drawable.tab_selected_bg);
+            tabReviews.setBackground(null);
+
+            fetchCharacters(); // ✅ This loads the characters when tab is clicked
+        }
+    }
+
     private void fetchReviews(int animeId) {
         progressBar.setVisibility(View.VISIBLE);
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("reviews")
                 .whereEqualTo("animeId", String.valueOf(animeId))
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .addSnapshotListener((snapshots, e) -> {
                     progressBar.setVisibility(View.GONE);
-
                     if (snapshots != null) {
                         postAdapter = new PostAdapter(snapshots.getDocuments());
                         recyclerView.setAdapter(postAdapter);
+                    }
+                });
+    }
+
+    private void fetchCharacters() {
+        // Note: Ensure you have a "characters" collection in Firebase
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("characters")
+                .orderBy("votes", Query.Direction.DESCENDING)
+                .addSnapshotListener((snapshots, e) -> {
+                    if (snapshots != null) {
+                        // Using your existing PostAdapter for now
+                        characterAdapter = new PostAdapter(snapshots.getDocuments());
+                        recyclerCharacters.setAdapter(characterAdapter);
                     }
                 });
     }
@@ -100,7 +151,6 @@ public class CommunityFragment extends Fragment {
         Button btnSubmit = dialogView.findViewById(R.id.btnSubmit);
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
-
         btnSubmit.setOnClickListener(v -> {
             String animeTitle = editAnimeTitle.getText().toString().trim();
             String reviewText = editReview.getText().toString().trim();
@@ -114,13 +164,11 @@ public class CommunityFragment extends Fragment {
             submitReview(animeTitle, reviewText, rating, ANIME_ID);
             dialog.dismiss();
         });
-
         dialog.show();
     }
 
     private void submitReview(String animeTitle, String reviewText, float rating, int animeId) {
         progressBar.setVisibility(View.VISIBLE);
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> review = new HashMap<>();
@@ -128,7 +176,7 @@ public class CommunityFragment extends Fragment {
         review.put("animeTitle", animeTitle);
         review.put("reviewText", reviewText);
         review.put("rating", rating);
-        review.put("username", currentUser); // ✅ actual logged-in user
+        review.put("username", currentUser);
         review.put("timestamp", System.currentTimeMillis());
 
         db.collection("reviews")

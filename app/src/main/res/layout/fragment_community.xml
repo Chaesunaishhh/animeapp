@@ -4,28 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Tabs -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Community"
+        android:textColor="@color/colorWhite"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect with other anime fans"
+        android:textColor="#AAAAAA"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"/>
+
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:gravity="center">
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp">
 
         <TextView
             android:id="@+id/tabReviews"
             android:text="Reviews"
-            android:textColor="@color/colorAccent"
-            android:textStyle="bold"
-            android:layout_marginEnd="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/tabWatchlists"
-            android:text="Watchlists"
             android:textColor="@color/colorWhite"
-            android:layout_marginEnd="16dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:background="@drawable/tab_selected_bg"
+            android:layout_marginEnd="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -33,34 +45,75 @@
             android:id="@+id/tabCharacters"
             android:text="Characters"
             android:textColor="@color/colorWhite"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-    <!-- Add Review Button -->
-    <Button
-        android:id="@+id/btnAddReview"
-        android:text="Add Review"
-        android:textColor="@color/colorWhite"
-        android:backgroundTint="@color/colorAccent"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"/>
+        android:layout_height="match_parent">
 
-    <!-- Progress bar -->
-    <ProgressBar
-        android:id="@+id/progressCommunity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminate="true"/>
+        <LinearLayout
+            android:id="@+id/layoutReviews"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-    <!-- RecyclerView for posts -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerCommunity"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="8dp"/>
+            <Button
+                android:id="@+id/btnAddReview"
+                android:text="Add Review"
+                android:textColor="@color/colorWhite"
+                android:backgroundTint="@color/colorAccent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:textAllCaps="false"
+                android:drawableStart="@android:drawable/ic_menu_edit"/>
+
+            <ProgressBar
+                android:id="@+id/progressCommunity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCommunity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="8dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutCharacters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:padding="16dp">
+
+            <TextView
+                android:text="Character Spotlight"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:text="Vote for your favorite anime character this week!"
+                android:textColor="#AAAAAA"
+                android:layout_marginBottom="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCharacters"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>
