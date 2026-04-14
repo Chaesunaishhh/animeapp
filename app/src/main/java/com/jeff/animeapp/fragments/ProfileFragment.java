@@ -1,6 +1,8 @@
 package com.jeff.animeapp.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +56,11 @@ public class ProfileFragment extends Fragment {
         quizEnthusiastCard = v.findViewById(R.id.quizEnthusiastCard);
 
         logoutBtn.setOnClickListener(view -> {
+            // Clear the local session
+            SharedPreferences.Editor editor = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE).edit();
+            editor.clear();
+            editor.apply();
+
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getActivity(), LoginActivity.class));
             getActivity().finish();

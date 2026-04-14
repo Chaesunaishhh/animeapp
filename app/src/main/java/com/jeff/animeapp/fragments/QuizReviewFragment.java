@@ -1,6 +1,5 @@
 package com.jeff.animeapp.fragments;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,26 +8,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
-
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jeff.animeapp.R;
 
-
 import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.List;
 
-
 public class QuizReviewFragment extends Fragment {
 
-
     private LinearLayout container;
-
 
     private final String[] questions = {
             "Who is the protagonist of 'Attack on Titan'?", "What is Goku's signature move?",
@@ -48,7 +41,6 @@ public class QuizReviewFragment extends Fragment {
             "What is the name of the orphanage in 'The Promised Neverland'?", "Which anime involves 'Quirks'?"
     };
 
-
     private final String[] answers = {
             "Eren Yeager", "Kamehameha", "Kakashi", "Gum-Gum", "Ryuk",
             "Demon Slayer", "Edward Elric", "Caped Baldy", "Sukuna", "Aincrad",
@@ -58,22 +50,17 @@ public class QuizReviewFragment extends Fragment {
             "Rengoku", "Grace Field", "MHA"
     };
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup parent, @Nullable Bundle savedInstanceState) {
 
-
         View v = inflater.inflate(R.layout.fragment_review, parent, false);
-
 
         container = v.findViewById(R.id.reviewContainer);
         Button btnLeaderboard = v.findViewById(R.id.btnLeaderboard);
 
-
         SharedPreferences session = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         String username = session.getString("logged_in_user", "");
-
 
         if (username.isEmpty()) {
             showMessage("No user logged in!", 0x33FF9800);
@@ -81,14 +68,18 @@ public class QuizReviewFragment extends Fragment {
             return v;
         }
 
-
         SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
-
 
         // ✅ CHECK IF USER TOOK QUIZ THIS WEEK
         long currentWeekStart = getWeekStart();
-        long lastQuizWeek = prefs.getLong("quiz_week_" + username, -1);
-
+        long lastQuizWeek;
+        try {
+            lastQuizWeek = prefs.getLong("quiz_week_" + username, -1);
+        } catch (ClassCastException e) {
+            // If the value was incorrectly stored as a String, clear it
+            prefs.edit().remove("quiz_week_" + username).apply();
+            lastQuizWeek = -1;
+        }
 
         if (lastQuizWeek != currentWeekStart) {
             // User hasn't taken quiz this week
@@ -97,19 +88,15 @@ public class QuizReviewFragment extends Fragment {
             return v;
         }
 
-
         Gson gson = new Gson();
-
 
         Type typeA = new TypeToken<List<String>>(){}.getType();
         String answersJson = prefs.getString("answers_" + username, "[]");
         List<String> userAnswers = gson.fromJson(answersJson, typeA);
 
-
         Type typeQ = new TypeToken<List<Integer>>(){}.getType();
         String questionsJson = prefs.getString("questions_" + username, "[]");
         List<Integer> qIndex = gson.fromJson(questionsJson, typeQ);
-
 
         // Check if there's any data to show
         if (userAnswers.isEmpty() || qIndex.isEmpty()) {
@@ -117,7 +104,6 @@ public class QuizReviewFragment extends Fragment {
             setupLeaderboardButton(btnLeaderboard);
             return v;
         }
-
 
         // Add header to show it's this week's quiz
         TextView header = new TextView(getContext());
@@ -128,43 +114,33 @@ public class QuizReviewFragment extends Fragment {
         header.setGravity(Gravity.CENTER);
         container.addView(header);
 
-
         // Loop safely through user answers
         int correctCount = 0;
 
-
         for (int i = 0; i < userAnswers.size() && i < qIndex.size(); i++) {
 
-
             int idx = qIndex.get(i);
-
 
             // Safety check to prevent crash
             if (idx >= questions.length || idx >= answers.length) continue;
 
-
             String userAns = userAnswers.get(i);
             String correct = answers[idx];
-
 
             if (userAns.equals(correct)) {
                 correctCount++;
             }
 
-
             TextView tv = new TextView(getContext());
-
 
             String result = "❓ Q" + (i + 1) + ": " + questions[idx] +
                     "\n📝 Your Answer: " + userAns +
                     "\n✅ Correct Answer: " + correct;
 
-
             tv.setText(result);
             tv.setTextSize(16);
             tv.setPadding(20, 20, 20, 20);
             tv.setTextColor(0xFFFFFFFF);
-
 
             if (userAns.equals(correct)) {
                 tv.setBackgroundColor(0x334CAF50); // Green for correct
@@ -172,18 +148,15 @@ public class QuizReviewFragment extends Fragment {
                 tv.setBackgroundColor(0x33F44336); // Red for wrong
             }
 
-
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
             params.setMargins(0, 0, 0, 20);
 
-
             tv.setLayoutParams(params);
             container.addView(tv);
         }
-
 
         // Add score summary at the bottom
         TextView summary = new TextView(getContext());
@@ -197,11 +170,9 @@ public class QuizReviewFragment extends Fragment {
         summary.setGravity(Gravity.CENTER);
         container.addView(summary);
 
-
         setupLeaderboardButton(btnLeaderboard);
         return v;
     }
-
 
     private void showMessage(String message, int backgroundColor) {
         TextView messageView = new TextView(getContext());
@@ -214,7 +185,6 @@ public class QuizReviewFragment extends Fragment {
         container.addView(messageView);
     }
 
-
     private void setupLeaderboardButton(Button btnLeaderboard) {
         btnLeaderboard.setOnClickListener(view -> {
             getParentFragmentManager().beginTransaction()
@@ -222,7 +192,6 @@ public class QuizReviewFragment extends Fragment {
                     .commit();
         });
     }
-
 
     private long getWeekStart() {
         Calendar cal = Calendar.getInstance();

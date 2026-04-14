@@ -1,6 +1,7 @@
 package com.jeff.animeapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -101,13 +102,27 @@ public class RegisterActivity extends AppCompatActivity {
         setLoading(false);
         isProcessing = false;
 
+        // ✅ RESET QUIZ DATA FOR NEW USER
+        SharedPreferences prefs = getSharedPreferences("QuizData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String usernameStr = username.getText().toString().trim();
+
+        editor.remove("last_" + usernameStr);
+        editor.remove("total_" + usernameStr);
+        editor.remove("quiz_week_" + usernameStr);
+        editor.remove("answers_" + usernameStr);
+        editor.remove("questions_" + usernameStr);
+
+        editor.apply();
+
         Toast.makeText(this,
                 "Account created successfully!\nPlease login with your credentials.",
                 Toast.LENGTH_LONG).show();
 
         new android.os.Handler().postDelayed(() -> {
             goToLoginActivity();
-        }, 1500); // 1.5 second delay to show toast
+        }, 1500);
     }
 
     private void handleRegistrationError(Exception error) {
@@ -169,4 +184,5 @@ public class RegisterActivity extends AppCompatActivity {
         }
         password.setSelection(password.getText().length());
     }
+
 }

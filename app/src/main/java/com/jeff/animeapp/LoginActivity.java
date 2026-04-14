@@ -13,6 +13,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -49,7 +52,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkAutoLogin() {
         if (auth.getCurrentUser() != null) {
-            goToMainActivity();
+            // Even if auto-logged in, ensure we have the username in session
+            String uid = auth.getCurrentUser().getUid();
+            fetchUsernameAndGo(uid);
         }
     }
 
@@ -63,13 +68,31 @@ public class LoginActivity extends AppCompatActivity {
 
         auth.signInWithEmailAndPassword(emailStr, passwordStr)
                 .addOnSuccessListener(result -> {
+                    String uid = result.getUser().getUid();
+                    fetchUsernameAndGo(uid);
+                })
+                .addOnFailureListener(e -> {
+                    setLoading(false);
+                    Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void fetchUsernameAndGo(String uid) {
+        FirebaseFirestore.getInstance().collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String username = documentSnapshot.getString("username");
+                    if (username != null) {
+                        SharedPreferences.Editor editor = getSharedPreferences("UserSession", Context.MODE_PRIVATE).edit();
+                        editor.putString("logged_in_user", username);
+                        editor.apply();
+                    }
                     setLoading(false);
                     Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
                     goToMainActivity();
                 })
                 .addOnFailureListener(e -> {
                     setLoading(false);
-                    Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error fetching user data", Toast.LENGTH_SHORT).show();
                 });
     }
 

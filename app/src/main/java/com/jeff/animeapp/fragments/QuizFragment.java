@@ -1,6 +1,5 @@
 package com.jeff.animeapp.fragments;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -11,26 +10,20 @@ import android.os.Looper;
 import android.view.*;
 import android.widget.*;
 
-
 import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
-
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.jeff.animeapp.R;
 
-
 import java.util.*;
 
-
 public class QuizFragment extends Fragment {
-
 
     private TextView tvQuestion, tvScore, tvQuestionCount, tvLives;
     private ProgressBar progressBar;
     private final Button[] options = new Button[4];
-
 
     private int score = 0;
     private int currentIdx = 0;
@@ -38,16 +31,13 @@ public class QuizFragment extends Fragment {
     private String currentUsername;
     private boolean isAnswering = false;
 
-
     private List<Integer> questionIndices;
     private List<String> userAnswers = new ArrayList<>();
     private long currentWeekStart;
 
-
     private final int COLOR_DEFAULT = Color.parseColor("#1E1E2C");
     private final int COLOR_CORRECT = Color.parseColor("#4CAF50");
     private final int COLOR_WRONG = Color.parseColor("#F44336");
-
 
     private final String[] questions = {
             "Who is the protagonist of 'Attack on Titan'?", "What is Goku's signature move?",
@@ -67,7 +57,6 @@ public class QuizFragment extends Fragment {
             "What is the name of the orphanage in 'The Promised Neverland'?", "Which anime involves 'Quirks'?"
     };
 
-
     private final String[][] choices = {
             {"Levi", "Eren Yeager", "Mikasa", "Armin"}, {"Chidori", "Rasengan", "Kamehameha", "Bankai"},
             {"Kakashi", "Sasuke", "Itachi", "Minato"}, {"Gum-Gum", "Flame-Flame", "Ice-Ice", "Dark-Dark"},
@@ -86,7 +75,6 @@ public class QuizFragment extends Fragment {
             {"Grace Field", "Glory Bell", "Grand Valley", "Goldy Pond"}, {"MHA", "Naruto", "One Piece", "Black Clover"}
     };
 
-
     private final String[] answers = {
             "Eren Yeager", "Kamehameha", "Kakashi", "Gum-Gum", "Ryuk",
             "Demon Slayer", "Edward Elric", "Caped Baldy", "Sukuna", "Aincrad",
@@ -96,24 +84,19 @@ public class QuizFragment extends Fragment {
             "Grace Field", "MHA"
     };
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-
         SharedPreferences session = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         currentUsername = session.getString("logged_in_user", null);
-
 
         if (currentUsername == null) {
             Toast.makeText(getContext(), "User not logged in!", Toast.LENGTH_SHORT).show();
             return inflater.inflate(R.layout.fragment_quiz, container, false);
         }
 
-
         View v = inflater.inflate(R.layout.fragment_quiz, container, false);
-
 
         tvQuestion = v.findViewById(R.id.tvQuestion);
         tvScore = v.findViewById(R.id.tvScore);
@@ -121,16 +104,13 @@ public class QuizFragment extends Fragment {
         tvLives = v.findViewById(R.id.tvLives);
         progressBar = v.findViewById(R.id.quizProgress);
 
-
         options[0] = v.findViewById(R.id.btnOption1);
         options[1] = v.findViewById(R.id.btnOption2);
         options[2] = v.findViewById(R.id.btnOption3);
         options[3] = v.findViewById(R.id.btnOption4);
 
-
         // Reset userAnswers for new quiz session
         userAnswers = new ArrayList<>();
-
 
         // Weekly check
         if (!canUserTakeQuizThisWeek()) {
@@ -138,30 +118,31 @@ public class QuizFragment extends Fragment {
             return v;
         }
 
-
         setupRandomQuestions();
         progressBar.setMax(questionIndices.size());
 
-
         updateUI();
-
 
         for (Button btn : options) {
             btn.setOnClickListener(view -> checkAnswer((Button) view));
         }
 
-
         return v;
     }
-
 
     private boolean canUserTakeQuizThisWeek() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
         currentWeekStart = getWeekStart();
-        long last = prefs.getLong("quiz_week_" + currentUsername, -1);
+        long last;
+        try {
+            last = prefs.getLong("quiz_week_" + currentUsername, -1);
+        } catch (ClassCastException e) {
+            // If the value was incorrectly stored as a String, clear it
+            prefs.edit().remove("quiz_week_" + currentUsername).apply();
+            last = -1;
+        }
         return last != currentWeekStart;
     }
-
 
     private long getWeekStart() {
         Calendar cal = Calendar.getInstance();
@@ -173,7 +154,6 @@ public class QuizFragment extends Fragment {
         return cal.getTimeInMillis();
     }
 
-
     private void setupRandomQuestions() {
         List<Integer> list = new ArrayList<>();
         for (int i = 0; i < questions.length; i++) list.add(i);
@@ -181,55 +161,42 @@ public class QuizFragment extends Fragment {
         questionIndices = list.subList(0, Math.min(10, list.size()));
     }
 
-
     private void updateUI() {
         isAnswering = false;
 
-
         int idx = questionIndices.get(currentIdx);
-
 
         tvScore.setText("Score: " + score);
         tvQuestionCount.setText((currentIdx + 1) + "/" + questionIndices.size());
         tvLives.setText("❤️".repeat(lives));
 
-
         progressBar.setProgress(currentIdx + 1);
-
 
         for (Button b : options) {
             b.setEnabled(true);
             b.setBackgroundTintList(ColorStateList.valueOf(COLOR_DEFAULT));
         }
 
-
         tvQuestion.setText(questions[idx]);
-
 
         List<String> shuffled = new ArrayList<>(Arrays.asList(choices[idx]));
         Collections.shuffle(shuffled);
-
 
         for (int i = 0; i < 4; i++) {
             options[i].setText(shuffled.get(i));
         }
     }
 
-
     private void checkAnswer(Button btn) {
         if (isAnswering) return;
         isAnswering = true;
 
-
         int idx = questionIndices.get(currentIdx);
         String correct = answers[idx];
 
-
         userAnswers.add(btn.getText().toString());
 
-
         for (Button b : options) b.setEnabled(false);
-
 
         if (btn.getText().toString().equals(correct)) {
             btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT));
@@ -238,7 +205,6 @@ public class QuizFragment extends Fragment {
             btn.setBackgroundTintList(ColorStateList.valueOf(COLOR_WRONG));
             lives--;
 
-
             for (Button b : options) {
                 if (b.getText().toString().equals(correct)) {
                     b.setBackgroundTintList(ColorStateList.valueOf(COLOR_CORRECT));
@@ -246,10 +212,8 @@ public class QuizFragment extends Fragment {
             }
         }
 
-
         new Handler(Looper.getMainLooper()).postDelayed(this::nextQuestion, 1200);
     }
-
 
     private void nextQuestion() {
         if (lives <= 0) {
@@ -257,9 +221,7 @@ public class QuizFragment extends Fragment {
             return;
         }
 
-
         currentIdx++;
-
 
         if (currentIdx >= questionIndices.size()) {
             finishQuiz();
@@ -268,35 +230,27 @@ public class QuizFragment extends Fragment {
         }
     }
 
-
     private void finishQuiz() {
         SharedPreferences prefs = requireActivity().getSharedPreferences("QuizData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-
         editor.putLong("quiz_week_" + currentUsername, currentWeekStart);
         editor.putInt("last_" + currentUsername, score);
 
-
         int total = prefs.getInt("total_" + currentUsername, 0) + score;
         editor.putInt("total_" + currentUsername, total);
-
 
         // ✅ SAVE USER ANSWERS AND QUESTION INDICES FOR REVIEW
         Gson gson = new Gson();
         String answersJson = gson.toJson(userAnswers);
         String questionsJson = gson.toJson(questionIndices);
 
-
         editor.putString("answers_" + currentUsername, answersJson);
         editor.putString("questions_" + currentUsername, questionsJson);
 
-
         editor.apply();
 
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
 
         Map<String, Object> data = new HashMap<>();
         data.put("username", currentUsername);
@@ -304,15 +258,12 @@ public class QuizFragment extends Fragment {
         data.put("totalScore", total);
         data.put("week", currentWeekStart);
 
-
         db.collection("weekly_leaderboard")
                 .document(currentUsername)
                 .set(data);
 
-
         openReview();
     }
-
 
     private void openReview() {
         getParentFragmentManager().beginTransaction()
