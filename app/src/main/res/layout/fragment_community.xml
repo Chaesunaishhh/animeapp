@@ -131,7 +131,7 @@
                             <Spinner
                                 android:id="@+id/spinnerSort"
                                 android:layout_width="wrap_content"
-                                android:layout_height="36dp"
+                                android:layout_height="48dp"
                                 android:layout_marginEnd="8dp"
                                 android:background="@drawable/spinner_bg"
                                 android:minWidth="100dp"
@@ -141,7 +141,7 @@
                             <Spinner
                                 android:id="@+id/spinnerRating"
                                 android:layout_width="wrap_content"
-                                android:layout_height="36dp"
+                                android:layout_height="48dp"
                                 android:layout_marginEnd="8dp"
                                 android:background="@drawable/spinner_bg"
                                 android:minWidth="100dp"
@@ -151,7 +151,7 @@
                             <Spinner
                                 android:id="@+id/spinnerAnime"
                                 android:layout_width="160dp"
-                                android:layout_height="36dp"
+                                android:layout_height="48dp"
                                 android:background="@drawable/spinner_bg"
                                 android:paddingStart="8dp"
                                 android:paddingEnd="24dp" />
