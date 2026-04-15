@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface AnimeCharacterApiService {
 
-    // Get all characters with pagination
+    // Get all characters
     @GET("api/v1/characters")
     Call<CharacterResponse> getAllCharacters(@Query("page") int page, @Query("limit") int limit);
 

@@ -127,7 +127,6 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
         int progress = maxVotes > 0 ? (int) ((voteCount * 100L) / maxVotes) : 0;
         holder.progressVotes.setProgress(progress);
 
-        // ✅ FIXED IMAGE LOADING WITH ROUNDED CORNERS FOR POSTERS
         if (imageUrl != null && !imageUrl.isEmpty() && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
 
             RequestOptions requestOptions = new RequestOptions()
@@ -152,12 +151,10 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
 
         boolean canInteract = !currentUser.equals("Guest") && (hasVoted || userVoteCount < 3);
 
-        // Set heart state
         holder.btnVote.setImageResource(
                 hasVoted ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
         );
 
-        // Visual feedback for disabled button
         if (!canInteract && !currentUser.equals("Guest")) {
             holder.btnVote.setAlpha(0.3f);
         } else {
@@ -189,7 +186,6 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
     private int getColorForName(String name) {
         if (name == null) return 0xFF4CAF50;
 
-        // Generate consistent color based on name
         int hash = name.hashCode();
         int[] colors = {
                 0xFF4CAF50, 0xFF2196F3, 0xFF9C27B0, 0xFFFF9800,
@@ -212,7 +208,6 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
                     Toast.makeText(holder.itemView.getContext(),
                             "Removed vote for " + characterName,
                             Toast.LENGTH_SHORT).show();
-                    // Local state update is handled by the snapshot listener in the fragment
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(holder.itemView.getContext(),

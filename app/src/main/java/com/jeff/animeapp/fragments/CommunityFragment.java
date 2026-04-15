@@ -92,7 +92,6 @@ public class CommunityFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_community, container, false);
 
-        // 1. Initialize View IDs
         recyclerView = v.findViewById(R.id.recyclerCommunity);
         progressBar = v.findViewById(R.id.progressCommunity);
         btnAddReview = v.findViewById(R.id.btnAddReview);
@@ -111,22 +110,18 @@ public class CommunityFragment extends Fragment {
         spinnerRating = v.findViewById(R.id.spinnerRating);
         spinnerAnime = v.findViewById(R.id.spinnerAnime);
 
-        // 2. Set Layout Managers
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerCharacters.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // 3. Session Management
         SharedPreferences userSession = requireActivity()
                 .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         currentUser = userSession.getString("logged_in_user", "Guest");
 
         Log.d(TAG, "Current user: " + currentUser);
 
-        // Setup Spinners and Search
         setupFilters();
         setupSearch();
 
-        // Setup Swipe Refresh
         swipeRefresh.setOnRefreshListener(() -> {
             if (layoutReviews.getVisibility() == View.VISIBLE) {
                 fetchReviews();
@@ -135,21 +130,17 @@ public class CommunityFragment extends Fragment {
             }
         });
 
-        // 4. Initial Load (Default to Reviews tab)
         fetchReviews();
         fetchCharacters();
 
-        // 5. Initialize Adapters
         postAdapter = new PostAdapter(allReviews, currentUser);
         recyclerView.setAdapter(postAdapter);
 
         characterAdapter = new CharacterAdapter(allCharacters, currentUser);
         recyclerCharacters.setAdapter(characterAdapter);
 
-        // Generate weekly characters if needed
         generateWeeklyCharacters();
 
-        // 5. Click Listeners
         btnAddReview.setOnClickListener(view -> showAddReviewDialog());
 
         com.google.android.material.button.MaterialButtonToggleGroup toggleGroup = v.findViewById(R.id.toggleGroup);
@@ -163,21 +154,18 @@ public class CommunityFragment extends Fragment {
     }
 
     private void setupFilters() {
-        // Sort Spinner
         String[] sortOptions = {"Newest", "Oldest", "Highest Rating", "Lowest Rating"};
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(requireContext(),
                 R.layout.spinner_item, sortOptions);
         sortAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSort.setAdapter(sortAdapter);
 
-        // Rating Spinner
         String[] ratingOptions = {"All Ratings", "5 Stars", "4 Stars", "3 Stars", "2 Stars", "1 Star"};
         ArrayAdapter<String> ratingAdapter = new ArrayAdapter<>(requireContext(),
                 R.layout.spinner_item, ratingOptions);
         ratingAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRating.setAdapter(ratingAdapter);
 
-        // Anime Spinner
         animeTitles.add("All Anime");
         animeAdapter = new ArrayAdapter<>(requireContext(),
                 R.layout.spinner_item, animeTitles);
@@ -226,8 +214,6 @@ public class CommunityFragment extends Fragment {
         }
 
         List<DocumentSnapshot> filteredList = new ArrayList<>(allReviews);
-        // ... (rest of filtering logic remains same)
-        // 1. Filter by Rating
         String ratingFilter = spinnerRating.getSelectedItem().toString();
         if (!ratingFilter.equals("All Ratings")) {
             int targetRating = Integer.parseInt(ratingFilter.substring(0, 1));
@@ -241,7 +227,6 @@ public class CommunityFragment extends Fragment {
             filteredList = temp;
         }
 
-        // 2. Filter by Anime
         String animeFilter = spinnerAnime.getSelectedItem().toString();
         if (!animeFilter.equals("All Anime")) {
             List<DocumentSnapshot> temp = new ArrayList<>();
@@ -254,7 +239,6 @@ public class CommunityFragment extends Fragment {
             filteredList = temp;
         }
 
-        // 3. Filter by Search Query
         String query = searchReviews.getText().toString().trim().toLowerCase();
         if (!query.isEmpty()) {
             List<DocumentSnapshot> temp = new ArrayList<>();
@@ -272,7 +256,6 @@ public class CommunityFragment extends Fragment {
             filteredList = temp;
         }
 
-        // 4. Sort
         String sortOrder = spinnerSort.getSelectedItem().toString();
         Collections.sort(filteredList, (d1, d2) -> {
             switch (sortOrder) {
@@ -314,14 +297,12 @@ public class CommunityFragment extends Fragment {
             layoutCharacters.setVisibility(View.GONE);
             btnAddReview.setVisibility(View.VISIBLE);
 
-            // Refresh reviews when switching to this tab
             fetchReviews();
         } else {
             layoutReviews.setVisibility(View.GONE);
             layoutCharacters.setVisibility(View.VISIBLE);
             btnAddReview.setVisibility(View.GONE);
 
-            // Refresh characters when switching to this tab
             fetchCharacters();
         }
     }
@@ -358,11 +339,10 @@ public class CommunityFragment extends Fragment {
                         }
 
                         animeTitles.clear();
-                        animeTitles.add("All Anime"); // Always first
+                        animeTitles.add("All Anime");
                         animeTitles.addAll(titles);
                         if (animeAdapter != null) {
                             animeAdapter.notifyDataSetChanged();
-                            // If spinnerAnime is already on something other than 0, we might want to keep it
                         }
 
                         applyFilters();
@@ -433,7 +413,7 @@ public class CommunityFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                selectedAnimeId = null; // Reset if they type manually
+                selectedAnimeId = null;
                 if (s.length() >= 3) {
                     searchAnimeTitles(s.toString(), editAnimeTitle);
                 }
@@ -488,7 +468,6 @@ public class CommunityFragment extends Fragment {
                     List<String> titles = new ArrayList<>();
                     JsonArray data = response.body().getAsJsonArray("data");
                     
-                    // Clear previous results to ensure we only have fresh ones
                     searchResultMap.clear();
                     
                     if (data != null) {
@@ -510,7 +489,6 @@ public class CommunityFragment extends Fragment {
                         textView.setAdapter(adapter);
                         textView.showDropDown();
                         
-                        // If user typed the full name perfectly, auto-resolve it
                         String currentText = textView.getText().toString();
                         if (searchResultMap.containsKey(currentText)) {
                             selectedAnimeId = searchResultMap.get(currentText);
@@ -573,7 +551,6 @@ public class CommunityFragment extends Fragment {
         long lastUpdate = prefs.getLong("last_update_v7", 0);
         long now = System.currentTimeMillis();
 
-        // 7 days = 604800000 ms
         if (now - lastUpdate < 604800000 && lastUpdate != 0) {
             db.collection("characters").get().addOnSuccessListener(snapshots -> {
                 if (snapshots.isEmpty()) {

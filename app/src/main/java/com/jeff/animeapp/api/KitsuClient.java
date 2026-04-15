@@ -17,7 +17,6 @@ public class KitsuClient {
 
     private static Retrofit retrofit = null;
 
-    // Singleton Retrofit client
     public static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
@@ -28,7 +27,6 @@ public class KitsuClient {
         return retrofit;
     }
 
-    // API interface for Kitsu
     public interface API {
 
         @GET("anime")
@@ -42,7 +40,7 @@ public class KitsuClient {
         @GET("anime/{id}/reviews")
         Call<JsonObject> getAnimeReviews(@Path("id") int animeId);
 
-        // Add a new review (requires authentication)
+        // Add a new review
         @POST("reviews")
         Call<JsonObject> addReview(@Body JsonObject body);
     }

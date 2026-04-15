@@ -1,6 +1,8 @@
 package com.jeff.animeapp.fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,6 +58,7 @@ public class HomeFragment extends Fragment {
         recyclerSearchResults = v.findViewById(R.id.recyclerSearchResults);
         tvSearchResults = v.findViewById(R.id.tvSearchResults);
 
+
         // Layout managers
         recyclerFeatured.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerTrending.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
@@ -70,10 +71,29 @@ public class HomeFragment extends Fragment {
         fetchRecommended();
 
         // Search Logic
-        searchIcon.setOnClickListener(view -> {
-            String searchText = searchInput.getText().toString().trim();
-            if (!searchText.isEmpty()) searchAnime(searchText);
-            else Toast.makeText(getContext(), "Enter an anime title", Toast.LENGTH_SHORT).show();
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString().trim();
+                if (!query.isEmpty()) {
+                    recyclerFeatured.setVisibility(View.GONE);
+                    recyclerTrending.setVisibility(View.GONE);
+                    recyclerHome.setVisibility(View.GONE);
+                    searchAnime(query);
+                } else {
+                    recyclerFeatured.setVisibility(View.VISIBLE);
+                    recyclerTrending.setVisibility(View.VISIBLE);
+                    recyclerHome.setVisibility(View.VISIBLE);
+                    tvSearchResults.setVisibility(View.GONE);
+                    recyclerSearchResults.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         // Filter Icon
@@ -149,6 +169,16 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchAnime(String search) {
+        if (search.isEmpty()) {
+            // Restore sections if search is cleared
+            recyclerFeatured.setVisibility(View.VISIBLE);
+            recyclerTrending.setVisibility(View.VISIBLE);
+            recyclerHome.setVisibility(View.VISIBLE);
+            tvSearchResults.setVisibility(View.GONE);
+            recyclerSearchResults.setVisibility(View.GONE);
+            return;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         String query = "query ($search: String) { Page(page: 1, perPage: 20) { media(search: $search, type: ANIME) { id title { romaji } coverImage { large } averageScore description seasonYear genres } } }";
         JsonObject variables = new JsonObject();
@@ -168,6 +198,14 @@ public class HomeFragment extends Fragment {
                         tvSearchResults.setVisibility(View.VISIBLE);
                         recyclerSearchResults.setVisibility(View.VISIBLE);
                         recyclerSearchResults.setAdapter(new AnimeAdapter(mediaArray, id -> navigateTo(AnimeDetailsFragment.newInstance(id, false))));
+                    } else {
+                        Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                        // Restore sections if no results
+                        recyclerFeatured.setVisibility(View.VISIBLE);
+                        recyclerTrending.setVisibility(View.VISIBLE);
+                        recyclerHome.setVisibility(View.VISIBLE);
+                        tvSearchResults.setVisibility(View.GONE);
+                        recyclerSearchResults.setVisibility(View.GONE);
                     }
                 }
             }
@@ -184,13 +222,29 @@ public class HomeFragment extends Fragment {
         api.query(body).enqueue(new Callback<JsonObject>() {
             @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (!isAdded() || response.body() == null) return;
-                JsonArray mediaArray = response.body().getAsJsonObject("data").getAsJsonObject("Page").getAsJsonArray("media");
-                AnimeAdapter adapter = new AnimeAdapter(mediaArray, id -> navigateTo(AnimeDetailsFragment.newInstance(id, false)));
-                if ("featured".equals(target)) { adapterFeatured = adapter; recyclerFeatured.setAdapter(adapterFeatured); }
-                else if ("trending".equals(target)) { adapterTrending = adapter; recyclerTrending.setAdapter(adapterTrending); }
-                else if ("home".equals(target)) { adapterHome = adapter; recyclerHome.setAdapter(adapterHome); }
+                JsonArray mediaArray = response.body().getAsJsonObject("data")
+                        .getAsJsonObject("Page")
+                        .getAsJsonArray("media");
+
+                AnimeAdapter adapter = new AnimeAdapter(mediaArray,
+                        id -> navigateTo(AnimeDetailsFragment.newInstance(id, false)));
+
+                if ("featured".equals(target)) {
+                    adapterFeatured = adapter;
+                    recyclerFeatured.setAdapter(adapterFeatured);
+                } else if ("trending".equals(target)) {
+                    adapterTrending = adapter;
+                    recyclerTrending.setAdapter(adapterTrending);
+                } else if ("home".equals(target)) {
+                    adapterHome = adapter;
+                    recyclerHome.setAdapter(adapterHome);
+                }
             }
-            @Override public void onFailure(Call<JsonObject> call, Throwable t) {}
+
+            @Override public void onFailure(Call<JsonObject> call, Throwable t) {
+                // Optional: show error message
+                Toast.makeText(getContext(), "Failed to load " + target, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

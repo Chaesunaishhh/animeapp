@@ -80,10 +80,10 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .error(R.drawable.placeholder_image)
                 .into(holder.image);
 
-        // Add button logic
+        // Add button
         holder.btnWishlist.setOnClickListener(v -> addToWatchlist(v, anime));
 
-        // Item click → open details
+        // Pag click ng item, mag oopen yung details
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onAnimeClick(finalId);
         });
@@ -109,7 +109,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .addOnSuccessListener(u -> {
                     Toast.makeText(view.getContext(), "Added to Watchlist!", Toast.LENGTH_SHORT).show();
 
-                    // Remove from Home list
+                    // Remove from home page
                     int position = getPositionById(id);
                     if (position != -1) {
                         animeList.remove(position);

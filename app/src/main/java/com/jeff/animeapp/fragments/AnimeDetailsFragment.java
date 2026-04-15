@@ -205,7 +205,6 @@ public class AnimeDetailsFragment extends Fragment {
                     btnComplete.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#4CAF50")));
                     Toast.makeText(getContext(), "Marked as Completed!", Toast.LENGTH_SHORT).show();
 
-                    // Increment watchedCount in user profile
                     FirebaseFirestore.getInstance().collection("users")
                             .document(uid)
                             .update("watchedCount", FieldValue.increment(1));
@@ -224,7 +223,6 @@ public class AnimeDetailsFragment extends Fragment {
                     FirebaseFirestore.getInstance().collection("watchlist").document(uid)
                             .collection("anime").document(String.valueOf(id)).delete()
                             .addOnSuccessListener(aVoid -> {
-                                // Decrement watchedCount if anime was completed
                                 if (wasCompleted) {
                                     FirebaseFirestore.getInstance().collection("users")
                                             .document(uid)

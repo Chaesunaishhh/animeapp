@@ -91,7 +91,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
             );
         }
 
-        // Done button → mark as completed + increment watchedCount
         holder.btnDone.setOnClickListener(v -> {
             FirebaseUtils.firestore().collection("watchlist")
                     .document(FirebaseUtils.uid())
@@ -102,14 +101,13 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
                         anime.addProperty("status", "completed");
                         notifyItemChanged(position);
 
-                        // Increment watchedCount in user profile
+                        // anime watched count sa profile tab
                         FirebaseUtils.firestore().collection("users")
                                 .document(FirebaseUtils.uid())
                                 .update("watchedCount", FieldValue.increment(1));
                     });
         });
 
-        // Delete button → fetch doc, remove, decrement if completed
         holder.btnDelete.setOnClickListener(v -> {
             FirebaseFirestore.getInstance().collection("watchlist")
                     .document(FirebaseUtils.uid())
@@ -150,8 +148,8 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView title, score;
-        Button btnDone;          // matches <Button> in XML
-        ImageButton btnDelete;   // matches <ImageButton> in XML
+        Button btnDone;
+        ImageButton btnDelete;
 
         ViewHolder(View itemView) {
             super(itemView);

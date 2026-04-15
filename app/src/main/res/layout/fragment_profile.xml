@@ -10,11 +10,21 @@
         android:layout_height="wrap_content">
 
         <!-- Profile Header -->
+        <TextView
+            android:text="Profile"
+            android:textSize="22sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <LinearLayout
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
 
             <ImageView
                 android:id="@+id/profileImage"
@@ -62,7 +72,7 @@
 
         <!-- Statistics Section -->
         <TextView
-            android:text="Your Statistics"
+            android:text="📊 Your Statistics"
             android:textColor="@color/colorWhite"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -157,7 +167,7 @@
         </GridLayout>
 
         <TextView
-            android:text="Achievements"
+            android:text="🏆 Achievements"
             android:textColor="@color/colorWhite"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -177,6 +187,7 @@
                 android:id="@+id/collectorCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -202,7 +213,9 @@
                     android:layout_height="wrap_content"
                     android:text="Progress: 0/10"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
 
             <!-- Master Collector -->
@@ -210,6 +223,7 @@
                 android:id="@+id/masterCollectorCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -225,7 +239,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Add 50 anime to your watchlist"
+                    android:text="Add 30 anime to your watchlist"
                     android:textColor="@color/colorGray"
                     android:textSize="12sp" />
 
@@ -233,9 +247,11 @@
                     android:id="@+id/progressMasterCollector"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Progress: 0/50"
+                    android:text="Progress: 0/30"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
 
             <!-- Finisher -->
@@ -243,6 +259,7 @@
                 android:id="@+id/finisherCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -268,7 +285,9 @@
                     android:layout_height="wrap_content"
                     android:text="Progress: 0/5"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
 
             <!-- Master Finisher -->
@@ -276,6 +295,7 @@
                 android:id="@+id/masterFinisherCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -301,7 +321,9 @@
                     android:layout_height="wrap_content"
                     android:text="Progress: 0/20"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
 
             <!-- Legendary Otaku -->
@@ -309,6 +331,7 @@
                 android:id="@+id/legendaryOtakuCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -334,7 +357,9 @@
                     android:layout_height="wrap_content"
                     android:text="Progress: 0/50"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
 
             <!-- Quiz Enthusiast -->
@@ -342,6 +367,7 @@
                 android:id="@+id/quizEnthusiastCard"
                 android:layout_width="175dp"
                 android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_margin="8dp"
                 android:background="@drawable/achievement_card"
                 android:orientation="vertical"
@@ -367,13 +393,16 @@
                     android:layout_height="wrap_content"
                     android:text="Progress: 0/10"
                     android:textColor="@color/colorAccent"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:singleLine="true"
+                    android:ellipsize="none"/>
             </LinearLayout>
         </GridLayout>
 
+
         <!-- Settings Section -->
         <TextView
-            android:text="Settings"
+            android:text="⚙️ Settings"
             android:textColor="@color/colorWhite"
             android:textSize="18sp"
             android:textStyle="bold"

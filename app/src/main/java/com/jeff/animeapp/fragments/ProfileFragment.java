@@ -99,32 +99,53 @@ public class ProfileFragment extends Fragment {
                                 tvQuizAvgScore.setText("Quiz Avg Score: 0%");
                             }
 
-                            // Progress text updates
+                            // Achievements logic
                             if (watchlistCount != null) {
-                                progressCollector.setText("Progress: " + watchlistCount + "/10");
-                                progressMasterCollector.setText("Progress: " + watchlistCount + "/50");
-                            }
-                            if (watchedCount != null) {
-                                progressFinisher.setText("Progress: " + watchedCount + "/5");
-                                progressMasterFinisher.setText("Progress: " + watchedCount + "/20");
-                                progressLegendaryOtaku.setText("Progress: " + watchedCount + "/50");
-                            }
-                            if (quizCount != null) {
-                                progressQuizEnthusiast.setText("Progress: " + quizCount + "/10");
+                                if (watchlistCount >= 10) {
+                                    progressCollector.setText("Completed");
+                                    collectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressCollector.setText("Progress: " + watchlistCount + "/10");
+                                }
+
+                                if (watchlistCount >= 30) {
+                                    progressMasterCollector.setText("Completed");
+                                    masterCollectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressMasterCollector.setText("Progress: " + watchlistCount + "/30");
+                                }
                             }
 
-                            // Achievements unlock logic
-                            if (watchlistCount != null) {
-                                if (watchlistCount >= 10) collectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
-                                if (watchlistCount >= 50) masterCollectorCard.setBackgroundResource(R.drawable.achievement_unlocked);
-                            }
                             if (watchedCount != null) {
-                                if (watchedCount >= 5) finisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
-                                if (watchedCount >= 20) masterFinisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
-                                if (watchedCount >= 50) legendaryOtakuCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                if (watchedCount >= 5) {
+                                    progressFinisher.setText("Completed");
+                                    finisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressFinisher.setText("Progress: " + watchedCount + "/5");
+                                }
+
+                                if (watchedCount >= 20) {
+                                    progressMasterFinisher.setText("Completed");
+                                    masterFinisherCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressMasterFinisher.setText("Progress: " + watchedCount + "/20");
+                                }
+
+                                if (watchedCount >= 50) {
+                                    progressLegendaryOtaku.setText("Completed");
+                                    legendaryOtakuCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressLegendaryOtaku.setText("Progress: " + watchedCount + "/50");
+                                }
                             }
-                            if (quizCount != null && quizCount >= 10) {
-                                quizEnthusiastCard.setBackgroundResource(R.drawable.achievement_unlocked);
+
+                            if (quizCount != null) {
+                                if (quizCount >= 10) {
+                                    progressQuizEnthusiast.setText("Completed");
+                                    quizEnthusiastCard.setBackgroundResource(R.drawable.achievement_unlocked);
+                                } else {
+                                    progressQuizEnthusiast.setText("Progress: " + quizCount + "/10");
+                                }
                             }
                         }
                     });

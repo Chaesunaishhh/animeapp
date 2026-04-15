@@ -78,7 +78,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             float ratingValue = rating != null ? rating.floatValue() : 0f;
             holder.ratingBar.setRating(ratingValue);
 
-            // Set rating text (e.g., "4.5/5")
+            // Set rating text
             if (holder.ratingText != null) {
                 holder.ratingText.setText(String.format(Locale.getDefault(), "%.1f/5", ratingValue));
             }
@@ -88,7 +88,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 holder.timestamp.setText(formatTimestamp(timestamp));
             }
 
-            // Likes Logic
+            // Likes
             List<String> likes = (List<String>) snapshot.get("likes");
             if (likes == null) likes = new ArrayList<>();
             int likeCount = likes.size();
@@ -111,7 +111,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 handleLike(snapshot.getId(), isLiked, holder);
             });
 
-            // Delete logic (if user is the owner)
+            // Delete
             holder.itemView.setOnLongClickListener(v -> {
                 if (userName != null && userName.equals(currentUser)) {
                     showDeleteDialog(snapshot.getId(), holder.itemView.getContext());
@@ -120,7 +120,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 return false;
             });
 
-            // Load avatar with Glide
+            // Load avatar
             if (avatarUrl != null && !avatarUrl.isEmpty()) {
                 Glide.with(holder.itemView.getContext())
                         .load(avatarUrl)

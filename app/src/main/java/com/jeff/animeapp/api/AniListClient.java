@@ -15,7 +15,6 @@ public class AniListClient {
 
     private static Retrofit retrofit = null;
 
-    // Singleton Retrofit client
     public static Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
@@ -26,10 +25,9 @@ public class AniListClient {
         return retrofit;
     }
 
-    // API interface for GraphQL queries
     public interface API {
         @Headers("Content-Type: application/json")
-        @POST("graphql") // clearer than "."
+        @POST("graphql")
         Call<JsonObject> query(@Body JsonObject body);
     }
 }
