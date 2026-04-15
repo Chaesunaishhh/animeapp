@@ -34,6 +34,10 @@ public class KitsuClient {
         @GET("anime")
         Call<JsonObject> searchAnime(@Query("filter[text]") String title);
 
+        // Get trending anime
+        @GET("trending/anime")
+        Call<JsonObject> getTrendingAnime();
+
         // Get reviews for a specific anime by ID
         @GET("anime/{id}/reviews")
         Call<JsonObject> getAnimeReviews(@Path("id") int animeId);

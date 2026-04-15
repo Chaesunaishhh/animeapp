@@ -44,6 +44,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         Glide.with(holder.thumbnail.getContext())
                 .load(item.getImageUrl()) // can be URL or local drawable
                 .placeholder(R.drawable.placeholder_image) // shown while loading
+                .error(R.drawable.placeholder_image)       // shown if load fails (e.g. 404)
                 .into(holder.thumbnail);
     }
 

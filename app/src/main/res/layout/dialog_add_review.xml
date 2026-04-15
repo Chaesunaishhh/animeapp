@@ -6,12 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- Anime Title -->
-    <EditText
+    <!-- Anime Title with Search/AutoComplete -->
+    <AutoCompleteTextView
         android:id="@+id/editAnimeTitle"
-        android:hint="Anime title..."
+        android:hint="Search anime title..."
         android:textColor="@color/colorWhite"
+        android:textColorHint="#888888"
         android:background="@drawable/edittext_bg"
+        android:padding="12dp"
+        android:completionThreshold="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"/>
@@ -58,7 +61,7 @@
             android:id="@+id/btnSubmit"
             android:text="Submit"
             android:textColor="@color/colorWhite"
-            android:backgroundTint="@color/colorAccentPink"
+            android:backgroundTint="@color/colorGreen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>

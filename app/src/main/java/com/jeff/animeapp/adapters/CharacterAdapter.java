@@ -1,5 +1,6 @@
 package com.jeff.animeapp.adapters;
 
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,32 +11,77 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
 import com.jeff.animeapp.R;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
 
     private List<DocumentSnapshot> characterList;
     private String currentUser;
-    private int maxVotes = 1; // Used to calculate progress bar percentage
+    private int maxVotes = 1;
+    private Map<String, Integer> userVotes = new HashMap<>();
 
     public CharacterAdapter(List<DocumentSnapshot> characterList, String currentUser) {
-        this.characterList = characterList;
+        this.characterList = characterList != null ? characterList : new ArrayList<>();
         this.currentUser = currentUser;
+        calculateMaxVotes();
+        loadUserVotes();
+    }
 
-        // Find max votes for scaling the progress bars
+    private void loadUserVotes() {
+        int voteCount = 0;
         for (DocumentSnapshot doc : characterList) {
-            Long votes = doc.getLong("votes");
-            if (votes != null && votes > maxVotes) {
-                maxVotes = votes.intValue();
+            List<String> voters = (List<String>) doc.get("voters");
+            if (voters != null && voters.contains(currentUser)) {
+                voteCount++;
+                userVotes.put(doc.getId(), 1);
             }
         }
+    }
+
+    private void calculateMaxVotes() {
+        maxVotes = 1;
+        for (DocumentSnapshot doc : characterList) {
+            if (doc != null && doc.exists()) {
+                Long votes = doc.getLong("votes");
+                if (votes != null && votes > maxVotes) {
+                    maxVotes = votes.intValue();
+                }
+            }
+        }
+    }
+
+    public void updateData(List<DocumentSnapshot> newList) {
+        this.characterList = newList != null ? newList : new ArrayList<>();
+        calculateMaxVotes();
+        loadUserVotes();
+        notifyDataSetChanged();
+    }
+
+    public int getUserVoteCount() {
+        int count = 0;
+        for (DocumentSnapshot doc : characterList) {
+            List<String> voters = (List<String>) doc.get("voters");
+            if (voters != null && voters.contains(currentUser)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @NonNull
@@ -50,85 +96,163 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
     public void onBindViewHolder(@NonNull CharacterViewHolder holder, int position) {
         DocumentSnapshot doc = characterList.get(position);
 
-        String name = doc.getString("name");
-        String anime = doc.getString("anime");
+        if (!doc.exists()) {
+            return;
+        }
+
+        String title = doc.getString("name");
+        String type = doc.getString("anime");
         String imageUrl = doc.getString("imageUrl");
+
         Long votes = doc.getLong("votes");
-        long voteCount = votes != null ? votes : 0;
+        long voteCount = (votes != null) ? votes : 0;
 
-        // Rank number (1-based)
-        holder.tvRank.setText(String.valueOf(position + 1));
+        // Rank with medals
+        String rankText = (position + 1) + "";
+        if (position == 0) {
+            rankText = "🥇 " + rankText;
+        } else if (position == 1) {
+            rankText = "🥈 " + rankText;
+        } else if (position == 2) {
+            rankText = "🥉 " + rankText;
+        }
+        holder.tvRank.setText(rankText);
 
-        // Character name & anime
-        holder.tvName.setText(name != null ? name : "Unknown");
-        holder.tvAnime.setText(anime != null ? anime : "");
+        // Text
+        holder.tvTitle.setText(title != null ? title : "Unknown");
+        holder.tvType.setText(type != null ? type : "");
+        holder.tvVotes.setText(voteCount + " vote" + (voteCount != 1 ? "s" : ""));
 
-        // Vote count label
-        holder.tvVotes.setText(voteCount + " votes");
-
-        // Progress bar scaled to max votes
+        // Progress bar
         int progress = maxVotes > 0 ? (int) ((voteCount * 100L) / maxVotes) : 0;
         holder.progressVotes.setProgress(progress);
 
-        // Load character image
-        if (imageUrl != null && !imageUrl.isEmpty()) {
+        // ✅ FIXED IMAGE LOADING WITH ROUNDED CORNERS FOR POSTERS
+        if (imageUrl != null && !imageUrl.isEmpty() && (imageUrl.startsWith("http://") || imageUrl.startsWith("https://"))) {
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .timeout(15000);
+
             Glide.with(holder.itemView.getContext())
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .circleCrop()
-                    .into(holder.ivCharacter);
+                    .apply(requestOptions)
+                    .into(holder.ivPoster);
         } else {
-            holder.ivCharacter.setImageResource(R.drawable.ic_launcher_background);
+            holder.ivPoster.setImageResource(R.drawable.ic_launcher_background);
+            holder.ivPoster.setBackgroundColor(getColorForName(title));
         }
 
-        // Check if current user already voted for this character
+        // Check if user has voted for this character
         List<String> voters = (List<String>) doc.get("voters");
         boolean hasVoted = voters != null && voters.contains(currentUser);
-        holder.btnVote.setSelected(hasVoted);
-        holder.btnVote.setImageResource(hasVoted ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
+        int userVoteCount = getUserVoteCount();
 
-        // Vote button click
+        boolean canInteract = !currentUser.equals("Guest") && (hasVoted || userVoteCount < 3);
+
+        // Set heart state
+        holder.btnVote.setImageResource(
+                hasVoted ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline
+        );
+
+        // Visual feedback for disabled button
+        if (!canInteract && !currentUser.equals("Guest")) {
+            holder.btnVote.setAlpha(0.3f);
+        } else {
+            holder.btnVote.setAlpha(1.0f);
+        }
+
         holder.btnVote.setOnClickListener(v -> {
-            if (hasVoted) {
-                Toast.makeText(v.getContext(), "You already voted for " + name + "!", Toast.LENGTH_SHORT).show();
+            if (currentUser.equals("Guest")) {
+                Toast.makeText(v.getContext(),
+                        "Please login to vote!",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
-            castVote(doc.getId(), name, holder, position);
+
+            if (hasVoted) {
+                removeVote(doc.getId(), title, holder);
+            } else {
+                if (userVoteCount >= 3) {
+                    Toast.makeText(v.getContext(),
+                            "You've used all 3 votes! Remove one to vote for " + title,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    castVote(doc.getId(), title, holder);
+                }
+            }
         });
     }
 
-    private void castVote(String docId, String characterName, CharacterViewHolder holder, int position) {
+    private int getColorForName(String name) {
+        if (name == null) return 0xFF4CAF50;
+
+        // Generate consistent color based on name
+        int hash = name.hashCode();
+        int[] colors = {
+                0xFF4CAF50, 0xFF2196F3, 0xFF9C27B0, 0xFFFF9800,
+                0xFFF44336, 0xFF009688, 0xFF673AB7, 0xFFFF5722,
+                0xFF795548, 0xFF607D8B, 0xFFE91E63, 0xFF00BCD4
+        };
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    private void removeVote(String docId, String characterName, CharacterViewHolder holder) {
+        holder.btnVote.setEnabled(false);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection("characters").document(docId)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    Long currentVotes = snapshot.getLong("votes");
-                    long newVotes = (currentVotes != null ? currentVotes : 0) + 1;
-
-                    // Update votes and add user to voters list
-                    db.collection("characters").document(docId)
-                            .update(
-                                    "votes", newVotes,
-                                    "voters", com.google.firebase.firestore.FieldValue.arrayUnion(currentUser)
-                            )
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(holder.itemView.getContext(),
-                                        "Voted for " + characterName + "!", Toast.LENGTH_SHORT).show();
-                                // Mark button as voted
-                                holder.btnVote.setSelected(true);
-                                holder.btnVote.setImageResource(R.drawable.ic_heart_filled);
-                                holder.tvVotes.setText(newVotes + " votes");
-
-                                // Update progress
-                                if (newVotes > maxVotes) maxVotes = (int) newVotes;
-                                int progress = (int) ((newVotes * 100L) / maxVotes);
-                                holder.progressVotes.setProgress(progress);
-                            })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(holder.itemView.getContext(),
-                                            "Vote failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .update(
+                        "votes", FieldValue.increment(-1),
+                        "voters", FieldValue.arrayRemove(currentUser)
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(holder.itemView.getContext(),
+                            "Removed vote for " + characterName,
+                            Toast.LENGTH_SHORT).show();
+                    // Local state update is handled by the snapshot listener in the fragment
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(holder.itemView.getContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    holder.btnVote.setEnabled(true);
                 });
+    }
+
+    private void castVote(String docId, String characterName, CharacterViewHolder holder) {
+        holder.btnVote.setEnabled(false);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Check again before updating to prevent race conditions or UI lag issues
+        db.collection("characters").document(docId).get().addOnSuccessListener(documentSnapshot -> {
+            List<String> voters = (List<String>) documentSnapshot.get("voters");
+            if (voters != null && voters.contains(currentUser)) {
+                Toast.makeText(holder.itemView.getContext(), "Already voted!", Toast.LENGTH_SHORT).show();
+                holder.btnVote.setEnabled(true);
+                return;
+            }
+
+            db.collection("characters").document(docId)
+                    .update(
+                            "votes", FieldValue.increment(1),
+                            "voters", FieldValue.arrayUnion(currentUser)
+                    )
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(holder.itemView.getContext(),
+                                "✓ Voted for " + characterName + "!",
+                                Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(holder.itemView.getContext(),
+                                "✗ Vote failed: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        holder.btnVote.setEnabled(true);
+                    });
+        });
     }
 
     @Override
@@ -136,19 +260,19 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
         return characterList.size();
     }
 
-    public static class CharacterViewHolder extends RecyclerView.ViewHolder {
-        TextView tvRank, tvName, tvAnime, tvVotes;
-        ImageView ivCharacter;
+    static class CharacterViewHolder extends RecyclerView.ViewHolder {
+        TextView tvRank, tvTitle, tvType, tvVotes;
+        ImageView ivPoster;
         ProgressBar progressVotes;
         ImageButton btnVote;
 
         public CharacterViewHolder(@NonNull View itemView) {
             super(itemView);
             tvRank = itemView.findViewById(R.id.tvRank);
-            tvName = itemView.findViewById(R.id.tvName);
-            tvAnime = itemView.findViewById(R.id.tvAnime);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvType = itemView.findViewById(R.id.tvType);
             tvVotes = itemView.findViewById(R.id.tvVotes);
-            ivCharacter = itemView.findViewById(R.id.ivCharacter);
+            ivPoster = itemView.findViewById(R.id.ivPoster);
             progressVotes = itemView.findViewById(R.id.progressVotes);
             btnVote = itemView.findViewById(R.id.btnVote);
         }

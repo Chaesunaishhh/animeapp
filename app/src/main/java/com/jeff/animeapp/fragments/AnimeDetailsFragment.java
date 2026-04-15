@@ -136,7 +136,11 @@ public class AnimeDetailsFragment extends Fragment {
                     meta.setText(year + " • " + genresStr + " • " + episodes + " Episodes");
                     characters.setText(charsBuilder.length() > 0 ? charsBuilder.toString() : "No characters available.");
 
-                    Glide.with(requireContext()).load(imageUrl).into(cover);
+                    Glide.with(requireContext())
+                            .load(imageUrl)
+                            .placeholder(R.drawable.placeholder_image)
+                            .error(R.drawable.placeholder_image)
+                            .into(cover);
                 }
             }
 

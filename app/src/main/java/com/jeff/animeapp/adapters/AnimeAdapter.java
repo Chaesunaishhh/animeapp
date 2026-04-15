@@ -74,7 +74,11 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         // Bind UI
         holder.title.setText(titleStr);
         holder.score.setText("⭐ " + scoreInt);
-        Glide.with(holder.itemView.getContext()).load(imageStr).into(holder.image);
+        Glide.with(holder.itemView.getContext())
+                .load(imageStr)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.placeholder_image)
+                .into(holder.image);
 
         // Add button logic
         holder.btnWishlist.setOnClickListener(v -> addToWatchlist(v, anime));

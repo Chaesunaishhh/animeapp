@@ -3,8 +3,8 @@
     <color name="colorBackgroundDark">#121212</color>
     <color name="colorCard">#1E1E1E</color>
     <color name="colorCardDark">#1E1E1E</color>
-    <color name="colorAccent">#BB86FC</color>
-    <color name="colorAccentPink">#FF4081</color>
+    <color name="colorAccent">#22C55E</color>
+    <color name="colorAccentPink">#22C55E</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGray">#AAAAAA</color>
     <color name="colorPink">#E639CE</color>
@@ -23,4 +23,5 @@
         <color name="accent">#7C4DFF</color>
         <color name="text">#FFFFFF</color>
         <color name="muted">#B0B0C3</color>
+    <color name="rating_star">#FFC107</color>
 </resources>

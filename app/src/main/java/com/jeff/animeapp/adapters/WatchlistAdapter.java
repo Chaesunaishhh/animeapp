@@ -68,6 +68,8 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
 
         Glide.with(holder.itemView.getContext())
                 .load(image)
+                .placeholder(R.drawable.placeholder_image)
+                .error(R.drawable.placeholder_image)
                 .transform(new RoundedCorners(24))
                 .into(holder.image);
 
