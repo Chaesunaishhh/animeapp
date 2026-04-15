@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.jeff.animeapp.R;
+import com.jeff.animeapp.adapters.CharacterAdapter;  // ← CHANGED: was PostAdapter
 import com.jeff.animeapp.adapters.PostAdapter;
 
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class CommunityFragment extends Fragment {
     private LinearLayout layoutReviews, layoutCharacters;
     private TextView tabReviews, tabCharacters;
     private RecyclerView recyclerCharacters;
-    private PostAdapter characterAdapter; // For the character list
+    private CharacterAdapter characterAdapter;  // ← CHANGED: was PostAdapter
 
     private static final int ANIME_ID = 1;
 
@@ -100,7 +101,7 @@ public class CommunityFragment extends Fragment {
             tabCharacters.setBackgroundResource(R.drawable.tab_selected_bg);
             tabReviews.setBackground(null);
 
-            fetchCharacters(); // ✅ This loads the characters when tab is clicked
+            fetchCharacters();
         }
     }
 
@@ -119,15 +120,16 @@ public class CommunityFragment extends Fragment {
                 });
     }
 
+    // ← THIS IS THE ONLY METHOD THAT CHANGED
     private void fetchCharacters() {
-        // Note: Ensure you have a "characters" collection in Firebase
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("characters")
                 .orderBy("votes", Query.Direction.DESCENDING)
                 .addSnapshotListener((snapshots, e) -> {
                     if (snapshots != null) {
-                        // Using your existing PostAdapter for now
-                        characterAdapter = new PostAdapter(snapshots.getDocuments());
+                        // Uses CharacterAdapter instead of PostAdapter
+                        // Passes currentUser so the adapter knows who is logged in
+                        characterAdapter = new CharacterAdapter(snapshots.getDocuments(), currentUser);
                         recyclerCharacters.setAdapter(characterAdapter);
                     }
                 });
