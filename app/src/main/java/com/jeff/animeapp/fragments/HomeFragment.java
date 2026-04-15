@@ -116,33 +116,82 @@ public class HomeFragment extends Fragment {
 
     // ✅ ADDED THIS METHOD TO FIX MAINACTIVITY ERROR
     public void applyFilters(List<String> genres, List<String> years) {
-        if (adapterHome == null || adapterHome.getMediaArray() == null) return;
+        if (genres.isEmpty() && years.isEmpty()) {
+            // Restore sections if no filter applied
+            recyclerFeatured.setVisibility(View.VISIBLE);
+            recyclerTrending.setVisibility(View.VISIBLE);
+            recyclerHome.setVisibility(View.VISIBLE);
+            tvSearchResults.setVisibility(View.GONE);
+            recyclerSearchResults.setVisibility(View.GONE);
+            return;
+        }
 
-        JsonArray filteredArray = new JsonArray();
-        JsonArray originalData = adapterHome.getMediaArray();
+        progressBar.setVisibility(View.VISIBLE);
 
-        for (int i = 0; i < originalData.size(); i++) {
-            JsonObject anime = originalData.get(i).getAsJsonObject();
+        // Build GraphQL query with filters
+        String query = "query ($genres: [String], $year: Int) { " +
+                "Page(page: 1, perPage: 20) { " +
+                "media(type: ANIME, genre_in: $genres, seasonYear: $year) { " +
+                "id title { romaji } coverImage { large } averageScore description seasonYear genres } } }";
 
-            // Extract Genres
-            String genreString = anime.has("genres") ? anime.getAsJsonArray("genres").toString() : "";
-            // Extract Year
-            String year = anime.has("seasonYear") && !anime.get("seasonYear").isJsonNull()
-                    ? anime.get("seasonYear").getAsString() : "";
-
-            boolean matchGenre = genres.isEmpty() || genres.stream().anyMatch(genreString::contains);
-            boolean matchYear = years.isEmpty() || years.contains(year);
-
-            if (matchGenre && matchYear) {
-                filteredArray.add(anime);
+        JsonObject variables = new JsonObject();
+        if (!genres.isEmpty()) {
+            JsonArray genreArray = new JsonArray();
+            for (String g : genres) genreArray.add(g);
+            variables.add("genres", genreArray);
+        }
+        if (!years.isEmpty()) {
+            try {
+                int year = Integer.parseInt(years.get(0)); // assume single year for now
+                variables.addProperty("year", year);
+            } catch (NumberFormatException e) {
+                // ignore invalid year
             }
         }
 
-        adapterHome.updateData(filteredArray);
+        JsonObject body = new JsonObject();
+        body.addProperty("query", query);
+        body.add("variables", variables);
 
-        if (filteredArray.size() == 0) {
-            Toast.makeText(getContext(), "No anime matches these filters", Toast.LENGTH_SHORT).show();
-        }
+        AniListClient.API api = AniListClient.getClient().create(AniListClient.API.class);
+        api.query(body).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!isAdded()) return;
+                progressBar.setVisibility(View.GONE);
+                if (response.body() != null) {
+                    JsonArray mediaArray = response.body()
+                            .getAsJsonObject("data")
+                            .getAsJsonObject("Page")
+                            .getAsJsonArray("media");
+
+                    if (mediaArray.size() > 0) {
+                        tvSearchResults.setVisibility(View.VISIBLE);
+                        recyclerSearchResults.setVisibility(View.VISIBLE);
+                        recyclerSearchResults.setAdapter(new AnimeAdapter(mediaArray,
+                                id -> navigateTo(AnimeDetailsFragment.newInstance(id, false))));
+
+                        // Hide other sections
+                        recyclerFeatured.setVisibility(View.GONE);
+                        recyclerTrending.setVisibility(View.GONE);
+                        recyclerHome.setVisibility(View.GONE);
+                    } else {
+                        Toast.makeText(getContext(), "No anime matches these filters", Toast.LENGTH_SHORT).show();
+                        recyclerFeatured.setVisibility(View.VISIBLE);
+                        recyclerTrending.setVisibility(View.VISIBLE);
+                        recyclerHome.setVisibility(View.VISIBLE);
+                        tvSearchResults.setVisibility(View.GONE);
+                        recyclerSearchResults.setVisibility(View.GONE);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Failed to fetch filtered anime", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void navigateTo(Fragment fragment) {
