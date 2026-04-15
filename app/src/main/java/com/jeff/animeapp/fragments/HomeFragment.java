@@ -117,7 +117,6 @@ public class HomeFragment extends Fragment {
     // ✅ ADDED THIS METHOD TO FIX MAINACTIVITY ERROR
     public void applyFilters(List<String> genres, List<String> years) {
         if (genres.isEmpty() && years.isEmpty()) {
-            // Restore sections if no filter applied
             recyclerFeatured.setVisibility(View.VISIBLE);
             recyclerTrending.setVisibility(View.VISIBLE);
             recyclerHome.setVisibility(View.VISIBLE);
@@ -128,7 +127,6 @@ public class HomeFragment extends Fragment {
 
         progressBar.setVisibility(View.VISIBLE);
 
-        // Build GraphQL query with filters
         String query = "query ($genres: [String], $year: Int) { " +
                 "Page(page: 1, perPage: 20) { " +
                 "media(type: ANIME, genre_in: $genres, seasonYear: $year) { " +
@@ -142,10 +140,9 @@ public class HomeFragment extends Fragment {
         }
         if (!years.isEmpty()) {
             try {
-                int year = Integer.parseInt(years.get(0)); // assume single year for now
+                int year = Integer.parseInt(years.get(0));
                 variables.addProperty("year", year);
             } catch (NumberFormatException e) {
-                // ignore invalid year
             }
         }
 
