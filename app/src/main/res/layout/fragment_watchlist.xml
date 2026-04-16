@@ -32,11 +32,11 @@
             android:paddingTop="48dp"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_bookmark"
-                app:tint="@color/colorWhite" />
+<!--            <ImageView-->
+<!--                android:layout_width="32dp"-->
+<!--                android:layout_height="32dp"-->
+<!--                android:src="@drawable/ic_bookmark"-->
+<!--                app:tint="@color/colorWhite" />-->
 
             <LinearLayout
                 android:layout_width="0dp"
