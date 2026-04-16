@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
                 android:letterSpacing="0.2"
-                android:text="TEMPORAL BROADCAST DATA"
+                android:text="BROADCAST SCHEDULE"
                 android:textColor="@color/colorTextSecondary"
                 android:textSize="12sp" />
 
