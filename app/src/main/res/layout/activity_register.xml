@@ -125,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:background="@drawable/edittext"
-                    android:hint="User123"
+                    android:hint="User1234"
                     android:paddingHorizontal="20dp"
                     android:textColor="@color/colorWhite"
                     android:textColorHint="@color/colorTextMuted"

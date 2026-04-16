@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
-            android:text="ENTER THE NEXT DIMENSION"
+            android:text="ENTER YOUR CREDENTIALS TO CONTINUE"
             android:textColor="@color/colorAccent"
             android:textSize="12sp"
             android:letterSpacing="0.2"
