@@ -23,6 +23,7 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
 
     private JsonArray animeList;
     private final OnAnimeClickListener listener;
+    private boolean isGrid = false;
 
     public interface OnAnimeClickListener {
         void onAnimeClick(int id);
@@ -30,6 +31,21 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
 
     public AnimeAdapter(JsonArray animeList, OnAnimeClickListener listener) {
         this.animeList = animeList;
+        this.listener = listener;
+    }
+
+    private boolean isWatchlistHorizontal = false;
+
+    public AnimeAdapter(JsonArray animeList, boolean isGrid, OnAnimeClickListener listener) {
+        this.animeList = animeList;
+        this.isGrid = isGrid;
+        this.listener = listener;
+    }
+
+    public AnimeAdapter(JsonArray animeList, boolean isGrid, boolean isWatchlistHorizontal, OnAnimeClickListener listener) {
+        this.animeList = animeList;
+        this.isGrid = isGrid;
+        this.isWatchlistHorizontal = isWatchlistHorizontal;
         this.listener = listener;
     }
 
@@ -47,9 +63,26 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        int layoutId = isWatchlistHorizontal ? R.layout.item_watchlist_horizontal : R.layout.item_anime;
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_anime, parent, false);
+                .inflate(layoutId, parent, false);
+
+        if (isGrid && !isWatchlistHorizontal) {
+            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            if (lp != null) {
+                lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                view.setLayoutParams(lp);
+            }
+        }
+
         return new ViewHolder(view);
+    }
+
+    private java.util.Set<Integer> watchlistIds = new java.util.HashSet<>();
+
+    public void setWatchlistIds(java.util.Set<Integer> ids) {
+        this.watchlistIds = ids;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -57,31 +90,75 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         JsonObject anime = animeList.get(position).getAsJsonObject();
 
         // Data parsing
-        String titleStr = anime.has("title") && anime.getAsJsonObject("title").has("romaji")
-                ? anime.getAsJsonObject("title").get("romaji").getAsString()
-                : "Unknown Title";
+        String titleStr = "Unknown Title";
+        if (anime.has("title")) {
+            if (anime.get("title").isJsonObject()) {
+                titleStr = anime.getAsJsonObject("title").has("romaji")
+                        ? anime.getAsJsonObject("title").get("romaji").getAsString()
+                        : "Unknown Title";
+            } else {
+                titleStr = anime.get("title").getAsString();
+            }
+        }
 
-        String imageStr = anime.has("coverImage") && anime.getAsJsonObject("coverImage").has("large")
-                ? anime.getAsJsonObject("coverImage").get("large").getAsString()
-                : "";
+        String imageStr = "";
+        if (anime.has("coverImage")) {
+            if (anime.get("coverImage").isJsonObject()) {
+                imageStr = anime.getAsJsonObject("coverImage").has("large")
+                        ? anime.getAsJsonObject("coverImage").get("large").getAsString()
+                        : "";
+            } else {
+                imageStr = anime.get("coverImage").getAsString();
+            }
+        }
 
         int scoreInt = anime.has("averageScore") && !anime.get("averageScore").isJsonNull()
                 ? anime.get("averageScore").getAsInt()
                 : 0;
+        
+        // Handle both API (averageScore) and Firestore (score)
+        if (scoreInt == 0 && anime.has("score") && !anime.get("score").isJsonNull()) {
+            scoreInt = anime.get("score").getAsInt();
+        }
+
+        double scoreFormatted = scoreInt / 10.0;
 
         final int finalId = anime.has("id") ? anime.get("id").getAsInt() : 0;
 
         // Bind UI
-        holder.title.setText(titleStr);
-        holder.score.setText("⭐ " + scoreInt);
+        if (holder.title != null) holder.title.setText(titleStr);
+        if (holder.score != null) {
+            if (isWatchlistHorizontal) {
+                holder.score.setText(scoreInt + "%");
+            } else {
+                holder.score.setText("⭐ " + scoreFormatted);
+            }
+        }
         Glide.with(holder.itemView.getContext())
                 .load(imageStr)
                 .placeholder(R.drawable.placeholder_image)
                 .error(R.drawable.placeholder_image)
                 .into(holder.image);
 
-        // Add button
-        holder.btnWishlist.setOnClickListener(v -> addToWatchlist(v, anime));
+        // Badge visibility
+        View badge = holder.itemView.findViewById(R.id.badgeInWatchlist);
+        if (badge != null) {
+            badge.setVisibility(watchlistIds.contains(finalId) ? View.VISIBLE : View.GONE);
+        }
+
+        // Add button logic - change icon if already in list
+        if (holder.btnWishlist != null) {
+            if (watchlistIds.contains(finalId)) {
+                holder.btnWishlist.setImageResource(R.drawable.ic_check); // Assuming ic_check exists
+                holder.btnWishlist.setEnabled(false);
+                holder.btnWishlist.setAlpha(0.5f);
+            } else {
+                holder.btnWishlist.setImageResource(R.drawable.ic_add);
+                holder.btnWishlist.setEnabled(true);
+                holder.btnWishlist.setAlpha(1.0f);
+                holder.btnWishlist.setOnClickListener(v -> addToWatchlist(v, anime));
+            }
+        }
 
         // Pag click ng item, mag oopen yung details
         holder.itemView.setOnClickListener(v -> {
@@ -108,14 +185,10 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
                 .collection("anime").document(String.valueOf(id)).set(map)
                 .addOnSuccessListener(u -> {
                     Toast.makeText(view.getContext(), "Added to Watchlist!", Toast.LENGTH_SHORT).show();
-
-                    // Remove from home page
-                    int position = getPositionById(id);
-                    if (position != -1) {
-                        animeList.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, animeList.size());
-                    }
+                    
+                    // Update local state and refresh
+                    watchlistIds.add(id);
+                    notifyDataSetChanged();
                 });
     }
 
@@ -134,12 +207,12 @@ public class AnimeAdapter extends RecyclerView.Adapter<AnimeAdapter.ViewHolder> 
         return animeList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView image;
-        TextView title, score;
-        ImageButton btnWishlist;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        public ImageView image;
+        public TextView title, score;
+        public ImageButton btnWishlist;
 
-        ViewHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.animeImage);
             title = itemView.findViewById(R.id.animeTitle);

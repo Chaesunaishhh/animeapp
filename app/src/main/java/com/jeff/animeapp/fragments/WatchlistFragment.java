@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
@@ -21,6 +22,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 public class WatchlistFragment extends Fragment {
 
     private FragmentWatchlistBinding binding;
+    private JsonArray watchingList = new JsonArray();
+    private JsonArray completedList = new JsonArray();
+    private JsonArray planningList = new JsonArray();
 
     public WatchlistFragment() {}
 
@@ -28,24 +32,41 @@ public class WatchlistFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentWatchlistBinding.inflate(inflater, container, false);
 
-        // Use LinearLayoutManager for vertical list (one item per row)
-        binding.recyclerWatchlist.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        );
-
+        setupUI();
         loadWatchlist();
 
         return binding.getRoot();
     }
 
+    private void setupUI() {
+        binding.recyclerWatching.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerPlanning.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        binding.watchlistTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                updateTabVisibility(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+    }
+
+    private void updateTabVisibility(int position) {
+        binding.recyclerWatching.setVisibility(position == 0 ? View.VISIBLE : View.GONE);
+        binding.recyclerCompleted.setVisibility(position == 1 ? View.VISIBLE : View.GONE);
+        binding.recyclerPlanning.setVisibility(position == 2 ? View.VISIBLE : View.GONE);
+    }
+
     private void loadWatchlist() {
-        if (FirebaseUtils.uid() == null) {
-            Toast.makeText(getContext(), "Please login first", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if (FirebaseUtils.uid() == null) return;
 
         binding.progressWatchlist.setVisibility(View.VISIBLE);
-
         FirebaseUtils.firestore()
                 .collection("watchlist")
                 .document(FirebaseUtils.uid())
@@ -53,56 +74,45 @@ public class WatchlistFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     if (!isAdded() || binding == null) return;
-
                     binding.progressWatchlist.setVisibility(View.GONE);
 
-                    JsonArray arr = new JsonArray();
+                    watchingList = new JsonArray();
+                    completedList = new JsonArray();
+                    planningList = new JsonArray();
+
                     for (DocumentSnapshot doc : snapshot.getDocuments()) {
                         JsonObject obj = new JsonObject();
-
-                        long id = doc.contains("id") && doc.getLong("id") != null ? doc.getLong("id") : 0;
-                        obj.addProperty("id", id);
-
+                        obj.addProperty("id", doc.getLong("id"));
+                        
                         JsonObject titleObj = new JsonObject();
-                        titleObj.addProperty("romaji", doc.getString("title") != null ? doc.getString("title") : "Unknown");
+                        titleObj.addProperty("romaji", doc.getString("title"));
                         obj.add("title", titleObj);
 
                         JsonObject imgObj = new JsonObject();
-                        imgObj.addProperty("large", doc.getString("coverImage") != null ? doc.getString("coverImage") : "");
+                        imgObj.addProperty("large", doc.getString("coverImage"));
                         obj.add("coverImage", imgObj);
 
-                        obj.addProperty("averageScore", doc.getLong("score") != null ? doc.getLong("score") : 0);
-                        obj.addProperty("status", doc.getString("status") != null ? doc.getString("status") : "watching");
+                        obj.addProperty("averageScore", doc.getLong("score"));
+                        String status = doc.getString("status") != null ? doc.getString("status").toLowerCase() : "watching";
+                        obj.addProperty("status", status);
 
-                        arr.add(obj);
+                        if (status.equals("completed")) completedList.add(obj);
+                        else if (status.equals("planning")) planningList.add(obj);
+                        else watchingList.add(obj);
                     }
 
-                    // Update watchlist count text
-                    int count = snapshot.size();
-                    binding.watchlistCount.setText(count + " anime in your list");
-
-                    // Update Firestore field for watchlistCount
-                    FirebaseUtils.firestore()
-                            .collection("users")
-                            .document(FirebaseUtils.uid())
-                            .update("watchlistCount", count);
-
-                    // Use WatchlistAdapter
-                    WatchlistAdapter adapter = new WatchlistAdapter(arr, id -> {
-                        Fragment detailsFragment = AnimeDetailsFragment.newInstance((int) id, true);
-                        getParentFragmentManager().beginTransaction()
-                                .replace(R.id.fragmentContainer, detailsFragment)
-                                .addToBackStack(null)
-                                .commit();
-                    });
-
-                    binding.recyclerWatchlist.setAdapter(adapter);
-                })
-                .addOnFailureListener(e -> {
-                    if (!isAdded() || binding == null) return;
-                    binding.progressWatchlist.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    binding.recyclerWatching.setAdapter(new WatchlistAdapter(watchingList, id -> openDetails(id)));
+                    binding.recyclerCompleted.setAdapter(new WatchlistAdapter(completedList, id -> openDetails(id)));
+                    binding.recyclerPlanning.setAdapter(new WatchlistAdapter(planningList, id -> openDetails(id)));
                 });
+    }
+
+    private void openDetails(long id) {
+        Fragment detailsFragment = AnimeDetailsFragment.newInstance((int) id, true);
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, detailsFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

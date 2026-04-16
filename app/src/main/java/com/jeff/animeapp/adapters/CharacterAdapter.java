@@ -222,32 +222,49 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Check again before updating to prevent race conditions or UI lag issues
-        db.collection("characters").document(docId).get().addOnSuccessListener(documentSnapshot -> {
-            List<String> voters = (List<String>) documentSnapshot.get("voters");
-            if (voters != null && voters.contains(currentUser)) {
-                Toast.makeText(holder.itemView.getContext(), "Already voted!", Toast.LENGTH_SHORT).show();
-                holder.btnVote.setEnabled(true);
-                return;
-            }
-
-            db.collection("characters").document(docId)
-                    .update(
-                            "votes", FieldValue.increment(1),
-                            "voters", FieldValue.arrayUnion(currentUser)
-                    )
-                    .addOnSuccessListener(aVoid -> {
+        // 1. Check total votes this week for this user across all characters
+        db.collection("characters").whereArrayContains("voters", currentUser).get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (querySnapshot.size() >= 3) {
                         Toast.makeText(holder.itemView.getContext(),
-                                "✓ Voted for " + characterName + "!",
-                                Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(holder.itemView.getContext(),
-                                "✗ Vote failed: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                                "You've already used your 3 votes this week! Remove a vote to change.",
+                                Toast.LENGTH_LONG).show();
                         holder.btnVote.setEnabled(true);
+                        return;
+                    }
+
+                    // 2. Double-check if already voted for THIS character (race condition check)
+                    db.collection("characters").document(docId).get().addOnSuccessListener(doc -> {
+                        List<String> voters = (List<String>) doc.get("voters");
+                        if (voters != null && voters.contains(currentUser)) {
+                            Toast.makeText(holder.itemView.getContext(), "Already voted!", Toast.LENGTH_SHORT).show();
+                            holder.btnVote.setEnabled(true);
+                            return;
+                        }
+
+                        // 3. Perform the vote update
+                        db.collection("characters").document(docId)
+                                .update(
+                                        "votes", FieldValue.increment(1),
+                                        "voters", FieldValue.arrayUnion(currentUser)
+                                )
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(holder.itemView.getContext(),
+                                            "✓ Voted for " + characterName + "!",
+                                            Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(holder.itemView.getContext(),
+                                            "✗ Vote failed: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                    holder.btnVote.setEnabled(true);
+                                });
                     });
-        });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(holder.itemView.getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    holder.btnVote.setEnabled(true);
+                });
     }
 
     @Override

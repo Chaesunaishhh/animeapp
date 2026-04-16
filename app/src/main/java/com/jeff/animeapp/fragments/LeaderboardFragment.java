@@ -38,6 +38,14 @@ public class LeaderboardFragment extends Fragment {
         TextView tvYourRank = v.findViewById(R.id.tvYourRank);
         recyclerLeaderboard = v.findViewById(R.id.recyclerLeaderboard);
 
+        // ✅ Corrected Back Button setup
+        View btnBack = v.findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(view -> {
+                getParentFragmentManager().popBackStack();
+            });
+        }
+
         SharedPreferences session = requireActivity()
                 .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
 
@@ -63,6 +71,10 @@ public class LeaderboardFragment extends Fragment {
         recyclerLeaderboard.setAdapter(adapter);
 
         loadGlobalTop10(tvYourRank);
+
+        v.findViewById(R.id.btnBack).setOnClickListener(view -> {
+            getParentFragmentManager().popBackStack();
+        });
 
         return v;
     }
@@ -190,9 +202,9 @@ public class LeaderboardFragment extends Fragment {
                 // Highlight current user
                 String cleanName = entry.username.replace("🥇 ", "").replace("🥈 ", "").replace("🥉 ", "");
                 if (cleanName.equals(currentUsername)) {
-                    itemView.setBackgroundColor(0x332196F3);
+                    ((androidx.cardview.widget.CardView) itemView).setCardBackgroundColor(0xFF2E2E3E);
                 } else {
-                    itemView.setBackgroundColor(0x00000000);
+                    ((androidx.cardview.widget.CardView) itemView).setCardBackgroundColor(0xFF1E1E2C);
                 }
             }
         }

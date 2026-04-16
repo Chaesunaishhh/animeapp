@@ -1,27 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorBackground">#121212</color>
+    <!-- Dark Black & Pink Theme -->
+
+    <!-- Backgrounds -->
+    <color name="colorBackground">#000000</color>
     <color name="colorBackgroundDark">#121212</color>
-    <color name="colorCard">#1E1E1E</color>
-    <color name="colorCardDark">#1E1E1E</color>
-    <color name="colorAccent">#22C55E</color>
-    <color name="colorAccentPink">#22C55E</color>
+    <color name="colorCard">#1A1A1A</color>
+    <color name="colorCardDark">#242424</color>
+
+    <!-- Theme Colors -->
+    <color name="colorPrimary">#F72585</color> <!-- Vibrant Pink -->
+    <color name="colorPrimaryDark">#B5179E</color>
+    <color name="colorAccent">#F72585</color>
+    <color name="colorAccentPurple">#7C3AED</color>
+
+    <!-- Accent Colors for Chips/Details -->
+    <color name="colorAccentBlue">#4CC9F0</color>
+    <color name="colorAccentPink">#F72585</color>
+    <color name="colorAccentOrange">#FB923C</color>
+    <color name="colorAccentYellow">#FBBF24</color>
+    <color name="colorAccentCyan">#4CC9F0</color>
+
+    <!-- Text Colors -->
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#B0B0B0</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGray">#AAAAAA</color>
-    <color name="colorPink">#E639CE</color>
-    <color name="colorRed">#E93030</color>
-    <color name="colorGreen">#22C55E</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#68159B</color>
-    <color name="teal_200">#0ECECB</color>
+    <color name="colorGray">#9CA3AF</color>
+    <color name="darkGray">#4B5563</color>
+    <color name="colorBlack">#000000</color>
+
+    <!-- Functional Colors -->
+    <color name="colorSuccess">#10B981</color>
+    <color name="colorError">#EF4444</color>
+    <color name="colorWarning">#F59E0B</color>
+    <color name="colorGreen">#10B981</color>
+    <color name="colorRed">#EF4444</color>
+
+    <!-- Aliases for Compatibility -->
+    <color name="purple_500">#F72585</color>
+    <color name="purple_700">#B5179E</color>
+    <color name="teal_200">#4CC9F0</color>
     <color name="white">#FFFFFF</color>
-    <color name="darkGray">#3C3939</color>
-
-
-
-        <color name="bg">#0B0B14</color>
-        <color name="card">#16162A</color>
-        <color name="accent">#7C4DFF</color>
-        <color name="text">#FFFFFF</color>
-        <color name="muted">#B0B0C3</color>
-    <color name="rating_star">#FFC107</color>
+    <color name="bg">#000000</color>
+    <color name="card">#1A1A1A</color>
+    <color name="accent">#F72585</color>
+    <color name="text">#FFFFFF</color>
+    <color name="muted">#B0B0B0</color>
+    <color name="rating_star">#FBBF24</color>
 </resources>

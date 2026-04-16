@@ -22,11 +22,13 @@
 
             <ImageView
                 android:id="@+id/userAvatar"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:src="@drawable/ic_profile"
                 android:scaleType="centerCrop"
-                android:background="@drawable/circle_bg" />
+                android:padding="2dp"
+                android:background="@drawable/circle_bg"
+                android:backgroundTint="@color/colorAccent" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -50,34 +52,52 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2h ago"
-                    android:textColor="#666666"
-                    android:textSize="11sp" />
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <RatingBar
-                android:id="@+id/postRating"
-                style="?android:attr/ratingBarStyleSmall"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:numStars="5"
-                android:progressTint="@color/rating_star"
-                android:rating="4.5"
-                android:stepSize="0.5" />
+                android:gravity="end"
+                android:orientation="vertical">
+
+                <RatingBar
+                    android:id="@+id/postRating"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:progressTint="@color/colorAccent"
+                    android:rating="4.5"
+                    android:stepSize="0.5" />
+
+                <TextView
+                    android:id="@+id/ratingText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="4.5/5"
+                    android:textColor="#AAAAAA"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </RelativeLayout>
 
-        <!-- Anime Title -->
+        <!-- Anime Title Chip -->
         <TextView
             android:id="@+id/animeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:background="@drawable/chip_bg"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
             android:text="Jujutsu Kaisen"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/colorWhite"
+            android:backgroundTint="#2A2A2A"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -86,58 +106,44 @@
             android:id="@+id/postContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:lineSpacingExtra="4dp"
-            android:text="This anime is absolutely incredible. The animation by MAPPA is top-tier and the story keeps you on the edge of your seat."
-            android:textColor="#CCCCCC"
-            android:textSize="14sp" />
+            android:text="This anime is absolutely incredible..."
+            android:textColor="#DDDDDD"
+            android:textSize="15sp" />
 
         <!-- Footer Actions -->
-        <LinearLayout
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="1dp"
             android:layout_marginTop="16dp"
+            android:background="#2A2A2A" />
+
+        <LinearLayout
+            android:id="@+id/layoutLike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackground">
 
-            <LinearLayout
-                android:id="@+id/layoutLike"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:padding="4dp">
-
-                <ImageView
-                    android:id="@+id/likeButton"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_heart_outline"
-                    app:tint="#666666" />
-
-                <TextView
-                    android:id="@+id/likeCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:text="24"
-                    android:textColor="#666666"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/likeButton"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_heart_outline"
+                app:tint="#888888" />
 
             <TextView
-                android:id="@+id/ratingText"
+                android:id="@+id/likeCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4.5/5"
-                android:textColor="#666666"
-                android:textSize="12sp"
-                android:textStyle="italic" />
-
+                android:layout_marginStart="8dp"
+                android:text="24"
+                android:textColor="#888888"
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

@@ -37,47 +37,19 @@
         </LinearLayout>
 
         <!-- Modern Tabs -->
-        <LinearLayout
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:paddingVertical="8dp">
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:checkedButton="@id/btnTabReviews"
-                app:singleSelection="true"
-                app:selectionRequired="true"
-                app:strokeWidth="0dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTabReviews"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reviews"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorWhite"
-                    app:backgroundTint="@color/tab_button_background_tint"
-                    app:cornerRadius="25dp"
-                    app:strokeWidth="0dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTabCharacters"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Top Anime"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorWhite"
-                    app:backgroundTint="@color/tab_button_background_tint"
-                    app:cornerRadius="25dp"
-                    app:strokeWidth="0dp" />
-
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-        </LinearLayout>
+            android:background="@color/colorBackground"
+            app:tabIndicatorColor="@color/colorAccent"
+            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorHeight="3dp"
+            app:tabMode="fixed"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabSelectedTextColor="@color/colorAccent"
+            app:tabTextColor="#888888"
+            app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
@@ -96,68 +68,75 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-                    <!-- Search Bar -->
-                    <EditText
-                        android:id="@+id/searchReviews"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:layout_marginVertical="8dp"
-                        android:background="@drawable/search_bg"
-                        android:drawableStart="@drawable/ic_search"
-                        android:drawablePadding="12dp"
-                        android:hint="Search reviews or users..."
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:paddingHorizontal="16dp"
-                        android:textColor="@color/colorWhite"
-                        android:textColorHint="#666666"
-                        android:textSize="14sp" />
+        <!-- Search Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/searchSection">
+            <EditText
+                android:id="@+id/searchReviews"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:background="@drawable/search_bg"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="12dp"
+                android:hint="Search reviews or users..."
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="#666666"
+                android:textSize="14sp" />
 
-                    <!-- Simplified Filters Row -->
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:scrollbars="none">
+            <!-- Compact Filter Section -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:scrollbars="none">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="16dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="16dp">
 
-                            <Spinner
-                                android:id="@+id/spinnerSort"
-                                android:layout_width="wrap_content"
-                                android:layout_height="48dp"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/spinner_bg"
-                                android:minWidth="100dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="24dp" />
+                    <Spinner
+                        android:id="@+id/spinnerSort"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/spinner_bg"
+                        android:minWidth="110dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp" />
 
-                            <Spinner
-                                android:id="@+id/spinnerRating"
-                                android:layout_width="wrap_content"
-                                android:layout_height="48dp"
-                                android:layout_marginEnd="8dp"
-                                android:background="@drawable/spinner_bg"
-                                android:minWidth="100dp"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="24dp" />
+                    <Spinner
+                        android:id="@+id/spinnerRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="@drawable/spinner_bg"
+                        android:minWidth="110dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp" />
 
-                            <Spinner
-                                android:id="@+id/spinnerAnime"
-                                android:layout_width="160dp"
-                                android:layout_height="48dp"
-                                android:background="@drawable/spinner_bg"
-                                android:paddingStart="8dp"
-                                android:paddingEnd="24dp" />
+                    <Spinner
+                        android:id="@+id/spinnerAnime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/spinner_bg"
+                        android:minWidth="140dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp" />
 
-                        </LinearLayout>
-                    </HorizontalScrollView>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
 
                     <ProgressBar
                         android:id="@+id/progressCommunity"
@@ -198,29 +177,23 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:paddingHorizontal="16dp"
-                        android:paddingTop="12dp">
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:background="#121212">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Weekly Anime Rankings"
+                            android:text="Weekly Community Rankings"
                             android:textColor="@color/colorWhite"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="8dp"
-                            android:text="Vote for your favorite anime! The rankings reset every week. Help your favorites reach the top of the community leaderboard."
-                            android:textColor="#BBBBBB"
-                            android:textSize="13sp" />
-
-                        <TextView
                             android:id="@+id/voteLimitText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
                             android:text="Votes this week: 0/3"
                             android:textColor="@color/colorAccent"
                             android:textSize="13sp"

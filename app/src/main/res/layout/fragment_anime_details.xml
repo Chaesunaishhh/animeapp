@@ -1,151 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#0F0F1A">
+    android:background="@color/colorBackground">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="16dp"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="350dp"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <!-- Cover Image -->
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardUseCompatPadding="true">
+            android:layout_height="match_parent"
+            app:contentScrim="@color/colorBackgroundDark"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false">
 
             <ImageView
                 android:id="@+id/animeCover"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"/>
-        </androidx.cardview.widget.CardView>
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
 
-        <!-- Title + Score -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/details_gradient_overlay" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/circle_background_dark"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="@color/colorWhite" />
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="4dp">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <TextView
-                android:id="@+id/animeTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Anime Title"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"/>
-
-            <TextView
-                android:id="@+id/animeScore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⭐ 0"
-                android:textSize="16sp"
-                android:textColor="#FFD700"/>
-        </LinearLayout>
-
-        <!-- Meta Info -->
-        <TextView
-            android:id="@+id/animeMeta"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2019 • Action, Fantasy • 52 Episodes"
-            android:textSize="14sp"
-            android:textColor="#AAAAAA"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#333333"
-            android:layout_marginBottom="12dp"/>
-
-        <!-- Description -->
-        <TextView
-            android:id="@+id/animeDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Anime description goes here..."
-            android:textSize="14sp"
-            android:textColor="#CCCCCC"
-            android:lineSpacingExtra="4dp"
-            android:layout_marginBottom="20dp"/>
-
-        <!-- Characters Section -->
-        <TextView
-            android:id="@+id/animeCharactersLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Characters:"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/animeCharacters"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Loading..."
-            android:textSize="14sp"
-            android:textColor="#CCCCCC"
-            android:layout_marginBottom="20dp"/>
-
-        <!-- Action Buttons -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:id="@+id/btnWatchlist"
-                android:text="ADD TO WATCHLIST"
+            <!-- Title and Score -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#333333"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/animeTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    tools:text="Jujutsu Kaisen" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_bg_yellow"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp">
+
+                    <TextView
+                        android:id="@+id/animeScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="⭐ 8.7" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/animeMeta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorAccentBlue"
+                android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
+                tools:text="2020 • Action, Supernatural • 24 Episodes" />
 
-
-        <!-- Watchlist Actions -->
-        <LinearLayout
-            android:id="@+id/layoutDetailsActions"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/btnDetailsComplete"
-                android:text="COMPLETE"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:backgroundTint="@color/colorGray"
-                android:textColor="@android:color/white"/>
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnDetailsRemove"
-                android:text="REMOVE"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWatchlist"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="@string/add_to_my_list"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    app:backgroundTint="@color/colorAccent"
+                    app:cornerRadius="16dp"
+                    app:icon="@drawable/ic_add" />
+
+                <LinearLayout
+                    android:id="@+id/layoutDetailsActions"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDetailsComplete"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:text="Complete"
+                        android:textColor="@color/colorAccentBlue"
+                        app:backgroundTint="#224CC9F0"
+                        app:cornerRadius="16dp"
+                        app:strokeColor="@color/colorAccentBlue"
+                        app:strokeWidth="1dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDetailsRemove"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:minWidth="56dp"
+                        android:padding="0dp"
+                        app:backgroundTint="#22F72585"
+                        app:cornerRadius="16dp"
+                        app:icon="@drawable/ic_delete"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="@color/colorRed" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Synopsis Section -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:backgroundTint="#F44336"
-                android:textColor="@android:color/white"/>
-        </LinearLayout>
+                android:layout_marginTop="24dp"
+                android:text="Synopsis"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-    </LinearLayout>
-</ScrollView>
+            <TextView
+                android:id="@+id/animeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:lineSpacingExtra="6dp"
+                android:textColor="@color/colorGray"
+                android:textSize="15sp"
+                tools:text="Synopsis content goes here..." />
+
+            <!-- Characters Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Main Characters"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/animeCharacters"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/colorGray"
+                android:textSize="15sp"
+                tools:text="Character Name, Character Name..." />
+
+            <!-- Recommendations Section -->
+            <TextView
+                android:id="@+id/tvRelatedTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="For You &amp; Related"
+                android:textColor="@color/colorWhite"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecommendations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingBottom="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_anime" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

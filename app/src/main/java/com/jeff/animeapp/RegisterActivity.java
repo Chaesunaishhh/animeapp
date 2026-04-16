@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,9 +26,12 @@ public class RegisterActivity extends AppCompatActivity {
     EditText email, password, username;
     Button registerBtn;
     TextView goToLogin;
-    ImageView togglePassword;
+    ImageView togglePassword, registerProfileImage;
+    private android.net.Uri selectedImageUri;
+    private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseAuth auth;
     FirebaseFirestore db;
+    FirebaseStorage storage;
     private boolean isProcessing = false;
 
     @Override
@@ -41,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void initViews() {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         username = findViewById(R.id.usernameInput);
         email = findViewById(R.id.emailInput);
@@ -48,12 +54,31 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn = findViewById(R.id.registerButton);
         goToLogin = findViewById(R.id.goToLogin);
         togglePassword = findViewById(R.id.togglePassword);
+        registerProfileImage = findViewById(R.id.registerProfileImage);
     }
 
     private void setupClickListeners() {
         registerBtn.setOnClickListener(v -> registerUser());
         goToLogin.setOnClickListener(v -> goToLoginActivity());
         togglePassword.setOnClickListener(v -> togglePasswordVisibility());
+        findViewById(R.id.btnSelectProfilePic).setOnClickListener(v -> openImagePicker());
+    }
+
+    private void openImagePicker() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Profile Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            selectedImageUri = data.getData();
+            registerProfileImage.setImageURI(selectedImageUri);
+            registerProfileImage.setPadding(0, 0, 0, 0); // Remove padding when image is set
+        }
     }
 
     private void registerUser() {
@@ -86,14 +111,48 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserProfile(String uid, String usernameStr, String emailStr) {
+        if (selectedImageUri != null) {
+            uploadProfileImage(uid, usernameStr, emailStr);
+        } else {
+            saveUserToFirestore(uid, usernameStr, emailStr, "");
+        }
+    }
+
+    private void uploadProfileImage(String uid, String usernameStr, String emailStr) {
+        StorageReference storageRef = storage.getReference().child("profile_images/" + uid + ".jpg");
+
+        // Add metadata to help the server identify the file type
+        com.google.firebase.storage.StorageMetadata metadata = new com.google.firebase.storage.StorageMetadata.Builder()
+                .setContentType("image/jpeg")
+                .build();
+
+        storageRef.putFile(selectedImageUri, metadata)
+                .addOnSuccessListener(taskSnapshot -> {
+                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        saveUserToFirestore(uid, usernameStr, emailStr, uri.toString());
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    android.util.Log.e("StorageError", "Upload failed", e);
+                    // Even if upload fails, we might want to save the user data without the image
+                    Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    saveUserToFirestore(uid, usernameStr, emailStr, "");
+                });
+    }
+
+    private void saveUserToFirestore(String uid, String usernameStr, String emailStr, String profileImageUrl) {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("username", usernameStr);
         userMap.put("email", emailStr);
+        userMap.put("profileImage", profileImageUrl);
+        userMap.put("watchedCount", 0);
+        userMap.put("watchlistCount", 0);
+        userMap.put("quizCount", 0);
+        userMap.put("quizAvgScore", 0.0);
         userMap.put("createdAt", System.currentTimeMillis());
 
         db.collection("users").document(uid).set(userMap)
                 .addOnCompleteListener(task -> {
-
                     handleRegistrationComplete();
                 });
     }

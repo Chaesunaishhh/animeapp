@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showRegisterDialog() {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.AnimeAlertDialog)
                 .setTitle("Create New Account")
                 .setMessage("Don't have an account? Sign up now!")
                 .setPositiveButton("Sign Up", (dialog, which) -> {

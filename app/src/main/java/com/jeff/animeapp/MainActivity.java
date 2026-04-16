@@ -17,6 +17,7 @@ import com.jeff.animeapp.fragments.CommunityFragment;
 import com.jeff.animeapp.fragments.HomeFragment;
 import com.jeff.animeapp.fragments.ProfileFragment;
 import com.jeff.animeapp.fragments.WatchlistFragment;
+import com.jeff.animeapp.notifications.NotificationHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // 🔥 APPLY THEME BEFORE SETCONTENTVIEW
+        android.content.SharedPreferences prefs = getSharedPreferences("Settings", android.content.Context.MODE_PRIVATE);
+        boolean isDark = prefs.getBoolean("DarkMode", true);
+        if (isDark) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         super.onCreate(savedInstanceState);
+
+        NotificationHelper.createNotificationChannel(this);
+        requestNotificationPermission();
 
         // 🔥 LOGIN CHECK FIRST
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
@@ -70,9 +83,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void requestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) 
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, 
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+    }
+
     // 🔑 FILTER DIALOG FUNCTION
     public void showFilterDialog(HomeFragment homeFragment) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnimeAlertDialog);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.filter_dialog, null);
         builder.setView(dialogView);

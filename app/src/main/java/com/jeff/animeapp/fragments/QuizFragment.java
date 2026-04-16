@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.jeff.animeapp.R;
+import com.jeff.animeapp.notifications.NotificationHelper;
 
 import java.util.*;
 
@@ -38,9 +39,9 @@ public class QuizFragment extends Fragment {
     private List<String> userAnswers = new ArrayList<>();
     private long currentWeekStart;
 
-    private final int COLOR_DEFAULT = Color.parseColor("#1E1E2C");
-    private final int COLOR_CORRECT = Color.parseColor("#4CAF50");
-    private final int COLOR_WRONG = Color.parseColor("#F44336");
+    private final int COLOR_DEFAULT = Color.parseColor("#1A0D2B"); // colorCard
+    private final int COLOR_CORRECT = Color.parseColor("#4CAF50"); // Material Green
+    private final int COLOR_WRONG = Color.parseColor("#F72585");   // Magenta/Pink (colorAccent)
 
     private final String[] questions = {
             "Who is the protagonist of 'Attack on Titan'?", "What is Goku's signature move?",
@@ -129,6 +130,10 @@ public class QuizFragment extends Fragment {
         for (Button btn : options) {
             btn.setOnClickListener(view -> checkAnswer((Button) view));
         }
+
+        v.findViewById(R.id.btnBack).setOnClickListener(view -> {
+            getParentFragmentManager().popBackStack();
+        });
 
         return v;
     }
@@ -293,6 +298,9 @@ public class QuizFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to record quiz stats", Toast.LENGTH_SHORT).show();
             });
         }
+
+        // Send Notification
+        NotificationHelper.sendNotification(getContext(), "Quiz Finished!", "You scored " + score + " points in this week's quiz.");
 
         openReview();
     }

@@ -1,45 +1,74 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F1A"
-    android:padding="12dp">
+    android:background="@color/colorBackground">
 
-
-    <LinearLayout
-        android:id="@+id/reviewContainer"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@color/colorBackground"
+        app:elevation="0dp">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStartWithNavigation="0dp">
 
-        <!-- HEADER -->
-        <TextView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="16dp">
+
+                <ImageView
+                    android:id="@+id/btnBack"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="@color/colorWhite" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="Quiz Review"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLeaderboard"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Leaderboard"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_leaderboard"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/colorAccent" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/reviewContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📘 Quiz Review"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:padding="16dp"
-            android:gravity="center"
-            android:layout_marginBottom="12dp"
-            android:background="#1A1A2E"/>
+            android:orientation="vertical"
+            android:padding="16dp" />
+    </androidx.core.widget.NestedScrollView>
 
-
-        <!-- BUTTON -->
-        <Button
-            android:id="@+id/btnLeaderboard"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="🏆 Back to Leaderboard"
-            android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:backgroundTint="#22C55E"
-            android:layout_marginBottom="16dp"/>
-
-
-    </LinearLayout>
-
-
-</ScrollView>
-
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

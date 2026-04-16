@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="160dp"
-    android:layout_height="210dp"
+    android:layout_width="150dp"
+    android:layout_height="220dp"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="14dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#1AFFFFFF"
+    android:clickable="true"
+    android:focusable="true"
+    app:rippleColor="#33F72585">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -17,51 +22,86 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="Anime Poster"/>
+            android:contentDescription="Anime Poster" />
 
-        <!-- Rating at upper-left -->
-        <TextView
-            android:id="@+id/animeScore"
-            android:text="⭐ 85"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:padding="4dp"
+        <!-- Gradient Overlay -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/anime_card_gradient" />
+
+        <!-- Rating Badge -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="top|start"
             android:layout_margin="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:background="@drawable/chip_bg"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="3dp"
+            android:gravity="center_vertical">
 
-        <!-- Overlay for Title -->
-        <LinearLayout
-            android:orientation="vertical"
-            android:background="#80000000"
+            <TextView
+                android:id="@+id/animeScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐ 85"
+                android:textColor="@color/colorWhite"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- In-Watchlist Badge -->
+        <TextView
+            android:id="@+id/badgeInWatchlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/chip_bg"
+            android:backgroundTint="#F72585"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="IN LIST"
+            android:textColor="@color/colorWhite"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- Add Button -->
+        <ImageButton
+            android:id="@+id/btnWishlist"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/circle_background"
             android:padding="6dp"
-            android:layout_gravity="bottom"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_add"
+            app:tint="@color/colorWhite" />
+
+        <!-- Bottom Content -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/animeTitle"
-                android:text="Anime Title"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
+                android:layout_marginEnd="32dp"
+                android:text="Anime Title"
+                android:textColor="@color/colorWhite"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:gravity="start" />
 
-        <!-- Circular Add Button -->
-        <ImageButton
-            android:id="@+id/btnWishlist"
-            android:src="@drawable/ic_add"
-            android:background="@drawable/button_bg"
-            android:layout_gravity="top|end"
-            android:layout_margin="8dp"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:contentDescription="Add to Watchlist"/>
+        </LinearLayout>
     </FrameLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

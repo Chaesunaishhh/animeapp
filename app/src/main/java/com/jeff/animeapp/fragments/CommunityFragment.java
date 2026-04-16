@@ -31,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -66,9 +67,8 @@ public class CommunityFragment extends Fragment {
     private EditText searchReviews;
     private TextView tvEmptyReviews;
 
-    // Tab UI Elements
-    private LinearLayout layoutReviews, layoutCharacters;
-    private com.google.android.material.button.MaterialButton tabReviews, tabCharacters;
+    private LinearLayout layoutReviews, layoutCharacters, searchSection;
+    private TabLayout tabLayout;
     private RecyclerView recyclerCharacters;
     private CharacterAdapter characterAdapter;
 
@@ -102,8 +102,8 @@ public class CommunityFragment extends Fragment {
 
         layoutReviews = v.findViewById(R.id.layoutReviews);
         layoutCharacters = v.findViewById(R.id.layoutCharacters);
-        tabReviews = v.findViewById(R.id.btnTabReviews);
-        tabCharacters = v.findViewById(R.id.btnTabCharacters);
+        searchSection = v.findViewById(R.id.searchSection);
+        tabLayout = v.findViewById(R.id.tabLayout);
         recyclerCharacters = v.findViewById(R.id.recyclerCharacters);
 
         spinnerSort = v.findViewById(R.id.spinnerSort);
@@ -143,11 +143,20 @@ public class CommunityFragment extends Fragment {
 
         btnAddReview.setOnClickListener(view -> showAddReviewDialog());
 
-        com.google.android.material.button.MaterialButtonToggleGroup toggleGroup = v.findViewById(R.id.toggleGroup);
-        toggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (isChecked) {
-                switchTab(checkedId == R.id.btnTabReviews);
+        tabLayout.addTab(tabLayout.newTab().setText("Reviews"));
+        tabLayout.addTab(tabLayout.newTab().setText("Top Anime"));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                switchTab(tab.getPosition() == 0);
             }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
         });
 
         return v;
@@ -295,12 +304,14 @@ public class CommunityFragment extends Fragment {
         if (isReviews) {
             layoutReviews.setVisibility(View.VISIBLE);
             layoutCharacters.setVisibility(View.GONE);
+            searchSection.setVisibility(View.VISIBLE);
             btnAddReview.setVisibility(View.VISIBLE);
 
             fetchReviews();
         } else {
             layoutReviews.setVisibility(View.GONE);
             layoutCharacters.setVisibility(View.VISIBLE);
+            searchSection.setVisibility(View.GONE);
             btnAddReview.setVisibility(View.GONE);
 
             fetchCharacters();
@@ -429,7 +440,7 @@ public class CommunityFragment extends Fragment {
             Log.d(TAG, "Selected Anime: " + selectedTitle + " ID: " + selectedAnimeId);
         });
 
-        AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog)
+        AlertDialog dialog = new AlertDialog.Builder(requireContext(), R.style.AnimeAlertDialog)
                 .setView(dialogView)
                 .setCancelable(true)
                 .create();

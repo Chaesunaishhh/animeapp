@@ -97,7 +97,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             holder.likeCount.setText(String.valueOf(likeCount));
             holder.likeButton.setImageResource(isLiked ? R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
             
-            int activeColor = holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark);
+            int activeColor = holder.itemView.getContext().getResources().getColor(R.color.colorAccent);
             int inactiveColor = holder.itemView.getContext().getResources().getColor(android.R.color.darker_gray);
             holder.likeButton.setColorFilter(isLiked ? activeColor : inactiveColor);
             holder.likeCount.setTextColor(isLiked ? activeColor : inactiveColor);
@@ -155,7 +155,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     }
 
     private void showDeleteDialog(String reviewId, android.content.Context context) {
-        new AlertDialog.Builder(context, R.style.CustomAlertDialog)
+        new androidx.appcompat.app.AlertDialog.Builder(context, R.style.AnimeAlertDialog)
                 .setTitle("Delete Review")
                 .setMessage("Are you sure you want to delete this review?")
                 .setPositiveButton("Delete", (dialog, which) -> {

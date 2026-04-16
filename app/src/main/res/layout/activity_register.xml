@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorBackground"
     android:padding="24dp"
     android:orientation="vertical"
@@ -19,9 +20,39 @@
         android:text="Join the anime community"
         android:textSize="12sp"
         android:textColor="@color/colorGray"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="24dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
+    <FrameLayout
+        android:id="@+id/btnSelectProfilePic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/circle_background"
+        android:padding="2dp">
+
+        <ImageView
+            android:id="@+id/registerProfileImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_profile_placeholder"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="#22FFFFFF"
+            android:padding="15dp" />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_edit"
+            app:tint="@color/colorAccent"
+            android:background="@drawable/circle_bg"
+            android:padding="6dp"
+            android:backgroundTint="#1E1E2C"/>
+    </FrameLayout>
 
     <EditText
         android:id="@+id/usernameInput"

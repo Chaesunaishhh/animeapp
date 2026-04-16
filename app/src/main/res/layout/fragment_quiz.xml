@@ -1,11 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0F0F1A"
+    android:background="@color/colorBackground"
     android:orientation="vertical"
     android:padding="20dp">
 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_back"
+            android:padding="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="@android:color/white"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Anime Quiz of the Week"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,7 +42,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Question 1 of 10"
-            android:textColor="#888888" />
+            android:textColor="@color/colorGray"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:letterSpacing="0.1" />
 
 
         <TextView
@@ -24,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="❤️❤️❤️"
-            android:textColor="#EF4444"
+            android:textColor="@color/colorAccent"
             android:textSize="18sp" />
 
 
@@ -34,7 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:text="Score: 0"
-            android:textColor="#888888" />
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 
@@ -46,7 +77,7 @@
         android:layout_marginTop="8dp"
         android:max="10"
         android:progress="1"
-        android:progressTint="#22C55E" />
+        android:progressTint="@color/colorAccent" />
 
 
     <TextView
