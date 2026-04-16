@@ -226,8 +226,8 @@ public class HomeFragment extends Fragment {
 
     private void resetToHome() {
         btnBack.setVisibility(View.GONE);
-        tvHeaderTitle.setText(R.string.app_title);
-        tvHeaderSubtitle.setText(R.string.discover_text);
+        tvHeaderTitle.setText("ANIME");
+        tvHeaderSubtitle.setText("EXPLORE");
         tvHeaderSubtitle.setVisibility(View.VISIBLE);
         
         layoutQuickAccess.setVisibility(View.VISIBLE);
