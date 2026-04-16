@@ -247,6 +247,11 @@ public class AnimeDetailsFragment extends Fragment {
                     btnWatchlist.setEnabled(false);
                     btnWatchlist.setAlpha(0.8f);
                     btnWatchlist.setIconResource(R.drawable.ic_check);
+                    
+                    FirebaseFirestore.getInstance().collection("users")
+                            .document(uid)
+                            .update("watchlistCount", FieldValue.increment(1));
+
                     NotificationHelper.sendNotification(getContext(), "Added to My List", title.getText().toString() + " is now in your list!");
                 });
     }
@@ -305,16 +310,18 @@ public class AnimeDetailsFragment extends Fragment {
                     if (doc.exists()) {
                         boolean wasCompleted = "completed".equals(doc.getString("status"));
                         
-                        // Move to 'dropped' instead of deleting
+                        // Remove from watchlist
                         db.collection("watchlist").document(uid)
                                 .collection("anime").document(String.valueOf(id))
-                                .update("status", "dropped")
+                                .delete()
                                 .addOnSuccessListener(aVoid -> {
+                                    db.collection("users").document(uid)
+                                            .update("watchlistCount", FieldValue.increment(-1));
                                     if (wasCompleted) {
                                         db.collection("users").document(uid)
                                                 .update("watchedCount", FieldValue.increment(-1));
                                     }
-                                    Toast.makeText(getContext(), "Moved to Dropped", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Removed from List", Toast.LENGTH_SHORT).show();
                                     getParentFragmentManager().popBackStack();
                                 });
                     }

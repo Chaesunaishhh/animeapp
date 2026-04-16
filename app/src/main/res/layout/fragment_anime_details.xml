@@ -64,7 +64,6 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Title and Score -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -76,15 +75,17 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:fontFamily="sans-serif-black"
                     android:textColor="@color/colorWhite"
                     android:textSize="26sp"
-                    android:textStyle="bold"
+                    android:letterSpacing="0.02"
                     tools:text="Jujutsu Kaisen" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/chip_bg_yellow"
+                    android:background="@drawable/chip_bg"
+                    android:backgroundTint="#22FFFFFF"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp">
 
@@ -92,9 +93,9 @@
                         android:id="@+id/animeScore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#000000"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/colorAccent"
                         android:textSize="16sp"
-                        android:textStyle="bold"
                         tools:text="⭐ 8.7" />
                 </LinearLayout>
             </LinearLayout>
@@ -171,18 +172,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Synopsis"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.1"
+                android:text="ARCHIVE DATA"
                 android:textColor="@color/colorWhite"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/animeDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:lineSpacingExtra="6dp"
-                android:textColor="@color/colorGray"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/colorTextSecondary"
                 android:textSize="15sp"
                 tools:text="Synopsis content goes here..." />
 
@@ -191,10 +194,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Main Characters"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.1"
+                android:text="KEY PERSONNEL"
                 android:textColor="@color/colorWhite"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/animeCharacters"

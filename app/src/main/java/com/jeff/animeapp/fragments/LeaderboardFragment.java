@@ -34,7 +34,7 @@ public class LeaderboardFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_leaderboard, container, false);
 
         TextView tvTotal = v.findViewById(R.id.tvTotalScoreValue);
-        TextView tvLatest = v.findViewById(R.id.tvYourScoreValue);
+        TextView tvWeekly = v.findViewById(R.id.tvWeeklyScoreValue);
         TextView tvYourRank = v.findViewById(R.id.tvYourRank);
         recyclerLeaderboard = v.findViewById(R.id.recyclerLeaderboard);
 
@@ -59,11 +59,11 @@ public class LeaderboardFragment extends Fragment {
         SharedPreferences quizPrefs = requireActivity()
                 .getSharedPreferences("QuizData", Context.MODE_PRIVATE);
 
-        int latestScore = quizPrefs.getInt("last_" + currentUsername, 0);
+        int weeklyScore = quizPrefs.getInt("last_" + currentUsername, 0);
         int totalScore = quizPrefs.getInt("total_" + currentUsername, 0);
 
-        tvLatest.setText(String.valueOf(latestScore));
         tvTotal.setText(String.valueOf(totalScore));
+        tvWeekly.setText(String.valueOf(weeklyScore));
 
         // Setup RecyclerView
         recyclerLeaderboard.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -117,7 +117,7 @@ public class LeaderboardFragment extends Fragment {
 
                     // Update your rank
                     if (yourRank != -1) {
-                        tvYourRank.setText("Your Rank: #" + yourRank);
+                        tvYourRank.setText("#" + yourRank);
                     } else {
                         findUserGlobalRank(tvYourRank);
                     }
@@ -140,15 +140,15 @@ public class LeaderboardFragment extends Fragment {
                     for (var doc : snapshot) {
                         String name = doc.getString("username");
                         if (name != null && name.equals(currentUsername)) {
-                            tvYourRank.setText("Your Rank: #" + rank);
+                            tvYourRank.setText("#" + rank);
                             return;
                         }
                         rank++;
                     }
-                    tvYourRank.setText("Your Rank: Unranked (Take a quiz!)");
+                    tvYourRank.setText("--");
                 })
                 .addOnFailureListener(e ->
-                        tvYourRank.setText("Your Rank: Unavailable")
+                        tvYourRank.setText("--")
                 );
     }
 
@@ -202,9 +202,12 @@ public class LeaderboardFragment extends Fragment {
                 // Highlight current user
                 String cleanName = entry.username.replace("🥇 ", "").replace("🥈 ", "").replace("🥉 ", "");
                 if (cleanName.equals(currentUsername)) {
-                    ((androidx.cardview.widget.CardView) itemView).setCardBackgroundColor(0xFF2E2E3E);
+                    ((com.google.android.material.card.MaterialCardView) itemView).setStrokeColor(
+                            android.graphics.Color.parseColor("#F72585")
+                    );
+                    ((com.google.android.material.card.MaterialCardView) itemView).setStrokeWidth(2);
                 } else {
-                    ((androidx.cardview.widget.CardView) itemView).setCardBackgroundColor(0xFF1E1E2C);
+                    ((com.google.android.material.card.MaterialCardView) itemView).setStrokeWidth(0);
                 }
             }
         }

@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import android.widget.Toast;
@@ -76,7 +75,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
 
             // Set rating
             float ratingValue = rating != null ? rating.floatValue() : 0f;
-            holder.ratingBar.setRating(ratingValue);
 
             // Set rating text
             if (holder.ratingText != null) {
@@ -208,7 +206,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
     static class Holder extends RecyclerView.ViewHolder {
         TextView user, animeTitle, content, timestamp, ratingText, likeCount;
         ImageView avatar, likeButton;
-        RatingBar ratingBar;
         View layoutLike;
 
         public Holder(@NonNull View itemView) {
@@ -217,7 +214,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             animeTitle = itemView.findViewById(R.id.animeTitle);
             content = itemView.findViewById(R.id.postContent);
             avatar = itemView.findViewById(R.id.userAvatar);
-            ratingBar = itemView.findViewById(R.id.postRating);
             timestamp = itemView.findViewById(R.id.timestamp);
             ratingText = itemView.findViewById(R.id.ratingText);
             likeButton = itemView.findViewById(R.id.likeButton);

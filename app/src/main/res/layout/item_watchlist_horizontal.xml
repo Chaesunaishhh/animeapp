@@ -44,9 +44,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="85%"
-                android:textColor="@color/colorWhite"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                android:textColor="@color/colorAccent"
+                android:textSize="9sp"
+                android:fontFamily="sans-serif-black" />
         </LinearLayout>
 
         <!-- Title (Bottom) with improved spacing -->
@@ -61,7 +61,8 @@
             android:text="Anime Title"
             android:textColor="@color/colorWhite"
             android:textSize="13sp"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.02"
             android:shadowColor="#CC000000"
             android:shadowDx="1"
             android:shadowDy="1"

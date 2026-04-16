@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="100dp"
+    android:layout_height="140dp"
+    android:layout_marginEnd="12dp"
+    style="@style/ModernCard">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <FrameLayout
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp">
+
+            <View
+                android:id="@+id/glowEffect"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0"
+                android:background="@drawable/trophy_glow" />
+
+            <ImageView
+                android:id="@+id/achievementBadge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/bg_hexagon_locked" />
+
+            <ImageView
+                android:id="@+id/achievementIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_trophy"
+                app:tint="@color/colorTextMuted" />
+
+            <TextView
+                android:id="@+id/achievementValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-black"
+                android:text="10"
+                android:textColor="@color/colorTextMuted"
+                android:textSize="9sp" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/achievementTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-black"
+            android:maxLines="1"
+            android:text="COLLECTOR"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/achievementProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-black"
+            android:text="0/10"
+            android:textColor="@color/colorTextSecondary"
+            android:textSize="9sp"
+            android:letterSpacing="0.1" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

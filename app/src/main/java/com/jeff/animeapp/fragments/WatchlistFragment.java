@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -18,13 +17,12 @@ import com.jeff.animeapp.adapters.WatchlistAdapter;
 import com.jeff.animeapp.databinding.FragmentWatchlistBinding;
 import com.jeff.animeapp.utils.FirebaseUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.ListenerRegistration;
 
 public class WatchlistFragment extends Fragment {
 
     private FragmentWatchlistBinding binding;
-    private JsonArray watchingList = new JsonArray();
-    private JsonArray completedList = new JsonArray();
-    private JsonArray planningList = new JsonArray();
+    private ListenerRegistration watchlistListener;
 
     public WatchlistFragment() {}
 
@@ -33,7 +31,7 @@ public class WatchlistFragment extends Fragment {
         binding = FragmentWatchlistBinding.inflate(inflater, container, false);
 
         setupUI();
-        loadWatchlist();
+        startWatchlistListener();
 
         return binding.getRoot();
     }
@@ -48,10 +46,8 @@ public class WatchlistFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 updateTabVisibility(tab.getPosition());
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {}
-
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
@@ -63,22 +59,24 @@ public class WatchlistFragment extends Fragment {
         binding.recyclerPlanning.setVisibility(position == 2 ? View.VISIBLE : View.GONE);
     }
 
-    private void loadWatchlist() {
+    private void startWatchlistListener() {
         if (FirebaseUtils.uid() == null) return;
 
         binding.progressWatchlist.setVisibility(View.VISIBLE);
-        FirebaseUtils.firestore()
+        
+        // Use SnapshotListener for REAL-TIME updates
+        watchlistListener = FirebaseUtils.firestore()
                 .collection("watchlist")
                 .document(FirebaseUtils.uid())
                 .collection("anime")
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    if (!isAdded() || binding == null) return;
+                .addSnapshotListener((snapshot, e) -> {
+                    if (!isAdded() || binding == null || snapshot == null) return;
+                    
                     binding.progressWatchlist.setVisibility(View.GONE);
 
-                    watchingList = new JsonArray();
-                    completedList = new JsonArray();
-                    planningList = new JsonArray();
+                    JsonArray watchingList = new JsonArray();
+                    JsonArray completedList = new JsonArray();
+                    JsonArray planningList = new JsonArray();
 
                     for (DocumentSnapshot doc : snapshot.getDocuments()) {
                         JsonObject obj = new JsonObject();
@@ -96,14 +94,21 @@ public class WatchlistFragment extends Fragment {
                         String status = doc.getString("status") != null ? doc.getString("status").toLowerCase() : "watching";
                         obj.addProperty("status", status);
 
+                        // Proper sorting logic
                         if (status.equals("completed")) completedList.add(obj);
                         else if (status.equals("planning")) planningList.add(obj);
-                        else watchingList.add(obj);
+                        else if (status.equals("watching")) watchingList.add(obj);
+                        // 'dropped' is hidden from these three main tabs but stays in DB
                     }
 
+                    // Update Adapters
                     binding.recyclerWatching.setAdapter(new WatchlistAdapter(watchingList, id -> openDetails(id)));
                     binding.recyclerCompleted.setAdapter(new WatchlistAdapter(completedList, id -> openDetails(id)));
                     binding.recyclerPlanning.setAdapter(new WatchlistAdapter(planningList, id -> openDetails(id)));
+                    
+                    // Show empty states if list is empty
+                    boolean isEmpty = snapshot.isEmpty();
+                    // You could add an empty view here if you want
                 });
     }
 
@@ -118,6 +123,7 @@ public class WatchlistFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (watchlistListener != null) watchlistListener.remove();
         binding = null;
     }
 }

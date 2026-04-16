@@ -9,26 +9,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Header Background -->
+        <!-- Loading Overlay -->
+        <ProgressBar
+            android:id="@+id/profileProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="20dp"
+            android:indeterminateTint="@color/colorAccent"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Header Banner -->
         <View
             android:id="@+id/headerBackground"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:background="@color/colorAccent"
+            android:layout_height="220dp"
+            android:background="@drawable/gradient_primary_accent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Profile Image -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@drawable/gradient_scrim_bottom"
+            app:layout_constraintBottom_toBottomOf="@+id/headerBackground" />
+
+        <!-- Profile Picture & Identity -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/profileImageCard"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="24dp"
-            app:cardCornerRadius="50dp"
-            app:cardElevation="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/headerBackground"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_marginTop="150dp"
+            app:cardCornerRadius="55dp"
+            app:cardElevation="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerBackground"
-            app:strokeColor="@android:color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/colorBackground"
             app:strokeWidth="4dp">
 
             <ImageView
@@ -39,32 +58,17 @@
                 android:src="@drawable/ic_profile_placeholder" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Edit Profile Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditProfileRow"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="24dp"
-            android:layout_marginTop="16dp"
-            android:text="Edit Profile"
-            android:textColor="@color/colorAccent"
-            app:cornerRadius="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/headerBackground"
-            app:strokeColor="@color/colorAccent" />
-
-        <!-- Profile Info -->
         <TextView
             android:id="@+id/profileUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-black"
-            android:text="Username"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
+            android:text=""
+            android:textColor="@color/colorWhite"
+            android:textSize="28sp"
+            android:letterSpacing="0.02"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileImageCard" />
 
@@ -72,348 +76,232 @@
             android:id="@+id/profileEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
             android:fontFamily="sans-serif-medium"
-            android:text="email@example.com"
-            android:textColor="@color/colorGray"
+            android:text=""
+            android:textColor="@color/colorTextSecondary"
             android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileUsername" />
 
-        <!-- Stats Section (Monthly Tracker style) -->
+        <!-- Edit Profile Button - Floating Style -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditProfileRow"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EDIT PROFILE"
+            android:textColor="@color/colorAccent"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif-black"
+            app:icon="@drawable/ic_edit"
+            app:iconSize="16dp"
+            app:iconTint="@color/colorAccent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+
+        <!-- Stats Dashboard -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/statsCard"
+            style="@style/ModernCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="24dp"
-            app:cardBackgroundColor="@color/colorCard"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/profileEmail">
+            app:layout_constraintTop_toBottomOf="@+id/btnEditProfileRow">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="20dp"
+                android:baselineAligned="false">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/statWatched"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="22sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="WATCHED"
+                        android:textColor="@color/colorTextMuted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1"/>
+                </LinearLayout>
+
+                <View android:layout_width="1dp" android:layout_height="30dp" android:layout_gravity="center_vertical" android:background="@color/dividerColor"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvInWatchlist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--"
+                        android:textColor="@color/colorSimpleBlue"
+                        android:textSize="22sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="PLANNING"
+                        android:textColor="@color/colorTextMuted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1"/>
+                </LinearLayout>
+
+                <View android:layout_width="1dp" android:layout_height="30dp" android:layout_gravity="center_vertical" android:background="@color/dividerColor"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvQuizzesTaken"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="22sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="QUIZZES"
+                        android:textColor="@color/colorTextMuted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1"/>
+                </LinearLayout>
+
+                <View android:layout_width="1dp" android:layout_height="30dp" android:layout_gravity="center_vertical" android:background="@color/dividerColor"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvQuizAvgScore"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--"
+                        android:textColor="@color/colorSimpleGreen"
+                        android:textSize="22sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="AVG SCORE"
+                        android:textColor="@color/colorTextMuted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.1"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Achievements Section -->
+        <TextView
+            android:id="@+id/labelTrophy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:fontFamily="sans-serif-black"
+            android:text="ACHIEVEMENTS"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="16sp"
+            android:letterSpacing="0.05"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statsCard" />
+
+        <HorizontalScrollView
+            android:id="@+id/trophyScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:paddingHorizontal="16dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@+id/labelTrophy">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- Achievement Card Template -->
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge1"/>
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge2"/>
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge3"/>
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge4"/>
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge5"/>
+                <include layout="@layout/item_achievement_profile" android:id="@+id/badge6"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Menu Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/menuCard"
+            style="@style/ModernCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@+id/trophyScroll">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="8dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-bold"
-                    android:text="Anime Tracker"
-                    android:textColor="@color/colorTextPrimary"
-                    android:textSize="18sp" />
+                <include layout="@layout/item_profile_menu" android:id="@+id/itemNotif"/>
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/dividerColor" android:layout_marginHorizontal="16dp"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal"
-                    android:weightSum="4">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/statWatched"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Watched"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvInWatchlist"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="My List"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvQuizzesTaken"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Quizzes"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-                        <TextView
-                            android:id="@+id/tvQuizAvgScore"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0%"
-                            android:textColor="@color/colorPrimary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Avg Score"
-                            android:textColor="@color/colorTextSecondary"
-                            android:textSize="10sp" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Menu Section -->
-        <LinearLayout
-            android:id="@+id/menuSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="vertical"
-            android:paddingHorizontal="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/statsCard">
-
-            <!-- Trophy Case (Keeping it but making it cleaner) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:fontFamily="sans-serif-bold"
-                android:text="Trophy Case"
-                android:textColor="@color/colorTextPrimary"
-                android:textSize="18sp" />
-
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:layout_marginBottom="24dp">
-                <!-- Achievement Items -->
-                <!-- Collector -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowCollector" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgCollector" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconCollector" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtCollectorVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="10" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Collector" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressCollector" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/10" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-
-                <!-- Master Collector -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowMasterCollector" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgMasterCollector" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconMasterCollector" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtMasterCollectorVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="30" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Master" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressMasterCollector" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/30" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-
-                <!-- Finisher -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowFinisher" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgFinisher" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconFinisher" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtFinisherVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="5" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Finisher" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressFinisher" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/5" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-
-                <!-- Master Finisher -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowMasterFinisher" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgMasterFinisher" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconMasterFinisher" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtMasterFinisherVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="15" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Master" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressMasterFinisher" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/15" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-
-                <!-- Legendary -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowLegendary" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgLegendary" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconLegendary" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtLegendaryVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="50" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Legendary" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressLegendaryOtaku" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/50" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-
-                <!-- Quiz Enthusiast -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp">
-                    <FrameLayout
-                        android:layout_width="60dp"
-                        android:layout_height="60dp">
-                        <View android:id="@+id/glowQuiz" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/trophy_glow" android:visibility="gone" />
-                        <ImageView android:id="@+id/imgQuiz" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/bg_hexagon_locked" />
-                        <ImageView android:id="@+id/iconQuiz" android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:layout_marginTop="-4dp" android:src="@drawable/ic_trophy" app:tint="#44FFFFFF" />
-                        <TextView android:id="@+id/txtQuizVal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:layout_marginTop="10dp" android:text="10" android:textColor="#44FFFFFF" android:textSize="8sp" android:textStyle="bold" />
-                    </FrameLayout>
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Quizzer" android:textColor="@color/colorTextPrimary" android:textSize="10sp" android:textStyle="bold" />
-                    <TextView android:id="@+id/progressQuizEnthusiast" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0/10" android:textColor="@color/colorTextSecondary" android:textSize="8sp" />
-                </LinearLayout>
-            </GridLayout>
-
-            <!-- Menu Rows -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_rounded_card"
-                android:orientation="vertical">
-
-                <!-- Notifications Row -->
-                <RelativeLayout
-                    android:id="@+id/btnNotifications"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingHorizontal="16dp">
-                    <ImageView
-                        android:id="@+id/iconNotif"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_notifications"
-                        app:tint="@color/colorAccent" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="16dp"
-                        android:layout_toEndOf="@id/iconNotif"
-                        android:text="Notifications"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="16sp" />
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_back"
-                        android:rotation="180"
-                        app:tint="@color/colorTextSecondary" />
-                </RelativeLayout>
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#11000000" android:layout_marginHorizontal="16dp" />
-
-                <!-- Dark Mode Row -->
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:paddingHorizontal="16dp">
                     <ImageView
                         android:id="@+id/iconDark"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_calendar"
-                        app:tint="@color/colorAccent" />
+                        android:src="@drawable/ic_moon"
+                        app:tint="@color/colorSimpleBlue" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="16dp"
                         android:layout_toEndOf="@id/iconDark"
-                        android:text="Dark Mode"
+                        android:text="Midnight Mode"
+                        android:fontFamily="sans-serif-medium"
                         android:textColor="@color/colorTextPrimary"
                         android:textSize="16sp" />
                     <androidx.appcompat.widget.SwitchCompat
@@ -422,64 +310,30 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        app:thumbTint="@color/colorAccent"
-                        app:trackTint="@color/colorAccent" />
+                        app:thumbTint="@color/colorSimpleBlue"
+                        app:trackTint="@color/colorSimpleBlue" />
                 </RelativeLayout>
 
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#11000000" android:layout_marginHorizontal="16dp" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/dividerColor" android:layout_marginHorizontal="16dp"/>
+                <include layout="@layout/item_profile_menu" android:id="@+id/itemHelp"/>
 
-                <!-- Help & Support Row -->
-                <RelativeLayout
-                    android:id="@+id/btnHelpSupport"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingHorizontal="16dp">
-                    <ImageView
-                        android:id="@+id/iconHelp"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_quiz"
-                        app:tint="@color/colorAccent" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="16dp"
-                        android:layout_toEndOf="@id/iconHelp"
-                        android:text="Help &amp; Support"
-                        android:textColor="@color/colorTextPrimary"
-                        android:textSize="16sp" />
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/ic_back"
-                        android:rotation="180"
-                        app:tint="@color/colorTextSecondary" />
-                </RelativeLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <!-- Logout Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/logoutButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="40dp"
-                app:cornerRadius="16dp"
-                android:text="LOGOUT"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:fontFamily="sans-serif-black"
-                android:backgroundTint="#FF4B2B"
-                app:elevation="0dp" />
-
-        </LinearLayout>
+        <!-- Logout Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logoutButton"
+            style="@style/ModernButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="40dp"
+            android:text="LOGOUT"
+            android:textColor="@color/colorWhite"
+            android:backgroundTint="@color/colorError"
+            app:layout_constraintTop_toBottomOf="@+id/menuCard"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

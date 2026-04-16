@@ -25,15 +25,20 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.LoginActivity;
 import com.jeff.animeapp.notifications.NotificationHelper;
 import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageMetadata;
 import android.net.Uri;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileFragment extends Fragment {
 
@@ -47,6 +52,7 @@ public class ProfileFragment extends Fragment {
     private TextView txtCollectorVal, txtMasterCollectorVal, txtFinisherVal, txtMasterFinisherVal, txtLegendaryVal, txtQuizVal;
     private SwitchCompat switchDarkMode;
     private View btnNotifications, btnHelpSupport, btnEditProfileButton;
+    private android.widget.ProgressBar profileProgressBar;
     
     private Uri selectedImageUri;
     private ImageView editProfileImgView;
@@ -71,6 +77,14 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        initViews(v);
+        setupSettings(v);
+        loadUserData();
+
+        return v;
+    }
+
+    private void initViews(View v) {
         logoutBtn = v.findViewById(R.id.logoutButton);
         usernameView = v.findViewById(R.id.profileUsername);
         emailView = v.findViewById(R.id.profileEmail);
@@ -79,77 +93,79 @@ public class ProfileFragment extends Fragment {
         tvInWatchlist = v.findViewById(R.id.tvInWatchlist);
         tvQuizzesTaken = v.findViewById(R.id.tvQuizzesTaken);
         tvQuizAvgScore = v.findViewById(R.id.tvQuizAvgScore);
+        profileProgressBar = v.findViewById(R.id.profileProgressBar);
+        // Views initialized in setupBadgeViews
+        setupBadgeViews(v);
 
-        // Achievement Images
-        imgCollector = v.findViewById(R.id.imgCollector);
-        imgMasterCollector = v.findViewById(R.id.imgMasterCollector);
-        imgFinisher = v.findViewById(R.id.imgFinisher);
-        imgMasterFinisher = v.findViewById(R.id.imgMasterFinisher);
-        imgLegendary = v.findViewById(R.id.imgLegendary);
-        imgQuiz = v.findViewById(R.id.imgQuiz);
-
-        // Achievement Icons
-        iconCollector = v.findViewById(R.id.iconCollector);
-        iconMasterCollector = v.findViewById(R.id.iconMasterCollector);
-        iconFinisher = v.findViewById(R.id.iconFinisher);
-        iconMasterFinisher = v.findViewById(R.id.iconMasterFinisher);
-        iconLegendary = v.findViewById(R.id.iconLegendary);
-        iconQuiz = v.findViewById(R.id.iconQuiz);
-
-        // Achievement Glows
-        glowCollector = v.findViewById(R.id.glowCollector);
-        glowMasterCollector = v.findViewById(R.id.glowMasterCollector);
-        glowFinisher = v.findViewById(R.id.glowFinisher);
-        glowMasterFinisher = v.findViewById(R.id.glowMasterFinisher);
-        glowLegendary = v.findViewById(R.id.glowLegendary);
-        glowQuiz = v.findViewById(R.id.glowQuiz);
-
-        // Achievement Text Values
-        txtCollectorVal = v.findViewById(R.id.txtCollectorVal);
-        txtMasterCollectorVal = v.findViewById(R.id.txtMasterCollectorVal);
-        txtFinisherVal = v.findViewById(R.id.txtFinisherVal);
-        txtMasterFinisherVal = v.findViewById(R.id.txtMasterFinisherVal);
-        txtLegendaryVal = v.findViewById(R.id.txtLegendaryVal);
-        txtQuizVal = v.findViewById(R.id.txtQuizVal);
-
-        // Progress TextViews
-        progressCollector = v.findViewById(R.id.progressCollector);
-        progressMasterCollector = v.findViewById(R.id.progressMasterCollector);
-        progressFinisher = v.findViewById(R.id.progressFinisher);
-        progressMasterFinisher = v.findViewById(R.id.progressMasterFinisher);
-        progressLegendaryOtaku = v.findViewById(R.id.progressLegendaryOtaku);
-        progressQuizEnthusiast = v.findViewById(R.id.progressQuizEnthusiast);
-
-        // Settings
         switchDarkMode = v.findViewById(R.id.switchDarkMode);
-        btnNotifications = v.findViewById(R.id.btnNotifications);
-        btnHelpSupport = v.findViewById(R.id.btnHelpSupport);
+
+        View rowNotif = v.findViewById(R.id.itemNotif);
+        btnNotifications = rowNotif.findViewById(R.id.menuRow);
+        ((ImageView)rowNotif.findViewById(R.id.menuIcon)).setImageResource(R.drawable.ic_notifications);
+        ((TextView)rowNotif.findViewById(R.id.menuTitle)).setText("Notifications");
+
+        View rowHelp = v.findViewById(R.id.itemHelp);
+        btnHelpSupport = rowHelp.findViewById(R.id.menuRow);
+        ((ImageView)rowHelp.findViewById(R.id.menuIcon)).setImageResource(R.drawable.ic_community);
+        ((TextView)rowHelp.findViewById(R.id.menuTitle)).setText("Help & Support");
+
         btnEditProfileButton = v.findViewById(R.id.btnEditProfileRow);
 
-        setupSettings();
-
-        btnEditProfileButton.setOnClickListener(v1 -> {
-            showEditProfileDialog();
-        });
-
-        logoutBtn.setOnClickListener(view -> {
-            new AlertDialog.Builder(getContext(), R.style.AnimeAlertDialog)
-                    .setTitle("Logout")
-                    .setMessage("Are you sure you want to logout?")
-                    .setPositiveButton("Logout", (dialog, which) -> {
-                        performLogout();
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
-
-        loadUserData();
-
-        return v;
+        logoutBtn.setOnClickListener(view -> performLogout());
+        btnEditProfileButton.setOnClickListener(view -> showEditProfileDialog());
     }
 
-    private void setupSettings() {
-        // SharedPreferences
+    private void setupBadgeViews(View v) {
+        View b1 = v.findViewById(R.id.badge1);
+        imgCollector = b1.findViewById(R.id.achievementBadge);
+        iconCollector = b1.findViewById(R.id.achievementIcon);
+        glowCollector = b1.findViewById(R.id.glowEffect);
+        txtCollectorVal = b1.findViewById(R.id.achievementValue);
+        progressCollector = b1.findViewById(R.id.achievementProgress);
+        ((TextView)b1.findViewById(R.id.achievementTitle)).setText("COLLECTOR");
+
+        View b2 = v.findViewById(R.id.badge2);
+        imgMasterCollector = b2.findViewById(R.id.achievementBadge);
+        iconMasterCollector = b2.findViewById(R.id.achievementIcon);
+        glowMasterCollector = b2.findViewById(R.id.glowEffect);
+        txtMasterCollectorVal = b2.findViewById(R.id.achievementValue);
+        progressMasterCollector = b2.findViewById(R.id.achievementProgress);
+        ((TextView)b2.findViewById(R.id.achievementTitle)).setText("MASTER");
+
+        View b3 = v.findViewById(R.id.badge3);
+        imgFinisher = b3.findViewById(R.id.achievementBadge);
+        iconFinisher = b3.findViewById(R.id.achievementIcon);
+        glowFinisher = b3.findViewById(R.id.glowEffect);
+        txtFinisherVal = b3.findViewById(R.id.achievementValue);
+        progressFinisher = b3.findViewById(R.id.achievementProgress);
+        ((TextView)b3.findViewById(R.id.achievementTitle)).setText("FINISHER");
+
+        View b4 = v.findViewById(R.id.badge4);
+        imgMasterFinisher = b4.findViewById(R.id.achievementBadge);
+        iconMasterFinisher = b4.findViewById(R.id.achievementIcon);
+        glowMasterFinisher = b4.findViewById(R.id.glowEffect);
+        txtMasterFinisherVal = b4.findViewById(R.id.achievementValue);
+        progressMasterFinisher = b4.findViewById(R.id.achievementProgress);
+        ((TextView)b4.findViewById(R.id.achievementTitle)).setText("ELITE");
+
+        View b5 = v.findViewById(R.id.badge5);
+        imgLegendary = b5.findViewById(R.id.achievementBadge);
+        iconLegendary = b5.findViewById(R.id.achievementIcon);
+        glowLegendary = b5.findViewById(R.id.glowEffect);
+        txtLegendaryVal = b5.findViewById(R.id.achievementValue);
+        progressLegendaryOtaku = b5.findViewById(R.id.achievementProgress);
+        ((TextView)b5.findViewById(R.id.achievementTitle)).setText("LEGEND");
+
+        View b6 = v.findViewById(R.id.badge6);
+        imgQuiz = b6.findViewById(R.id.achievementBadge);
+        iconQuiz = b6.findViewById(R.id.achievementIcon);
+        glowQuiz = b6.findViewById(R.id.glowEffect);
+        txtQuizVal = b6.findViewById(R.id.achievementValue);
+        progressQuizEnthusiast = b6.findViewById(R.id.achievementProgress);
+        ((TextView)b6.findViewById(R.id.achievementTitle)).setText("QUIZZER");
+    }
+
+    private void setupSettings(View root) {
         SharedPreferences prefs = getActivity().getSharedPreferences("Settings", Context.MODE_PRIVATE);
         boolean isDark = prefs.getBoolean("DarkMode", true);
         switchDarkMode.setChecked(isDark);
@@ -159,334 +175,279 @@ public class ProfileFragment extends Fragment {
             editor.putBoolean("DarkMode", isChecked);
             editor.apply();
 
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
+            AppCompatDelegate.setDefaultNightMode(isChecked ? 
+                    AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
             Toast.makeText(getContext(), "Theme updated!", Toast.LENGTH_SHORT).show();
         });
 
-        btnNotifications.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                intent.setAction(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                intent.putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, requireContext().getPackageName());
-            } else {
-                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-                intent.putExtra("app_package", requireContext().getPackageName());
-                intent.putExtra("app_uid", requireContext().getApplicationInfo().uid);
-            }
-            try {
-                startActivity(intent);
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Could not open settings", Toast.LENGTH_SHORT).show();
-            }
-        });
+        View itemNotif = root.findViewById(R.id.itemNotif);
+        if (itemNotif != null) {
+            ((TextView)itemNotif.findViewById(R.id.menuTitle)).setText("Notifications");
+            ((ImageView)itemNotif.findViewById(R.id.menuIcon)).setImageResource(R.drawable.ic_notifications);
+            itemNotif.setOnClickListener(v -> {
+                Intent intent = new Intent();
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    intent.setAction(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                    intent.putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, requireContext().getPackageName());
+                } else {
+                    intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                    intent.putExtra("app_package", requireContext().getPackageName());
+                    intent.putExtra("app_uid", requireContext().getApplicationInfo().uid);
+                }
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "Could not open settings", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
-        btnHelpSupport.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(android.net.Uri.parse("mailto:"));
-            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"support@animeapp.com"});
-            intent.putExtra(Intent.EXTRA_SUBJECT, "App Support - " + (usernameView != null ? usernameView.getText().toString() : "User"));
-            try {
-                startActivity(Intent.createChooser(intent, "Send Email"));
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "No email client found", Toast.LENGTH_SHORT).show();
-            }
-        });
+        View itemHelp = root.findViewById(R.id.itemHelp);
+        if (itemHelp != null) {
+            ((TextView)itemHelp.findViewById(R.id.menuTitle)).setText("Help & Support");
+            ((ImageView)itemHelp.findViewById(R.id.menuIcon)).setImageResource(R.drawable.ic_quiz);
+            itemHelp.setOnClickListener(v -> {
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"));
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"support@animeapp.com"});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "App Support - " + (usernameView != null ? usernameView.getText().toString() : "User"));
+                try {
+                    startActivity(Intent.createChooser(intent, "Send Email"));
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), "No email client found", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 
         if (btnEditProfileButton != null) {
             btnEditProfileButton.setOnClickListener(v -> showEditProfileDialog());
         }
+
+        logoutBtn.setOnClickListener(view -> {
+            new AlertDialog.Builder(requireContext(), R.style.AnimeAlertDialog)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Logout", (dialog, which) -> performLogout())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
     }
 
     private void showEditProfileDialog() {
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_edit_profile, null);
         EditText editUsername = dialogView.findViewById(R.id.editUsername);
         EditText editEmail = dialogView.findViewById(R.id.editEmail);
-        EditText editPassword = dialogView.findViewById(R.id.editPassword);
         editProfileImgView = dialogView.findViewById(R.id.editProfileImage);
         View btnChangePic = dialogView.findViewById(R.id.btnChangeProfilePic);
 
-        selectedImageUri = null; // Reset for new edit session
+        selectedImageUri = null;
+        editUsername.setText(usernameView.getText());
+        editEmail.setText(emailView.getText());
 
-        String currentUsername = usernameView.getText().toString();
-        String currentEmail = emailView.getText().toString();
-
-        editUsername.setText(currentUsername);
-        editEmail.setText(currentEmail);
-
-        // Show current image in dialog
         if (profileImage.getDrawable() != null) {
             editProfileImgView.setImageDrawable(profileImage.getDrawable());
-            editProfileImgView.setPadding(0, 0, 0, 0);
+            editProfileImgView.setPadding(0,0,0,0);
         }
 
-        btnChangePic.setOnClickListener(v -> {
-            mGetContent.launch("image/*");
-        });
-
+        btnChangePic.setOnClickListener(v -> mGetContent.launch("image/*"));
         editProgressBar = dialogView.findViewById(R.id.editProfileProgressBar);
 
         editDialog = new AlertDialog.Builder(requireContext(), R.style.AnimeAlertDialog)
                 .setView(dialogView)
-                .setPositiveButton("Save Changes", null) // Set listener later to control dismiss
-                .setNegativeButton("Cancel", (dialog, which) -> {
-                    editProfileImgView = null;
-                })
+                .setPositiveButton("Save Changes", null)
+                .setNegativeButton("Cancel", (dialog, which) -> editProfileImgView = null)
                 .create();
 
         editDialog.show();
-
         editDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String newName = editUsername.getText().toString().trim();
             String newEmail = editEmail.getText().toString().trim();
-            String newPass = editPassword.getText().toString().trim();
-
-            if (!newName.isEmpty()) {
-                updateProfile(newName, newEmail, newPass, currentUsername, currentEmail);
+            String newPass = ((EditText)dialogView.findViewById(R.id.editPassword)).getText().toString().trim();
+            
+            if (newName.isEmpty()) {
+                editUsername.setError("Username required");
+                return;
             }
+            
+            updateProfile(newName, newEmail, newPass);
         });
     }
 
-    private void updateProfile(String newName, String newEmail, String newPass, String oldName, String oldEmail) {
+    private void updateProfile(String newName, String newEmail, String newPass) {
         com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String uid = user.getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         if (editProgressBar != null) editProgressBar.setVisibility(View.VISIBLE);
 
-        // Track tasks to know when to dismiss
-        final boolean[] imgDone = {selectedImageUri == null};
-        final boolean[] nameDone = {newName.equals(oldName)};
-        final boolean[] emailDone = {newEmail.equals(oldEmail) || newEmail.isEmpty()};
-        final boolean[] passDone = {newPass.isEmpty()};
+        // Handle Email Change
+        if (!newEmail.equals(user.getEmail()) && !newEmail.isEmpty()) {
+            user.updateEmail(newEmail).addOnFailureListener(e -> 
+                Toast.makeText(getContext(), "Failed to update email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
 
-        Runnable checkDismiss = () -> {
-            if (imgDone[0] && nameDone[0] && emailDone[0] && passDone[0]) {
-                if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
-                if (editDialog != null && editDialog.isShowing()) editDialog.dismiss();
-            }
-        };
+        // Handle Password Change
+        if (!newPass.isEmpty() && newPass.length() >= 6) {
+            user.updatePassword(newPass).addOnFailureListener(e -> 
+                Toast.makeText(getContext(), "Failed to update password: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
 
-        // 0. Update Profile Picture if selected
         if (selectedImageUri != null) {
-            uploadImage(selectedImageUri, () -> {
-                imgDone[0] = true;
-                checkDismiss.run();
-            });
+            uploadImage(selectedImageUri, () -> finalizeProfileUpdate(user.getUid(), newName, newEmail));
+        } else {
+            finalizeProfileUpdate(user.getUid(), newName, newEmail);
         }
+    }
 
-        // 1. Update Firestore Username (if changed)
-        if (!newName.equals(oldName)) {
-            db.collection("users").document(uid)
-                    .update("username", newName)
-                    .addOnSuccessListener(aVoid -> {
+    private void finalizeProfileUpdate(String uid, String newName, String newEmail) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("username", newName);
+        updates.put("email", newEmail);
+
+        FirebaseFirestore.getInstance().collection("users").document(uid)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    if (isAdded()) {
                         usernameView.setText(newName);
-                        NotificationHelper.sendNotification(getContext(), "Profile Updated", "Your username has been changed to " + newName);
-                        nameDone[0] = true;
-                        checkDismiss.run();
-                    })
-                    .addOnFailureListener(e -> {
-                        nameDone[0] = true;
-                        checkDismiss.run();
-                    });
-        }
-
-        // 2. Update Auth Email (if changed)
-        if (!newEmail.equals(oldEmail) && !newEmail.isEmpty()) {
-            user.updateEmail(newEmail)
-                    .addOnSuccessListener(aVoid -> {
                         emailView.setText(newEmail);
-                        db.collection("users").document(uid).update("email", newEmail);
-                        Toast.makeText(getContext(), "Email updated!", Toast.LENGTH_SHORT).show();
-                        emailDone[0] = true;
-                        checkDismiss.run();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getContext(), "Email update failed. Re-login required.", Toast.LENGTH_LONG).show();
-                        emailDone[0] = true;
-                        checkDismiss.run();
-                    });
-        }
-
-        // 3. Update Auth Password (if provided)
-        if (!newPass.isEmpty()) {
-            if (newPass.length() < 6) {
-                Toast.makeText(getContext(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
-                passDone[0] = true;
-                checkDismiss.run();
-            } else {
-                user.updatePassword(newPass)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(getContext(), "Password updated!", Toast.LENGTH_SHORT).show();
-                            passDone[0] = true;
-                            checkDismiss.run();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(getContext(), "Password update failed. Re-login required.", Toast.LENGTH_LONG).show();
-                            passDone[0] = true;
-                            checkDismiss.run();
-                        });
-            }
-        }
-        
-        // Final check in case nothing was changed
-        checkDismiss.run();
+                        if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                        if (editDialog != null) editDialog.dismiss();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (isAdded()) {
+                        if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                        Toast.makeText(getContext(), "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void uploadImage(Uri imageUri, Runnable onComplete) {
         com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            if (onComplete != null) onComplete.run();
-            return;
-        }
+        if (user == null) return;
         
         String uid = user.getUid();
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + uid + ".jpg");
+        if (editProgressBar != null) editProgressBar.setVisibility(View.VISIBLE);
 
-        // Add metadata to help the server identify the file type
-        com.google.firebase.storage.StorageMetadata metadata = new com.google.firebase.storage.StorageMetadata.Builder()
-                .setContentType("image/jpeg")
-                .build();
+        try {
+            android.graphics.Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, baos);
+            byte[] data = baos.toByteArray();
 
-        storageRef.putFile(imageUri, metadata)
-                .addOnSuccessListener(taskSnapshot -> {
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String downloadUrl = uri.toString();
-                        FirebaseFirestore.getInstance().collection("users").document(uid)
-                                .update("profileImage", downloadUrl)
-                                .addOnSuccessListener(aVoid -> {
-                                    if (isAdded()) {
-                                        Glide.with(this).load(downloadUrl).into(profileImage);
-                                        Toast.makeText(getContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
-                                    }
-                                    if (onComplete != null) onComplete.run();
-                                });
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + uid + ".jpg");
+            StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
+
+            storageRef.putBytes(data, metadata)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            FirebaseFirestore.getInstance().collection("users").document(uid)
+                                    .update("profileImage", uri.toString())
+                                    .addOnSuccessListener(aVoid -> {
+                                        if (isAdded()) {
+                                            Glide.with(this)
+                                                .load(uri)
+                                                .circleCrop()
+                                                .into(profileImage);
+                                            onComplete.run();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        if (isAdded()) {
+                                            if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                                            Toast.makeText(getContext(), "Firestore update failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }).addOnFailureListener(e -> {
+                            if (isAdded()) {
+                                if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                                Toast.makeText(getContext(), "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        if (isAdded()) {
+                            if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                            Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
                     });
-                })
-                .addOnFailureListener(e -> {
-                    if (isAdded()) {
-                        Toast.makeText(getContext(), "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                    if (onComplete != null) onComplete.run();
-                });
+        } catch (java.io.IOException e) {
+            if (isAdded()) {
+                if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Error processing image", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void loadUserData() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
-            String uid = auth.getCurrentUser().getUid();
+            if (profileProgressBar != null) profileProgressBar.setVisibility(View.VISIBLE);
+            
+            FirebaseFirestore.getInstance().collection("users").document(auth.getCurrentUser().getUid())
+                    .get().addOnSuccessListener(doc -> {
+                        if (profileProgressBar != null) profileProgressBar.setVisibility(View.GONE);
 
-            FirebaseFirestore.getInstance()
-                    .collection("users")
-                    .document(uid)
-                    .get()
-                    .addOnSuccessListener((DocumentSnapshot doc) -> {
                         if (doc.exists() && isAdded()) {
-                            String username = doc.getString("username");
-                            String email = doc.getString("email");
-                            Long watchedCount = doc.getLong("watchedCount");
-                            Long watchlistCount = doc.getLong("watchlistCount");
-                            Long quizCount = doc.getLong("quizCount");
-                            Double quizAvgScore = doc.getDouble("quizAvgScore");
-
-                            if (username != null) usernameView.setText(username);
-                            if (email != null) emailView.setText(email);
-                            else if (auth.getCurrentUser().getEmail() != null) emailView.setText(auth.getCurrentUser().getEmail());
-
-                            String profilePicUrl = doc.getString("profileImage");
-                            if (profilePicUrl != null && !profilePicUrl.isEmpty()) {
-                                Glide.with(getContext())
-                                        .load(profilePicUrl)
+                            usernameView.setText(doc.getString("username"));
+                            emailView.setText(doc.getString("email"));
+                            
+                            String pic = doc.getString("profileImage");
+                            if (pic != null && !pic.isEmpty()) {
+                                Glide.with(this)
+                                        .load(pic)
                                         .placeholder(R.drawable.ic_profile_placeholder)
+                                        .error(R.drawable.ic_profile_placeholder)
+                                        .circleCrop()
                                         .into(profileImage);
                             } else {
                                 profileImage.setImageResource(R.drawable.ic_profile_placeholder);
                             }
 
-                            // Statistics
-                            statWatchedView.setText(String.valueOf(watchedCount != null ? watchedCount : 0));
-                            tvInWatchlist.setText(String.valueOf(watchlistCount != null ? watchlistCount : 0));
-                            tvQuizzesTaken.setText(String.valueOf(quizCount != null ? quizCount : 0));
+                            Long watched = doc.getLong("watchedCount");
+                            Long list = doc.getLong("watchlistCount");
+                            Long quiz = doc.getLong("quizCount");
+                            Double avg = doc.getDouble("quizAvgScore");
 
-                            if (quizAvgScore != null) {
-                                int avg = (int) Math.round(quizAvgScore);
-                                tvQuizAvgScore.setText(avg + "%");
-                            } else {
-                                tvQuizAvgScore.setText("0%");
-                            }
+                            statWatchedView.setText(String.valueOf(watched != null ? watched : 0));
+                            tvInWatchlist.setText(String.valueOf(list != null ? list : 0));
+                            tvQuizzesTaken.setText(String.valueOf(quiz != null ? quiz : 0));
+                            tvQuizAvgScore.setText((avg != null ? Math.round(avg) : 0) + "%");
 
-                            updateAchievements(watchedCount, watchlistCount, quizCount);
+                            updateAchievements(watched, list, quiz);
                         }
+                    })
+                    .addOnFailureListener(e -> {
+                        if (profileProgressBar != null) profileProgressBar.setVisibility(View.GONE);
                     });
         }
     }
 
-    private void updateAchievements(Long watchedCount, Long watchlistCount, Long quizCount) {
-        if (watchlistCount == null) watchlistCount = 0L;
-        if (watchedCount == null) watchedCount = 0L;
-        if (quizCount == null) quizCount = 0L;
-
-        // Collector (10)
-        updateBadge(imgCollector, iconCollector, glowCollector, txtCollectorVal, progressCollector, watchlistCount, 10);
-        // Master Collector (30)
-        updateBadge(imgMasterCollector, iconMasterCollector, glowMasterCollector, txtMasterCollectorVal, progressMasterCollector, watchlistCount, 30);
-        // Finisher (5)
-        updateBadge(imgFinisher, iconFinisher, glowFinisher, txtFinisherVal, progressFinisher, watchedCount, 5);
-        // Master Finisher (20)
-        updateBadge(imgMasterFinisher, iconMasterFinisher, glowMasterFinisher, txtMasterFinisherVal, progressMasterFinisher, watchedCount, 20);
-        // Legendary (50)
-        updateBadge(imgLegendary, iconLegendary, glowLegendary, txtLegendaryVal, progressLegendaryOtaku, watchedCount, 50);
-        // Quizzer (10)
-        updateBadge(imgQuiz, iconQuiz, glowQuiz, txtQuizVal, progressQuizEnthusiast, quizCount, 10);
+    private void updateAchievements(Long watched, Long list, Long quiz) {
+        updateBadge(imgCollector, iconCollector, glowCollector, txtCollectorVal, progressCollector, list != null ? list : 0, 10);
+        updateBadge(imgMasterCollector, iconMasterCollector, glowMasterCollector, txtMasterCollectorVal, progressMasterCollector, list != null ? list : 0, 30);
+        updateBadge(imgFinisher, iconFinisher, glowFinisher, txtFinisherVal, progressFinisher, watched != null ? watched : 0, 5);
+        updateBadge(imgMasterFinisher, iconMasterFinisher, glowMasterFinisher, txtMasterFinisherVal, progressMasterFinisher, watched != null ? watched : 0, 20);
+        updateBadge(imgLegendary, iconLegendary, glowLegendary, txtLegendaryVal, progressLegendaryOtaku, watched != null ? watched : 0, 50);
+        updateBadge(imgQuiz, iconQuiz, glowQuiz, txtQuizVal, progressQuizEnthusiast, quiz != null ? quiz : 0, 10);
     }
 
     private void updateBadge(ImageView img, ImageView icon, View glow, TextView val, TextView prog, long current, int target) {
         if (current >= target) {
             img.setImageResource(R.drawable.bg_hexagon);
-            img.setImageTintList(null); 
-            icon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#FFD700"))); // Gold
+            icon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#FFD700")));
             glow.setVisibility(View.VISIBLE);
-            
-            // Grand glow animation
-            glow.setAlpha(0f);
-            glow.animate().alpha(0.8f).setDuration(1500).setStartDelay(200).start();
-            
-            val.setTextColor(Color.WHITE);
-            val.setAlpha(1.0f);
-            
+            glow.animate().alpha(0.8f).setDuration(1500).start();
             prog.setText("UNLOCKED");
-            prog.setTextColor(Color.parseColor("#F72585")); // Pink accent
-            prog.setTypeface(null, android.graphics.Typeface.BOLD);
-            
-            // Scale icon up a bit for grand look
-            icon.setScaleX(1.2f);
-            icon.setScaleY(1.2f);
+            prog.setTextColor(Color.parseColor("#F72585"));
         } else {
             img.setImageResource(R.drawable.bg_hexagon_locked);
-            img.setImageTintList(null);
             icon.setImageTintList(ColorStateList.valueOf(Color.parseColor("#33FFFFFF")));
             glow.setVisibility(View.GONE);
-            val.setTextColor(Color.parseColor("#33FFFFFF"));
-            val.setAlpha(0.5f);
             prog.setText(current + " / " + target);
-            prog.setTextColor(Color.parseColor("#66FFFFFF"));
-            prog.setTypeface(null, android.graphics.Typeface.NORMAL);
-            
-            icon.setScaleX(1.0f);
-            icon.setScaleY(1.0f);
         }
     }
 
     private void performLogout() {
-        SharedPreferences.Editor editor = getActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE).edit();
-        editor.clear();
-        editor.apply();
-
         FirebaseAuth.getInstance().signOut();
         startActivity(new Intent(getActivity(), LoginActivity.class));
         getActivity().finish();

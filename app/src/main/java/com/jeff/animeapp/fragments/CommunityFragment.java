@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -67,7 +68,8 @@ public class CommunityFragment extends Fragment {
     private EditText searchReviews;
     private TextView tvEmptyReviews;
 
-    private LinearLayout layoutReviews, layoutCharacters, searchSection;
+    private LinearLayout layoutReviews, layoutCharacters;
+    private MaterialCardView searchSection;
     private TabLayout tabLayout;
     private RecyclerView recyclerCharacters;
     private CharacterAdapter characterAdapter;

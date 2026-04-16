@@ -9,47 +9,69 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Header -->
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="8dp">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <View
+                android:id="@+id/headerBackground"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:background="@drawable/gradient_primary_accent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/gradient_scrim_bottom"
+                app:layout_constraintBottom_toBottomOf="@+id/headerBackground" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Community"
-                android:textColor="@color/colorWhite"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-black"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="48dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:letterSpacing="0.05"
+                        android:text="COMMUNITY"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="26sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:letterSpacing="0.2"
+                        android:text="STATION HUB"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Connect with other anime fans"
-                android:textColor="#888888"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Modern Tabs -->
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorBackground"
-            app:tabIndicatorColor="@color/colorAccent"
-            app:tabIndicatorFullWidth="false"
-            app:tabIndicatorHeight="3dp"
-            app:tabMode="fixed"
-            app:tabRippleColor="@android:color/transparent"
-            app:tabSelectedTextColor="@color/colorAccent"
-            app:tabTextColor="#888888"
-            app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Subtitle2" />
+                android:layout_marginTop="120dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabIndicatorColor="@color/colorAccent"
+                app:tabSelectedTextColor="@color/colorWhite"
+                app:tabTextColor="#80FFFFFF" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
@@ -68,75 +90,103 @@
                     android:orientation="vertical"
                     android:visibility="visible">
 
-        <!-- Search Bar -->
-        <LinearLayout
+        <!-- Premium Search Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/searchSection"
+            style="@style/ModernCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/searchSection">
-            <EditText
-                android:id="@+id/searchReviews"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginVertical="8dp"
-                android:background="@drawable/search_bg"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="12dp"
-                android:hint="Search reviews or users..."
-                android:inputType="text"
-                android:maxLines="1"
-                android:paddingHorizontal="16dp"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="#666666"
-                android:textSize="14sp" />
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="12dp">
 
-            <!-- Compact Filter Section -->
-            <HorizontalScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:scrollbars="none">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="12dp">
 
-                    <Spinner
-                        android:id="@+id/spinnerSort"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/spinner_bg"
-                        android:minWidth="110dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp" />
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        app:tint="@color/colorTextMuted" />
 
-                    <Spinner
-                        android:id="@+id/spinnerRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/spinner_bg"
-                        android:minWidth="110dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp" />
-
-                    <Spinner
-                        android:id="@+id/spinnerAnime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:background="@drawable/spinner_bg"
-                        android:minWidth="140dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp" />
-
+                    <EditText
+                        android:id="@+id/searchReviews"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@android:color/transparent"
+                        android:hint="Search reviews or users..."
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textColorHint="@color/colorTextMuted"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium" />
                 </LinearLayout>
-            </HorizontalScrollView>
-        </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@color/dividerColor" />
+
+                <!-- Compact Filter Section -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:layout_marginTop="8dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="4dp"
+                        android:paddingBottom="4dp">
+
+                        <Spinner
+                            android:id="@+id/spinnerSort"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/spinner_bg"
+                            android:minWidth="100dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerRating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/spinner_bg"
+                            android:minWidth="100dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerAnime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:background="@drawable/spinner_bg"
+                            android:minWidth="120dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
                     <ProgressBar
                         android:id="@+id/progressCommunity"
@@ -176,28 +226,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingHorizontal="16dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:background="#121212">
+                        android:paddingHorizontal="20dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:background="@color/colorBackground">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Weekly Community Rankings"
+                            android:text="COMMUNITY RANKINGS"
                             android:textColor="@color/colorWhite"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="0.1" />
 
                         <TextView
                             android:id="@+id/voteLimitText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Votes this week: 0/3"
+                            android:text="VOTES THIS WEEK: 0/3"
                             android:textColor="@color/colorAccent"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:textSize="10sp"
+                            android:fontFamily="sans-serif-black"
+                            android:letterSpacing="0.15" />
 
                     </LinearLayout>
 

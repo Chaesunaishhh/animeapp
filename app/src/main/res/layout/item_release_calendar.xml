@@ -1,58 +1,79 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="#1E1E2A"
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp">
-
-    <ImageView
-        android:id="@+id/ivThumbnail"
-        android:layout_width="80dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        android:layout_marginEnd="12dp"/>
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    style="@style/ModernCard">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="0dp"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:text="Anime Title"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivThumbnail"
+            android:layout_width="70dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="16dp"
+            app:shapeAppearanceOverlay="@style/RoundedImage"/>
 
-        <TextView
-            android:id="@+id/tvDate"
-            android:text="Release Date"
-            android:textColor="#CCCCCC"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/tvType"
-            android:text="TV / Movie"
-            android:textColor="#FF4081"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Anime Title"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="15sp"
+                android:fontFamily="sans-serif-black"
+                android:maxLines="2"
+                android:ellipsize="end"/>
 
-        <TextView
-            android:id="@+id/tvTags"
-            android:text="Action, Fantasy"
-            android:textColor="#AAAAAA"
-            android:textSize="12sp"
-            android:layout_marginTop="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Release Date"
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="12sp"
+                android:fontFamily="sans-serif-medium"
+                android:textAllCaps="true"
+                android:letterSpacing="0.05"/>
+
+            <TextView
+                android:id="@+id/tvType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="TV / Movie"
+                android:textColor="@color/colorAccent"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.1"/>
+
+            <TextView
+                android:id="@+id/tvTags"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Action, Fantasy"
+                android:textColor="@color/colorTextMuted"
+                android:textSize="11sp"
+                android:fontFamily="sans-serif-medium"
+                android:ellipsize="end"
+                android:maxLines="1"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -5,10 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="1.5dp"
-    app:strokeColor="#1AFFFFFF">
+    style="@style/ModernCard">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,10 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Question text here"
-            android:textColor="@color/colorWhite"
-            android:textSize="17sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="15sp"
             android:lineSpacingExtra="4dp"
-            android:textStyle="bold" />
+            android:fontFamily="sans-serif-black" />
 
         <View
             android:layout_width="match_parent"
@@ -53,15 +50,15 @@
                     android:textAllCaps="true"
                     android:letterSpacing="0.1" />
 
-                <TextView
-                    android:id="@+id/tvUserAnswer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Answer"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="14sp"
-                    android:layout_marginTop="2dp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvUserAnswer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Answer"
+                        android:textColor="@color/colorTextPrimary"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="sans-serif-black" />
             </LinearLayout>
 
             <LinearLayout
@@ -79,15 +76,15 @@
                     android:textAllCaps="true"
                     android:letterSpacing="0.1" />
 
-                <TextView
-                    android:id="@+id/tvCorrectAnswer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Answer"
-                    android:textColor="#4CAF50"
-                    android:textSize="14sp"
-                    android:layout_marginTop="2dp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvCorrectAnswer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Answer"
+                        android:textColor="#4CAF50"
+                        android:textSize="13sp"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="sans-serif-black" />
             </LinearLayout>
 
         </LinearLayout>

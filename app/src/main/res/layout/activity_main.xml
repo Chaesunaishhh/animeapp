@@ -21,14 +21,15 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/card"
+            android:layout_height="64dp"
+            android:background="@color/colorBackground"
             android:elevation="10dp"
-            app:itemIconTint="@color/colorAccent"
-            app:itemTextColor="@color/colorAccent"
+            app:itemIconTint="@color/bottom_nav_colors"
+            app:itemTextColor="@color/bottom_nav_colors"
             app:menu="@menu/bottom_nav_menu"
             app:labelVisibilityMode="labeled"
-            app:itemHorizontalTranslationEnabled="false"/>
+            app:itemHorizontalTranslationEnabled="false"
+            app:itemRippleColor="@android:color/transparent" />
     </LinearLayout>
 
     <!-- In-App Notification Overlay -->

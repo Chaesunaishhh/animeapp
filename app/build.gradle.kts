@@ -57,14 +57,13 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // Glide
-    implementation("com.google.firebase:firebase-firestore:24.4.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    // ✅ Firebase BOM FIRST
+    // ✅ Firebase BOM (Manages all Firebase versions)
     implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
 
-    // ✅ Firebase Dependencies (WITHOUT VERSION NUMBERS)
+    // ✅ Firebase Dependencies (NO version numbers needed here)
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")

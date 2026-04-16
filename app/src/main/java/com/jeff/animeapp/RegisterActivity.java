@@ -15,8 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageMetadata;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +98,6 @@ public class RegisterActivity extends AppCompatActivity {
         auth.createUserWithEmailAndPassword(emailStr, passwordStr)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-
                         FirebaseUser user = auth.getCurrentUser();
                         if (user != null) {
                             saveUserProfile(user.getUid(), usernameStr, emailStr);
@@ -119,41 +120,54 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void uploadProfileImage(String uid, String usernameStr, String emailStr) {
-        StorageReference storageRef = storage.getReference().child("profile_images/" + uid + ".jpg");
+        try {
+            android.graphics.Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImageUri);
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, baos);
+            byte[] data = baos.toByteArray();
 
-        // Add metadata to help the server identify the file type
-        com.google.firebase.storage.StorageMetadata metadata = new com.google.firebase.storage.StorageMetadata.Builder()
-                .setContentType("image/jpeg")
-                .build();
+            StorageReference storageRef = storage.getReference().child("profile_images/" + uid + ".jpg");
+            StorageMetadata metadata = new StorageMetadata.Builder()
+                    .setContentType("image/jpeg")
+                    .build();
 
-        storageRef.putFile(selectedImageUri, metadata)
-                .addOnSuccessListener(taskSnapshot -> {
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        saveUserToFirestore(uid, usernameStr, emailStr, uri.toString());
+            storageRef.putBytes(data, metadata)
+                    .addOnSuccessListener(taskSnapshot -> {
+                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            saveUserToFirestore(uid, usernameStr, emailStr, uri.toString());
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        android.util.Log.e("StorageError", "Upload failed", e);
+                        Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        saveUserToFirestore(uid, usernameStr, emailStr, "");
                     });
-                })
-                .addOnFailureListener(e -> {
-                    android.util.Log.e("StorageError", "Upload failed", e);
-                    // Even if upload fails, we might want to save the user data without the image
-                    Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    saveUserToFirestore(uid, usernameStr, emailStr, "");
-                });
+        } catch (java.io.IOException e) {
+            android.util.Log.e("StorageError", "Error processing image", e);
+            saveUserToFirestore(uid, usernameStr, emailStr, "");
+        }
     }
 
     private void saveUserToFirestore(String uid, String usernameStr, String emailStr, String profileImageUrl) {
         Map<String, Object> userMap = new HashMap<>();
+        userMap.put("uid", uid);
         userMap.put("username", usernameStr);
         userMap.put("email", emailStr);
         userMap.put("profileImage", profileImageUrl);
+        userMap.put("createdAt", com.google.firebase.Timestamp.now());
+        
+        // Initial stats
         userMap.put("watchedCount", 0);
         userMap.put("watchlistCount", 0);
         userMap.put("quizCount", 0);
         userMap.put("quizAvgScore", 0.0);
-        userMap.put("createdAt", System.currentTimeMillis());
 
         db.collection("users").document(uid).set(userMap)
-                .addOnCompleteListener(task -> {
+                .addOnSuccessListener(aVoid -> {
                     handleRegistrationComplete();
+                })
+                .addOnFailureListener(e -> {
+                    handleRegistrationError(e);
                 });
     }
 
@@ -187,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void handleRegistrationError(Exception error) {
         setLoading(false);
         isProcessing = false;
-        Toast.makeText(this, "❌ " + error.getMessage(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "❌ " + (error != null ? error.getMessage() : "Registration failed"), Toast.LENGTH_SHORT).show();
     }
 
     private boolean validateInputs() {
@@ -225,7 +239,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void goToLoginActivity() {
         auth.signOut();
-
         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -243,5 +256,4 @@ public class RegisterActivity extends AppCompatActivity {
         }
         password.setSelection(password.getText().length());
     }
-
 }

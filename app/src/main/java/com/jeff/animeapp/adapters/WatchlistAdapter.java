@@ -1,27 +1,26 @@
 package com.jeff.animeapp.adapters;
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ImageButton;
-
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.firebase.firestore.FieldValue;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.utils.FirebaseUtils;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.ViewHolder> {
 
@@ -45,108 +44,55 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         JsonObject anime = animeList.get(position).getAsJsonObject();
 
-        String title = anime.has("title") && anime.getAsJsonObject("title").has("romaji")
-                ? anime.getAsJsonObject("title").get("romaji").getAsString()
-                : "Unknown";
+        final String title = anime.has("title") ?
+                (anime.get("title").isJsonObject() ? anime.getAsJsonObject("title").get("romaji").getAsString() : anime.get("title").getAsString()) :
+                "Unknown";
 
-        String image = anime.has("coverImage") && anime.getAsJsonObject("coverImage").has("large")
-                ? anime.getAsJsonObject("coverImage").get("large").getAsString()
-                : "";
+        final String image = anime.has("coverImage") ?
+                (anime.get("coverImage").isJsonObject() ? anime.getAsJsonObject("coverImage").get("large").getAsString() : anime.get("coverImage").getAsString()) :
+                "";
 
-        int score = anime.has("averageScore") && !anime.get("averageScore").isJsonNull()
-                ? anime.get("averageScore").getAsInt()
-                : 0;
-
-        int id = anime.has("id") && !anime.get("id").isJsonNull()
-                ? anime.get("id").getAsInt()
-                : 0;
+        int score = anime.has("averageScore") ? anime.get("averageScore").getAsInt() : 0;
+        int id = anime.has("id") ? anime.get("id").getAsInt() : 0;
+        String status = anime.has("status") ? anime.get("status").getAsString().toLowerCase() : "watching";
 
         holder.title.setText(title);
-        holder.score.setText("⭐ " + score);
+        holder.score.setText("⭐ " + (score / 10.0));
+        holder.status.setText(status.toUpperCase());
 
         Glide.with(holder.itemView.getContext())
                 .load(image)
                 .placeholder(R.drawable.placeholder_image)
-                .error(R.drawable.placeholder_image)
                 .transform(new RoundedCorners(24))
                 .into(holder.image);
 
-        String status = anime.has("status") && !anime.get("status").isJsonNull()
-                ? anime.get("status").getAsString()
-                : "watching";
-
-        holder.status.setText(status.toUpperCase());
-        
+        // Status Backgrounds
         int bgRes;
         switch (status) {
             case "completed": bgRes = R.drawable.status_bg_completed; break;
             case "planning": bgRes = R.drawable.status_bg_planning; break;
-            case "dropped": bgRes = R.drawable.status_bg_dropped; break;
             default: bgRes = R.drawable.status_bg_watching; break;
         }
         holder.status.setBackgroundResource(bgRes);
 
+        // Update Button Logic
         holder.btnUpdate.setOnClickListener(v -> {
             String[] options = {"Watching", "Completed", "Planning", "Dropped"};
             new androidx.appcompat.app.AlertDialog.Builder(v.getContext(), R.style.AnimeAlertDialog)
-                    .setTitle("Update Status")
+                    .setTitle("Move to...")
                     .setItems(options, (dialog, which) -> {
                         String newStatus = options[which].toLowerCase();
-                        FirebaseUtils.firestore().collection("watchlist")
-                                .document(FirebaseUtils.uid())
-                                .collection("anime").document(String.valueOf(id))
-                                .update("status", newStatus)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(v.getContext(), "Status updated to " + options[which], Toast.LENGTH_SHORT).show();
-                                    anime.addProperty("status", newStatus);
-                                    
-                                    // Update watchedCount if changed to/from completed
-                                    if ("completed".equals(newStatus) && !"completed".equals(status)) {
-                                        FirebaseUtils.firestore().collection("users")
-                                                .document(FirebaseUtils.uid())
-                                                .update("watchedCount", FieldValue.increment(1));
-                                    } else if (!"completed".equals(newStatus) && "completed".equals(status)) {
-                                        FirebaseUtils.firestore().collection("users")
-                                                .document(FirebaseUtils.uid())
-                                                .update("watchedCount", FieldValue.increment(-1));
-                                    }
-                                    
-                                    notifyItemChanged(position);
-                                });
+                        updateAnimeStatus(v, id, status, newStatus);
                     })
                     .show();
         });
 
+        // Delete Button Logic
         holder.btnDelete.setOnClickListener(v -> {
             new androidx.appcompat.app.AlertDialog.Builder(v.getContext(), R.style.AnimeAlertDialog)
-                    .setTitle("Remove from Watchlist")
-                    .setMessage("Are you sure you want to remove " + title + " from your watchlist?")
-                    .setPositiveButton("Remove", (dialog, which) -> {
-                        FirebaseFirestore.getInstance().collection("watchlist")
-                                .document(FirebaseUtils.uid())
-                                .collection("anime").document(String.valueOf(id))
-                                .get()
-                                .addOnSuccessListener(doc -> {
-                                    boolean wasCompleted = doc.exists() && "completed".equals(doc.getString("status"));
-
-                                    FirebaseFirestore.getInstance().collection("watchlist")
-                                            .document(FirebaseUtils.uid())
-                                            .collection("anime").document(String.valueOf(id))
-                                            .delete()
-                                            .addOnSuccessListener(aVoid -> {
-                                                if (wasCompleted) {
-                                                    FirebaseUtils.firestore().collection("users")
-                                                            .document(FirebaseUtils.uid())
-                                                            .update("watchedCount", FieldValue.increment(-1));
-                                                }
-
-                                                animeList.remove(position);
-                                                notifyItemRemoved(position);
-                                                notifyItemRangeChanged(position, animeList.size());
-                                                Toast.makeText(v.getContext(), "Removed from Watchlist!", Toast.LENGTH_SHORT).show();
-                                            });
-                                });
-                    })
+                    .setTitle("Remove Anime")
+                    .setMessage("Remove " + title + " from your list?")
+                    .setPositiveButton("Remove", (dialog, which) -> deleteAnime(v, id, status))
                     .setNegativeButton("Cancel", null)
                     .show();
         });
@@ -154,6 +100,51 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onAnimeClick(id);
         });
+    }
+
+    private void updateAnimeStatus(View v, int id, String oldStatus, String newStatus) {
+        if (oldStatus.equals(newStatus)) return;
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+
+        FirebaseUtils.firestore().collection("watchlist")
+                .document(FirebaseUtils.uid())
+                .collection("anime").document(String.valueOf(id))
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    // Update global stats
+                    if (newStatus.equals("completed")) {
+                        FirebaseUtils.firestore().collection("users")
+                                .document(FirebaseUtils.uid())
+                                .update("watchedCount", FieldValue.increment(1));
+                    } else if (oldStatus.equals("completed")) {
+                        FirebaseUtils.firestore().collection("users")
+                                .document(FirebaseUtils.uid())
+                                .update("watchedCount", FieldValue.increment(-1));
+                    }
+                    
+                    Toast.makeText(v.getContext(), "Moved to " + newStatus, Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void deleteAnime(View v, int id, String currentStatus) {
+        FirebaseUtils.firestore().collection("watchlist")
+                .document(FirebaseUtils.uid())
+                .collection("anime").document(String.valueOf(id))
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    FirebaseUtils.firestore().collection("users")
+                            .document(FirebaseUtils.uid())
+                            .update("watchlistCount", FieldValue.increment(-1));
+
+                    if (currentStatus.equals("completed")) {
+                        FirebaseUtils.firestore().collection("users")
+                                .document(FirebaseUtils.uid())
+                                .update("watchedCount", FieldValue.increment(-1));
+                    }
+                    Toast.makeText(v.getContext(), "Removed from list", Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -164,8 +155,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView title, score, status;
-        ImageButton btnUpdate;
-        ImageButton btnDelete;
+        ImageButton btnUpdate, btnDelete;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -177,5 +167,4 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
             btnDelete = itemView.findViewById(R.id.deleteButton);
         }
     }
-
 }

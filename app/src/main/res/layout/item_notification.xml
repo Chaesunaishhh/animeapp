@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="#1E1E2C"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp">
+    style="@style/ModernCard">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,7 +17,8 @@
             android:id="@+id/notifIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/circle_background_dark"
+            android:background="@drawable/circle_bg"
+            android:backgroundTint="@color/colorCardDark"
             android:padding="10dp"
             android:src="@drawable/ic_notifications"
             app:tint="@color/colorAccent" />
@@ -36,9 +35,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Notification Title"
-                android:textColor="@color/colorWhite"
+                android:textColor="@color/colorTextPrimary"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:fontFamily="sans-serif-black" />
 
             <TextView
                 android:id="@+id/tvMessage"
@@ -46,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Notification message goes here..."
-                android:textColor="#BBBBBB"
+                android:textColor="@color/colorTextSecondary"
                 android:textSize="13sp" />
 
             <TextView
@@ -55,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Just now"
-                android:textColor="#66FFFFFF"
+                android:textColor="@color/colorTextMuted"
                 android:textSize="11sp" />
         </LinearLayout>
 
@@ -67,4 +66,4 @@
             android:backgroundTint="@color/colorAccent"
             android:visibility="visible" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

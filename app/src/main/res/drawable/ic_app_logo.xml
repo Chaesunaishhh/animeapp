@@ -1,0 +1,32 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Outer Hexagon Frame -->
+    <path
+        android:pathData="M50,5 L89,27.5 L89,72.5 L50,95 L11,72.5 L11,27.5 Z"
+        android:strokeWidth="2"
+        android:strokeColor="#7C3AED" />
+
+    <!-- Inner Stylized 'A' / Cyberpunk Element -->
+    <path
+        android:fillColor="#7C3AED"
+        android:pathData="M50,25 L75,75 L65,75 L50,45 L35,75 L25,75 Z" />
+
+    <!-- Accent Line (Neon Cyan) -->
+    <path
+        android:pathData="M30,60 L70,60"
+        android:strokeWidth="4"
+        android:strokeColor="#00F5FF"
+        android:strokeLineCap="round" />
+
+    <!-- Glow Effect (Simplified for Vector) -->
+    <path
+        android:pathData="M50,15 L80,32 L80,68 L50,85 L20,68 L20,32 Z"
+        android:strokeWidth="0.5"
+        android:strokeColor="#4CC9F0" />
+
+</vector>

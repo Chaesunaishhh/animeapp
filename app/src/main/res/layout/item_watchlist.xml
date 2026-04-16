@@ -5,12 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="@color/colorCard"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="#1AFFFFFF">
+    android:layout_marginVertical="6dp"
+    style="@style/ModernCard">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -21,8 +17,8 @@
         <!-- Thumbnail -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/animeImage"
-            android:layout_width="100dp"
-            android:layout_height="145dp"
+            android:layout_width="90dp"
+            android:layout_height="130dp"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/RoundedImage"/>
 
@@ -32,8 +28,8 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp">
 
             <!-- Title -->
             <TextView
@@ -41,9 +37,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Anime Title"
-                android:textColor="@color/colorWhite"
-                android:textSize="17sp"
-                android:textStyle="bold"
+                android:textColor="@color/colorTextPrimary"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
                 android:maxLines="2"
                 android:ellipsize="end"/>
 
@@ -54,14 +50,16 @@
                 android:layout_height="wrap_content"
                 android:text="⭐ 8.5"
                 android:textColor="@color/rating_star"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:layout_marginTop="4dp"
-                android:textStyle="bold"/>
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.05" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:minHeight="16dp"/>
 
             <!-- Status & Actions -->
             <LinearLayout
@@ -76,8 +74,9 @@
                     android:layout_height="wrap_content"
                     android:text="WATCHING"
                     android:textColor="@color/colorWhite"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
+                    android:textSize="9sp"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.1"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:background="@drawable/status_bg_watching"/>
@@ -92,18 +91,21 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:src="@drawable/ic_edit"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/colorGray"
-                    android:padding="8dp"/>
+                    android:background="@drawable/circle_bg"
+                    android:backgroundTint="@color/colorCardDark"
+                    app:tint="@color/colorTextSecondary"
+                    android:padding="10dp"
+                    android:layout_marginEnd="8dp"/>
 
                 <ImageButton
                     android:id="@+id/deleteButton"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:src="@drawable/ic_delete"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:tint="@color/colorRed"
-                    android:padding="8dp"/>
+                    android:background="@drawable/circle_bg"
+                    android:backgroundTint="@color/colorCardDark"
+                    app:tint="@color/colorError"
+                    android:padding="10dp"/>
 
             </LinearLayout>
 

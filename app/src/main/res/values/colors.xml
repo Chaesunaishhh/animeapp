@@ -1,50 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark Black & Pink Theme -->
+    <!-- Modern "Midnight Cyberpunk" Theme -->
 
-    <!-- Backgrounds -->
-    <color name="colorBackground">#000000</color>
-    <color name="colorBackgroundDark">#121212</color>
-    <color name="colorCard">#1A1A1A</color>
-    <color name="colorCardDark">#242424</color>
+    <!-- Base Neutrals (Deep Indigo/Slate base instead of pure black) -->
+    <color name="colorBackground">#0B0E14</color>
+    <color name="colorSurface">#151921</color>
+    <color name="colorCard">#1C222D</color>
+    <color name="colorCardDark">#12161F</color>
 
-    <!-- Theme Colors -->
-    <color name="colorPrimary">#F72585</color> <!-- Vibrant Pink -->
-    <color name="colorPrimaryDark">#B5179E</color>
-    <color name="colorAccent">#F72585</color>
-    <color name="colorAccentPurple">#7C3AED</color>
+    <!-- Brand Colors -->
+    <color name="colorPrimary">#7C3AED</color> <!-- Premium Purple -->
+    <color name="colorPrimaryDark">#5B21B6</color>
+    <color name="colorAccent">#F72585</color> <!-- Vibrant Pink remains as highlight -->
 
-    <!-- Accent Colors for Chips/Details -->
-    <color name="colorAccentBlue">#4CC9F0</color>
-    <color name="colorAccentPink">#F72585</color>
-    <color name="colorAccentOrange">#FB923C</color>
-    <color name="colorAccentYellow">#FBBF24</color>
-    <color name="colorAccentCyan">#4CC9F0</color>
+    <!-- Simple Accents -->
+    <color name="colorSimpleBlue">#4CC9F0</color>
+    <color name="colorSimpleCyan">#00F5FF</color>
+    <color name="colorNeonBlue">#00D4FF</color>
+    <color name="colorSimpleGreen">#39FF14</color>
 
-    <!-- Text Colors -->
-    <color name="colorTextPrimary">#FFFFFF</color>
-    <color name="colorTextSecondary">#B0B0B0</color>
+    <!-- Text Palette -->
+    <color name="colorTextPrimary">#F8FAFC</color>
+    <color name="colorTextSecondary">#94A3B8</color>
+    <color name="colorTextMuted">#64748B</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorGray">#9CA3AF</color>
-    <color name="darkGray">#4B5563</color>
-    <color name="colorBlack">#000000</color>
+    <color name="colorGray">#475569</color>
+    <color name="darkGray">#1E293B</color>
+    <color name="colorBlack">#020617</color>
 
-    <!-- Functional Colors -->
+    <!-- Functional States -->
     <color name="colorSuccess">#10B981</color>
     <color name="colorError">#EF4444</color>
     <color name="colorWarning">#F59E0B</color>
-    <color name="colorGreen">#10B981</color>
-    <color name="colorRed">#EF4444</color>
+    <color name="colorInfo">#3B82F6</color>
 
-    <!-- Aliases for Compatibility -->
-    <color name="purple_500">#F72585</color>
-    <color name="purple_700">#B5179E</color>
+    <!-- Component Specifics -->
+    <color name="bottomNavBg">#0F172A</color>
+    <color name="dividerColor">#1E293B</color>
+    <color name="rating_star">#FBBF24</color>
+
+    <!-- Legacy Support (Aliased) -->
+    <color name="purple_500">#7C3AED</color>
+    <color name="purple_700">#5B21B6</color>
     <color name="teal_200">#4CC9F0</color>
     <color name="white">#FFFFFF</color>
-    <color name="bg">#000000</color>
-    <color name="card">#1A1A1A</color>
+    <color name="bg">#0B0E14</color>
+    <color name="card">#1C222D</color>
     <color name="accent">#F72585</color>
-    <color name="text">#FFFFFF</color>
-    <color name="muted">#B0B0B0</color>
-    <color name="rating_star">#FBBF24</color>
+    <color name="colorAccentBlue">@color/colorSimpleBlue</color>
+    <color name="colorGreen">@color/colorSuccess</color>
+    <color name="colorAccentYellow">@color/colorWarning</color>
+    <color name="colorRed">@color/colorError</color>
+    <color name="colorAccentPurple">@color/colorPrimary</color>
+    <color name="colorBackgroundDark">@color/colorCardDark</color>
 </resources>

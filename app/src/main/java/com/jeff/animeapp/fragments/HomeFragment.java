@@ -186,15 +186,24 @@ public class HomeFragment extends Fragment {
         });
 
         // ✅ QUICK ACCESS: CALENDAR
-        v.findViewById(R.id.btnCalendar).setOnClickListener(view ->
+        View btnCalendar = v.findViewById(R.id.btnCalendar);
+        ((TextView) btnCalendar.findViewById(R.id.tvLabel)).setText("CALENDAR");
+        ((ImageView) btnCalendar.findViewById(R.id.ivIcon)).setImageResource(R.drawable.ic_calendar);
+        btnCalendar.setOnClickListener(view ->
                 navigateTo(new ReleaseCalendarFragment()));
 
         // ✅ QUICK ACCESS: QUIZ
-        v.findViewById(R.id.btnQuiz).setOnClickListener(view ->
+        View btnQuiz = v.findViewById(R.id.btnQuiz);
+        ((TextView) btnQuiz.findViewById(R.id.tvLabel)).setText("QUIZ");
+        ((ImageView) btnQuiz.findViewById(R.id.ivIcon)).setImageResource(R.drawable.ic_quiz);
+        btnQuiz.setOnClickListener(view ->
                 navigateTo(new QuizFragment()));
 
         // ✅ QUICK ACCESS: LEADERBOARD
-        v.findViewById(R.id.btnLeaderboard).setOnClickListener(view ->
+        View btnLeaderboard = v.findViewById(R.id.btnLeaderboard);
+        ((TextView) btnLeaderboard.findViewById(R.id.tvLabel)).setText("RANKS");
+        ((ImageView) btnLeaderboard.findViewById(R.id.ivIcon)).setImageResource(R.drawable.ic_leaderboard);
+        btnLeaderboard.setOnClickListener(view ->
                 navigateTo(new LeaderboardFragment()));
 
         // See All Click Listeners
