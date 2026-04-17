@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-black"
-                    android:text="ANIME"
+                    android:text="NANIME"
                     android:textColor="@color/colorWhite"
                     android:textSize="28sp"
                     android:letterSpacing="0.05" />

@@ -18,7 +18,10 @@ import com.jeff.animeapp.adapters.CalendarAdapter;
 import com.jeff.animeapp.api.AniListClient;
 import com.jeff.animeapp.models.ReleaseItem;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -39,7 +42,6 @@ public class ReleaseCalendarFragment extends Fragment {
         recyclerCalendar = v.findViewById(R.id.recyclerCalendar);
         recyclerCalendar.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // ✅ Back button listener
         v.findViewById(R.id.btnBack).setOnClickListener(view -> {
             requireActivity().getSupportFragmentManager().popBackStack();
         });
@@ -50,8 +52,7 @@ public class ReleaseCalendarFragment extends Fragment {
     }
 
     private void fetchUpcomingAnime() {
-        // GraphQL query
-        String query = "query { Page(page:1, perPage:10) { media(season:SPRING, seasonYear:2026, type:ANIME) { title { romaji } startDate { year month day } coverImage { large } format genres } } }";
+        String query = "query { Page(page:1, perPage:50) { media(season:SPRING, seasonYear:2026, type:ANIME) { title { romaji } startDate { year month day } coverImage { large } format genres } } }";
 
         JsonObject body = new JsonObject();
         body.addProperty("query", query);
@@ -67,32 +68,61 @@ public class ReleaseCalendarFragment extends Fragment {
                     JsonObject page = data.getAsJsonObject("Page");
                     JsonArray mediaArray = page.getAsJsonArray("media");
 
+                    int currentMonth = LocalDate.now().getMonthValue();
+
                     for (int i = 0; i < mediaArray.size(); i++) {
                         JsonObject anime = mediaArray.get(i).getAsJsonObject();
 
                         String title = anime.getAsJsonObject("title").get("romaji").getAsString();
                         JsonObject startDate = anime.getAsJsonObject("startDate");
-                        String date = startDate.get("year").getAsInt() + "-" +
-                                startDate.get("month").getAsInt() + "-" +
-                                startDate.get("day").getAsInt();
 
-                        String format = anime.get("format").getAsString();
-                        JsonArray genresArray = anime.getAsJsonArray("genres");
-                        List<String> genres = new ArrayList<>();
-                        for (int j = 0; j < genresArray.size(); j++) {
-                            genres.add(genresArray.get(j).getAsString());
+                        if (!startDate.get("year").isJsonNull() &&
+                                !startDate.get("month").isJsonNull() &&
+                                !startDate.get("day").isJsonNull()) {
+
+                            int year = startDate.get("year").getAsInt();
+                            int month = startDate.get("month").getAsInt();
+                            int day = startDate.get("day").getAsInt();
+
+                            // current month only
+                            if (month == currentMonth) {
+                                String rawDate = String.format("%04d-%02d-%02d", year, month, day);
+
+                                // Pretty format for display
+                                String releaseDate = LocalDate.parse(rawDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                                        .format(DateTimeFormatter.ofPattern("MMMM d, yyyy"));
+
+                                String format = anime.get("format").getAsString();
+                                JsonArray genresArray = anime.getAsJsonArray("genres");
+                                List<String> genres = new ArrayList<>();
+                                for (int j = 0; j < genresArray.size(); j++) {
+                                    genres.add(genresArray.get(j).getAsString());
+                                }
+
+                                String imageUrl = anime.getAsJsonObject("coverImage").get("large").getAsString();
+
+                                releaseList.add(new ReleaseItem(
+                                        title,
+                                        rawDate,
+                                        releaseDate,
+                                        format,
+                                        String.join(", ", genres),
+                                        imageUrl
+                                ));
+                            }
                         }
-
-                        String imageUrl = anime.getAsJsonObject("coverImage").get("large").getAsString();
-
-                        releaseList.add(new ReleaseItem(
-                                title,
-                                date,
-                                format,
-                                String.join(", ", genres),
-                                imageUrl
-                        ));
                     }
+
+                    // Sort ascending by date
+                    Collections.sort(releaseList, (a, b) -> {
+                        try {
+                            LocalDate d1 = LocalDate.parse(a.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            LocalDate d2 = LocalDate.parse(b.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                            return d1.compareTo(d2);
+                        } catch (Exception e) {
+                            return 0;
+                        }
+                    });
 
                     recyclerCalendar.setAdapter(new CalendarAdapter(releaseList));
                 }

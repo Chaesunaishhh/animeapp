@@ -97,8 +97,8 @@ public class WatchlistFragment extends Fragment {
                         // Proper sorting logic
                         if (status.equals("completed")) completedList.add(obj);
                         else if (status.equals("planning")) planningList.add(obj);
-                        else if (status.equals("watching")) watchingList.add(obj);
-                        // 'dropped' is hidden from these three main tabs but stays in DB
+                        else watchingList.add(obj);
+                        // 'dropped' is no longer supported and will be ignored
                     }
 
                     // Update Adapters

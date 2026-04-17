@@ -66,7 +66,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
             String content = snapshot.getString("reviewText");
             Double rating = snapshot.getDouble("rating");
             Long timestamp = snapshot.getLong("timestamp");
-            String avatarUrl = snapshot.getString("avatarUrl");
 
             // Set text values
             holder.user.setText(userName != null ? userName : "Anonymous");
@@ -117,19 +116,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.Holder> {
                 }
                 return false;
             });
-
-            // Load avatar
-            if (avatarUrl != null && !avatarUrl.isEmpty()) {
-                Glide.with(holder.itemView.getContext())
-                        .load(avatarUrl)
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .circleCrop()
-                        .into(holder.avatar);
-            } else {
-                holder.avatar.setImageResource(R.drawable.ic_profile);
-            }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

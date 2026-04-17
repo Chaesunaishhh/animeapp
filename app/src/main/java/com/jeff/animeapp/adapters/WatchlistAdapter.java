@@ -77,7 +77,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<WatchlistAdapter.View
 
         // Update Button Logic
         holder.btnUpdate.setOnClickListener(v -> {
-            String[] options = {"Watching", "Completed", "Planning", "Dropped"};
+            String[] options = {"Watching", "Completed", "Planning"};
             new androidx.appcompat.app.AlertDialog.Builder(v.getContext(), R.style.AnimeAlertDialog)
                     .setTitle("Move to...")
                     .setItems(options, (dialog, which) -> {

@@ -43,8 +43,9 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="20dp"
-                android:src="@drawable/app_logo"
+                android:padding="5dp"
+                android:src="@drawable/ic_app_logo"
+                android:scaleType="centerInside"
                 android:background="@color/colorCard" />
         </com.google.android.material.card.MaterialCardView>
 

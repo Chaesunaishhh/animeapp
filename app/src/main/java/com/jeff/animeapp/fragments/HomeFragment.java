@@ -226,7 +226,7 @@ public class HomeFragment extends Fragment {
 
     private void resetToHome() {
         btnBack.setVisibility(View.GONE);
-        tvHeaderTitle.setText("ANIME");
+        tvHeaderTitle.setText("NANIME");
         tvHeaderSubtitle.setText("EXPLORE");
         tvHeaderSubtitle.setVisibility(View.VISIBLE);
         

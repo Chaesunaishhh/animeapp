@@ -36,33 +36,12 @@
             android:background="@drawable/gradient_scrim_bottom"
             app:layout_constraintBottom_toBottomOf="@+id/headerBackground" />
 
-        <!-- Profile Picture & Identity -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/profileImageCard"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_marginTop="150dp"
-            app:cardCornerRadius="55dp"
-            app:cardElevation="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/colorBackground"
-            app:strokeWidth="4dp">
-
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_profile_placeholder" />
-        </com.google.android.material.card.MaterialCardView>
-
+        <!-- Identity -->
         <TextView
             android:id="@+id/profileUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="170dp"
             android:fontFamily="sans-serif-black"
             android:text=""
             android:textColor="@color/colorWhite"
@@ -70,7 +49,7 @@
             android:letterSpacing="0.02"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profileImageCard" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/profileEmail"

@@ -558,26 +558,18 @@ public class CommunityFragment extends Fragment {
     private void generateWeeklyCharacters() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        SharedPreferences prefs = requireActivity()
-                .getSharedPreferences("WeeklyCharacters", Context.MODE_PRIVATE);
-
-        long lastUpdate = prefs.getLong("last_update_v7", 0);
-        long now = System.currentTimeMillis();
-
-        if (now - lastUpdate < 604800000 && lastUpdate != 0) {
-            db.collection("characters").get().addOnSuccessListener(snapshots -> {
-                if (snapshots.isEmpty()) {
-                    fetchCharactersFromApi(db, prefs, now);
-                }
-            });
-            Log.d(TAG, "Weekly characters already generated this week");
-            return;
-        }
-
-        fetchCharactersFromApi(db, prefs, now);
+        // Only generate if the collection is empty
+        db.collection("characters").limit(1).get().addOnSuccessListener(snapshots -> {
+            if (snapshots.isEmpty()) {
+                Log.d(TAG, "Database empty, generating characters...");
+                fetchCharactersFromApi(db);
+            } else {
+                Log.d(TAG, "Characters already exist in database.");
+            }
+        });
     }
 
-    private void fetchCharactersFromApi(FirebaseFirestore db, SharedPreferences prefs, long now) {
+    private void fetchCharactersFromApi(FirebaseFirestore db) {
         Log.d(TAG, "Fetching trending anime from Kitsu API...");
 
         KitsuClient.API apiService = KitsuClient.getClient().create(KitsuClient.API.class);
@@ -588,54 +580,45 @@ public class CommunityFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonArray data = response.body().getAsJsonArray("data");
                     if (data != null && data.size() > 0) {
-                        db.collection("characters").get().addOnSuccessListener(snapshots -> {
-                            // Clear existing
-                            for (DocumentSnapshot doc : snapshots) {
-                                doc.getReference().delete();
+                        int count = Math.min(data.size(), 10);
+                        for (int i = 0; i < count; i++) {
+                            JsonObject animeObj = data.get(i).getAsJsonObject();
+                            JsonObject attributes = animeObj.getAsJsonObject("attributes");
+                            
+                            String title = attributes.get("canonicalTitle").getAsString();
+                            String posterUrl = "";
+                            if (attributes.has("posterImage") && !attributes.get("posterImage").isJsonNull()) {
+                                posterUrl = attributes.getAsJsonObject("posterImage").get("medium").getAsString();
                             }
+                            
+                            String type = attributes.has("showType") ? attributes.get("showType").getAsString() : "TV";
 
-                            int count = Math.min(data.size(), 10);
-                            for (int i = 0; i < count; i++) {
-                                JsonObject animeObj = data.get(i).getAsJsonObject();
-                                JsonObject attributes = animeObj.getAsJsonObject("attributes");
-                                
-                                String title = attributes.get("canonicalTitle").getAsString();
-                                String posterUrl = "";
-                                if (attributes.has("posterImage") && !attributes.get("posterImage").isJsonNull()) {
-                                    posterUrl = attributes.getAsJsonObject("posterImage").get("medium").getAsString();
-                                }
-                                
-                                String type = attributes.has("showType") ? attributes.get("showType").getAsString() : "TV";
-
-                                Map<String, Object> animeData = new HashMap<>();
-                                animeData.put("name", title);
-                                animeData.put("anime", type.toUpperCase());
-                                animeData.put("imageUrl", posterUrl);
-                                animeData.put("votes", 0L);
-                                animeData.put("voters", new ArrayList<String>());
-                                db.collection("characters").add(animeData);
-                            }
-
-                            prefs.edit().putLong("last_update_v7", now).apply();
-                            Log.d(TAG, "Successfully populated trending anime");
-                        });
+                            Map<String, Object> animeData = new HashMap<>();
+                            animeData.put("name", title);
+                            animeData.put("anime", type.toUpperCase());
+                            animeData.put("imageUrl", posterUrl);
+                            animeData.put("votes", 0L);
+                            animeData.put("voters", new ArrayList<String>());
+                            db.collection("characters").add(animeData);
+                        }
+                        Log.d(TAG, "Successfully populated trending anime");
                     } else {
-                        forceGenerateCharacters(db, prefs, now);
+                        forceGenerateCharacters(db);
                     }
                 } else {
-                    forceGenerateCharacters(db, prefs, now);
+                    forceGenerateCharacters(db);
                 }
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 Log.e(TAG, "API Failure: " + t.getMessage());
-                forceGenerateCharacters(db, prefs, now);
+                forceGenerateCharacters(db);
             }
         });
     }
 
-    private void forceGenerateCharacters(FirebaseFirestore db, SharedPreferences prefs, long now) {
+    private void forceGenerateCharacters(FirebaseFirestore db) {
         List<Map<String, Object>> fallbackAnimes = new ArrayList<>();
         fallbackAnimes.add(createCharacter("Naruto Shippuden", "TV", "https://media.kitsu.io/anime/poster_images/1555/medium.jpg"));
         fallbackAnimes.add(createCharacter("Jujutsu Kaisen", "TV", "https://media.kitsu.io/anime/poster_images/42765/medium.jpg"));
@@ -648,16 +631,10 @@ public class CommunityFragment extends Fragment {
         fallbackAnimes.add(createCharacter("Hunter x Hunter", "TV", "https://media.kitsu.io/anime/poster_images/6448/medium.jpg"));
         fallbackAnimes.add(createCharacter("Fullmetal Alchemist: B", "TV", "https://media.kitsu.io/anime/poster_images/3936/medium.jpg"));
 
-        db.collection("characters").get().addOnSuccessListener(snapshots -> {
-            for (DocumentSnapshot doc : snapshots) {
-                doc.getReference().delete();
-            }
-            for (Map<String, Object> anime : fallbackAnimes) {
-                db.collection("characters").add(anime);
-            }
-            prefs.edit().putLong("last_update_v7", now).apply();
-            Log.d(TAG, "Successfully populated fallback anime");
-        });
+        for (Map<String, Object> anime : fallbackAnimes) {
+            db.collection("characters").add(anime);
+        }
+        Log.d(TAG, "Successfully populated fallback anime");
     }
 
     private void updateVoteCountDisplay() {

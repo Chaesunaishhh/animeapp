@@ -29,13 +29,7 @@ import com.google.firebase.firestore.SetOptions;
 import com.jeff.animeapp.R;
 import com.jeff.animeapp.LoginActivity;
 import com.jeff.animeapp.notifications.NotificationHelper;
-import com.bumptech.glide.Glide;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageMetadata;
 import android.net.Uri;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +38,6 @@ public class ProfileFragment extends Fragment {
 
     private Button logoutBtn;
     private TextView usernameView, emailView, statWatchedView, tvInWatchlist, tvQuizzesTaken, tvQuizAvgScore;
-    private ImageView profileImage;
     private TextView progressCollector, progressMasterCollector, progressFinisher, progressMasterFinisher, progressLegendaryOtaku, progressQuizEnthusiast;
     private ImageView imgCollector, imgMasterCollector, imgFinisher, imgMasterFinisher, imgLegendary, imgQuiz;
     private ImageView iconCollector, iconMasterCollector, iconFinisher, iconMasterFinisher, iconLegendary, iconQuiz;
@@ -54,22 +47,8 @@ public class ProfileFragment extends Fragment {
     private View btnNotifications, btnHelpSupport, btnEditProfileButton;
     private android.widget.ProgressBar profileProgressBar;
     
-    private Uri selectedImageUri;
-    private ImageView editProfileImgView;
     private android.widget.ProgressBar editProgressBar;
     private AlertDialog editDialog;
-
-    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    selectedImageUri = uri;
-                    if (editProfileImgView != null) {
-                        Glide.with(this).load(uri).into(editProfileImgView);
-                    }
-                }
-            }
-    );
 
     public ProfileFragment() {}
 
@@ -88,7 +67,6 @@ public class ProfileFragment extends Fragment {
         logoutBtn = v.findViewById(R.id.logoutButton);
         usernameView = v.findViewById(R.id.profileUsername);
         emailView = v.findViewById(R.id.profileEmail);
-        profileImage = v.findViewById(R.id.profileImage);
         statWatchedView = v.findViewById(R.id.statWatched);
         tvInWatchlist = v.findViewById(R.id.tvInWatchlist);
         tvQuizzesTaken = v.findViewById(R.id.tvQuizzesTaken);
@@ -237,25 +215,16 @@ public class ProfileFragment extends Fragment {
         View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_edit_profile, null);
         EditText editUsername = dialogView.findViewById(R.id.editUsername);
         EditText editEmail = dialogView.findViewById(R.id.editEmail);
-        editProfileImgView = dialogView.findViewById(R.id.editProfileImage);
-        View btnChangePic = dialogView.findViewById(R.id.btnChangeProfilePic);
 
-        selectedImageUri = null;
         editUsername.setText(usernameView.getText());
         editEmail.setText(emailView.getText());
 
-        if (profileImage.getDrawable() != null) {
-            editProfileImgView.setImageDrawable(profileImage.getDrawable());
-            editProfileImgView.setPadding(0,0,0,0);
-        }
-
-        btnChangePic.setOnClickListener(v -> mGetContent.launch("image/*"));
         editProgressBar = dialogView.findViewById(R.id.editProfileProgressBar);
 
         editDialog = new AlertDialog.Builder(requireContext(), R.style.AnimeAlertDialog)
                 .setView(dialogView)
                 .setPositiveButton("Save Changes", null)
-                .setNegativeButton("Cancel", (dialog, which) -> editProfileImgView = null)
+                .setNegativeButton("Cancel", null)
                 .create();
 
         editDialog.show();
@@ -291,11 +260,7 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to update password: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
 
-        if (selectedImageUri != null) {
-            uploadImage(selectedImageUri, () -> finalizeProfileUpdate(user.getUid(), newName, newEmail));
-        } else {
-            finalizeProfileUpdate(user.getUid(), newName, newEmail);
-        }
+        finalizeProfileUpdate(user.getUid(), newName, newEmail);
     }
 
     private void finalizeProfileUpdate(String uid, String newName, String newEmail) {
@@ -321,63 +286,6 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    private void uploadImage(Uri imageUri, Runnable onComplete) {
-        com.google.firebase.auth.FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
-        
-        String uid = user.getUid();
-        if (editProgressBar != null) editProgressBar.setVisibility(View.VISIBLE);
-
-        try {
-            android.graphics.Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
-            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
-            bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, baos);
-            byte[] data = baos.toByteArray();
-
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("profile_images/" + uid + ".jpg");
-            StorageMetadata metadata = new StorageMetadata.Builder().setContentType("image/jpeg").build();
-
-            storageRef.putBytes(data, metadata)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            FirebaseFirestore.getInstance().collection("users").document(uid)
-                                    .update("profileImage", uri.toString())
-                                    .addOnSuccessListener(aVoid -> {
-                                        if (isAdded()) {
-                                            Glide.with(this)
-                                                .load(uri)
-                                                .circleCrop()
-                                                .into(profileImage);
-                                            onComplete.run();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        if (isAdded()) {
-                                            if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
-                                            Toast.makeText(getContext(), "Firestore update failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }).addOnFailureListener(e -> {
-                            if (isAdded()) {
-                                if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
-                                Toast.makeText(getContext(), "Failed to get download URL", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        if (isAdded()) {
-                            if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
-                            Toast.makeText(getContext(), "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } catch (java.io.IOException e) {
-            if (isAdded()) {
-                if (editProgressBar != null) editProgressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Error processing image", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private void loadUserData() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() != null) {
@@ -390,18 +298,6 @@ public class ProfileFragment extends Fragment {
                         if (doc.exists() && isAdded()) {
                             usernameView.setText(doc.getString("username"));
                             emailView.setText(doc.getString("email"));
-                            
-                            String pic = doc.getString("profileImage");
-                            if (pic != null && !pic.isEmpty()) {
-                                Glide.with(this)
-                                        .load(pic)
-                                        .placeholder(R.drawable.ic_profile_placeholder)
-                                        .error(R.drawable.ic_profile_placeholder)
-                                        .circleCrop()
-                                        .into(profileImage);
-                            } else {
-                                profileImage.setImageResource(R.drawable.ic_profile_placeholder);
-                            }
 
                             Long watched = doc.getLong("watchedCount");
                             Long list = doc.getLong("watchlistCount");

@@ -20,37 +20,7 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Profile Picture Section -->
-        <FrameLayout
-            android:id="@+id/btnChangeProfilePic"
-            android:layout_width="110dp"
-            android:layout_height="110dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="32dp">
 
-            <ImageView
-                android:id="@+id/editProfileImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/circle_background"
-                android:clipToOutline="true"
-                android:padding="2dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_profile_placeholder" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/circle_bg"
-                android:backgroundTint="#44000000" />
-
-            <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_edit"
-                app:tint="@color/colorWhite" />
-        </FrameLayout>
 
         <!-- Username Input -->
         <TextView

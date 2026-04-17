@@ -26,51 +26,11 @@
             android:background="@drawable/gradient_scrim_bottom"
             app:layout_constraintBottom_toBottomOf="@+id/headerBackground" />
 
-        <!-- Profile Pic Selector -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/btnSelectProfilePic"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginTop="140dp"
-            app:cardCornerRadius="60dp"
-            app:cardElevation="12dp"
-            app:strokeWidth="4dp"
-            app:strokeColor="@color/colorBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/registerProfileImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile_placeholder"
-                    android:background="@color/colorCard"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#44000000"/>
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_edit"
-                    app:tint="@color/colorWhite" />
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
         <TextView
             android:id="@+id/registerTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="160dp"
             android:fontFamily="sans-serif-black"
             android:text="CREATE ACCOUNT"
             android:textColor="@color/colorWhite"
@@ -78,7 +38,7 @@
             android:letterSpacing="0.05"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnSelectProfilePic" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/registerSubtitle"

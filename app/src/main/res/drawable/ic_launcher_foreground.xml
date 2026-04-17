@@ -1,33 +1,35 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
+    android:viewportWidth="200"
+    android:viewportHeight="200">
 
-    <!-- Centered Logo within the 108dp safe zone for adaptive icons -->
-    <group
-        android:translateX="4"
-        android:translateY="4"
-        android:scaleX="1.0"
-        android:scaleY="1.0">
-
-        <!-- Outer Hexagon Frame -->
+    <group android:translateX="20" android:translateY="20" android:scaleX="0.8" android:scaleY="0.8">
+        <!-- Crescent Moon -->
         <path
-            android:pathData="M50,15 L80,32 L80,68 L50,85 L20,68 L20,32 Z"
-            android:strokeWidth="2.5"
-            android:strokeColor="#7C3AED" />
+            android:fillColor="#FFD700"
+            android:pathData="M135,55 C115,55 98,72 98,92 C98,112 115,129 135,129 C137,129 139,128.9 141,128.7 C130,140 112,148 92,148 C58,148 30,120 30,86 C30,66 40,48 56,38 C53,39 50,42 48,45 C38,55 32,69 32,84 C32,114 57,139 87,139 C105,139 121,130 131,117 C126,120 120,122 114,122 C94,122 77,106 77,85 C77,73 83,62 92,55 C89,56 86,57 83,59 Z" />
 
-        <!-- Inner Stylized 'A' -->
-        <path
-            android:fillColor="#7C3AED"
-            android:pathData="M50,30 L70,70 L62,70 L50,46 L38,70 L30,70 Z" />
+        <!-- 3D Depth/Shadow -->
+        <group android:translateX="54" android:translateY="84">
+            <path android:fillColor="#2D0066" android:pathData="M0,35 L0,0 L12,0 L20,18 L28,0 L40,0 L40,35 L30,35 L30,12 L22,30 L18,30 L10,12 L10,35 Z" />
+            <path android:fillColor="#2D0066" android:pathData="M50,35 L50,0 L85,0 L85,8 L60,8 L60,14 L80,14 L80,21 L60,21 L60,27 L85,27 L85,35 Z" />
+        </group>
 
-        <!-- Accent Line -->
-        <path
-            android:pathData="M35,58 L65,58"
-            android:strokeWidth="3.5"
-            android:strokeColor="#00F5FF"
-            android:strokeLineCap="round" />
+        <!-- Main Text (White for better contrast on home screen) -->
+        <group android:translateX="50" android:translateY="80">
+            <path android:fillColor="#FFFFFF" android:pathData="M0,35 L0,0 L12,0 L20,18 L28,0 L40,0 L40,35 L30,35 L30,12 L22,30 L18,30 L10,12 L10,35 Z" />
+            <path android:fillColor="#FFFFFF" android:pathData="M50,35 L50,0 L85,0 L85,8 L60,8 L60,14 L80,14 L80,21 L60,21 L60,27 L85,27 L85,35 Z" />
+        </group>
+
+        <!-- Accent Overlay -->
+        <group android:translateX="50" android:translateY="80">
+            <path android:fillColor="#7C3AED" android:pathData="M0,0 L12,0 L10,10 L0,10 Z M40,0 L28,0 L30,10 L40,10 Z M50,35 L85,35 L85,31 L50,31 Z" />
+        </group>
+
+        <!-- Stars -->
+        <path android:fillColor="#F72585" android:pathData="M165,45 l2,7 l7,2 l-7,2 l-2,7 l-2,-7 l-7,-2 l7,-2z" />
+        <path android:fillColor="#00F5FF" android:pathData="M45,155 l2,6 l6,2 l-6,2 l-2,6 l-2,-6 l-6,-2 l6,-2z" />
     </group>
 
 </vector>
